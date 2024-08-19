@@ -10,6 +10,8 @@ public final class CrmConstants {
     public static final class ErrorCodes {
         public static String USER_NOT_FOUND = "userNotFound";
 
+        public static String WRONG_PASSWORD = "wrongPassword";
+
         public static String COMPANY_NOT_FOUND = "companyNotFound";
 
         public static String CUSTOMER_SESSION_NOT_FOUND = "customerSessionNotFound";

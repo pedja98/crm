@@ -1,27 +1,44 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.config.SecurityConfig;
+
 import com.etf.crm.dtos.AuthUserRequestDto;
+import com.etf.crm.entities.User;
+import com.etf.crm.exceptions.ItemNotFoundException;
+import com.etf.crm.services.UserService;
+import com.etf.crm.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.config.annotation.web.AuthorizeRequestsDsl;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import com.etf.crm.utils.*;
+import org.springframework.web.bind.annotation.*;
+
+import static com.etf.crm.common.CrmConstants.ErrorCodes.WRONG_PASSWORD;
+
+import java.util.Map;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthUserRequestDto authRequest) throws Exception {
-        String username = authRequest.getUsername();
+    public ResponseEntity<?> login(@RequestBody AuthUserRequestDto authRequest) {
+        try {
+            User user = userService.getUserByUsername(authRequest.getUsername());
 
-        final String jwt = jwtUtil.generateToken(username);
-        return ResponseEntity.ok("");
+            if (!SecurityConfig.matches(authRequest.getPassword(), user.getPassword())) {
+                return ResponseEntity.status(401).body(WRONG_PASSWORD);
+            }
+
+            String token = jwtUtil.generateToken(user.getUsername());
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (ItemNotFoundException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
     }
+
 }
