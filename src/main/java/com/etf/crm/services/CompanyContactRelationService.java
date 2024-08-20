@@ -55,10 +55,10 @@ public class CompanyContactRelationService {
         this.relationRepository.save(relation);
     }
 
-    public CompanyContactRelation updateRelation(Long id, CompanyContactRelation relationDetails) {
+    public CompanyContactRelation updateRelation(Long id, CompanyContactRelation relation) {
         CompanyContactRelation existingRelation = this.getRelationById(id);
-        existingRelation.setRoleDescription(relationDetails.getRoleDescription());
-        existingRelation.setRelationType(relationDetails.getRelationType());
+        existingRelation.setRoleDescription(relation.getRoleDescription());
+        existingRelation.setRelationType(relation.getRelationType());
         return this.relationRepository.save(existingRelation);
     }
 

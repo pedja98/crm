@@ -31,10 +31,10 @@ public class Contact {
     @Column(nullable = false, name = "last_name")
     private String lastName;
 
-    @Column(nullable = false, unique = true, name = "verification_email")
-    private String verificationEmail;
+    @Column(nullable = false, unique = true, name = "email")
+    private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String phone;
 
     @Enumerated(EnumType.STRING)

@@ -1,5 +1,6 @@
 package com.etf.crm.entities;
 
+import com.etf.crm.enums.UserType;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -38,8 +39,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserType type;
 
     @ManyToOne
     @JoinColumn(name = "created_by", updatable = false)

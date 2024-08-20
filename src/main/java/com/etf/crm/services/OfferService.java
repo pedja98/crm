@@ -42,11 +42,11 @@ public class OfferService {
         this.offerRepository.save(offer);
     }
 
-    public Offer updateOffer(Long id, Offer offerDetails) {
+    public Offer updateOffer(Long id, Offer offer) {
         Offer existingOffer = this.getOfferById(id);
-        existingOffer.setName(offerDetails.getName());
-        existingOffer.setStatus(offerDetails.getStatus());
-        existingOffer.setModifiedBy(offerDetails.getModifiedBy());
+        existingOffer.setName(offer.getName());
+        existingOffer.setStatus(offer.getStatus());
+        existingOffer.setModifiedBy(offer.getModifiedBy());
         return this.offerRepository.save(existingOffer);
     }
 

@@ -48,16 +48,16 @@ public class CustomerSessionService {
         this.customerSessionRepository.save(customerSession);
     }
 
-    public CustomerSession updateCustomerSession(Long id, CustomerSession customerSessionDetails) {
+    public CustomerSession updateCustomerSession(Long id, CustomerSession customerSession) {
         CustomerSession existingCustomerSession = this.getCustomerSessionById(id);
-        existingCustomerSession.setName(customerSessionDetails.getName());
-        existingCustomerSession.setDescription(customerSessionDetails.getDescription());
-        existingCustomerSession.setStatus(customerSessionDetails.getStatus());
-        existingCustomerSession.setType(customerSessionDetails.getType());
-        existingCustomerSession.setMode(customerSessionDetails.getMode());
-        existingCustomerSession.setSessionStart(customerSessionDetails.getSessionStart());
-        existingCustomerSession.setSessionEnd(customerSessionDetails.getSessionEnd());
-        existingCustomerSession.setModifiedBy(customerSessionDetails.getModifiedBy());
+        existingCustomerSession.setName(customerSession.getName());
+        existingCustomerSession.setDescription(customerSession.getDescription());
+        existingCustomerSession.setStatus(customerSession.getStatus());
+        existingCustomerSession.setType(customerSession.getType());
+        existingCustomerSession.setMode(customerSession.getMode());
+        existingCustomerSession.setSessionStart(customerSession.getSessionStart());
+        existingCustomerSession.setSessionEnd(customerSession.getSessionEnd());
+        existingCustomerSession.setModifiedBy(customerSession.getModifiedBy());
         return this.customerSessionRepository.save(existingCustomerSession);
     }
 

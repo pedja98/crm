@@ -8,6 +8,7 @@ import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.services.UserService;
 import com.etf.crm.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,18 +28,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthUserRequestDto authRequest) {
-        try {
-            User user = userService.getUserByUsername(authRequest.getUsername());
-
-            if (!SecurityConfig.matches(authRequest.getPassword(), user.getPassword())) {
-                return ResponseEntity.status(401).body(WRONG_PASSWORD);
-            }
-
-            String token = jwtUtil.generateToken(user.getUsername());
-            return ResponseEntity.ok(Map.of("token", token));
-        } catch (ItemNotFoundException e) {
-            return ResponseEntity.status(401).body(e.getMessage());
+        User user = userService.getUserByUsername(authRequest.getUsername());
+        if (!SecurityConfig.matches(authRequest.getPassword(), user.getPassword())) {
+            throw new ItemNotFoundException(WRONG_PASSWORD);
         }
+        String token = jwtUtil.generateToken(user.getUsername());
+        return ResponseEntity.ok(Map.of("token", token));
     }
-
 }

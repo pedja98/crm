@@ -39,18 +39,18 @@ public class CompanyService {
         }
     }
 
-    public Company updateCompany(Long id, Company companyDetails) {
+    public Company updateCompany(Long id, Company company) {
         Company existingCompany = this.getCompanyById(id);
-        existingCompany.setName(companyDetails.getName());
-        existingCompany.setHqAddress(companyDetails.getHqAddress());
-        existingCompany.setIndustry(companyDetails.getIndustry());
-        existingCompany.setContactPhone(companyDetails.getContactPhone());
-        existingCompany.setNumberOfEmployees(companyDetails.getNumberOfEmployees());
-        existingCompany.setTin(companyDetails.getTin());
-        existingCompany.setBankName(companyDetails.getBankName());
-        existingCompany.setBankAccountNumber(companyDetails.getBankAccountNumber());
-        existingCompany.setComment(companyDetails.getComment());
-        existingCompany.setModifiedBy(companyDetails.getModifiedBy());
+        existingCompany.setName(company.getName());
+        existingCompany.setHqAddress(company.getHqAddress());
+        existingCompany.setIndustry(company.getIndustry());
+        existingCompany.setContactPhone(company.getContactPhone());
+        existingCompany.setNumberOfEmployees(company.getNumberOfEmployees());
+        existingCompany.setTin(company.getTin());
+        existingCompany.setBankName(company.getBankName());
+        existingCompany.setBankAccountNumber(company.getBankAccountNumber());
+        existingCompany.setComment(company.getComment());
+        existingCompany.setModifiedBy(company.getModifiedBy());
         return this.companyRepository.save(existingCompany);
     }
 

@@ -26,6 +26,9 @@ public final class CrmConstants {
 
         public static String CONTRACT_NOT_FOUND = "contractNotFound";
 
+        public static String USERNAME_ALREADY_TAKEN = "usernameAlreadyTaken";
+
+        public static String EMAIL_ALREADY_TAKEN = "emailAlreadyTaken";
     }
 
 }

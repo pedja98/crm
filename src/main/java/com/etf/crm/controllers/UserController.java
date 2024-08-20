@@ -1,6 +1,7 @@
 package com.etf.crm.controllers;
 
 import com.etf.crm.entities.User;
+import com.etf.crm.exceptions.DuplicateItemException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.services.UserService;
 
@@ -29,11 +30,6 @@ public class UserController {
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
         return ResponseEntity.ok(user);
-    }
-
-    @ExceptionHandler(ItemNotFoundException.class)
-    public ResponseEntity<String> handleItemNotFound(ItemNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @GetMapping

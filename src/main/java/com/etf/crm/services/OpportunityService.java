@@ -44,10 +44,10 @@ public class OpportunityService {
         this.opportunityRepository.save(opportunity);
     }
 
-    public Opportunity updateOpportunity(Long id, Opportunity opportunityDetails) {
+    public Opportunity updateOpportunity(Long id, Opportunity opportunity) {
         Opportunity existingOpportunity = this.getOpportunityById(id);
-        existingOpportunity.setName(opportunityDetails.getName());
-        existingOpportunity.setModifiedBy(opportunityDetails.getModifiedBy());
+        existingOpportunity.setName(opportunity.getName());
+        existingOpportunity.setModifiedBy(opportunity.getModifiedBy());
         return this.opportunityRepository.save(existingOpportunity);
     }
 

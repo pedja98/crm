@@ -48,14 +48,14 @@ public class ContractService {
         this.contractRepository.save(contract);
     }
 
-    public Contract updateContract(Long id, Contract contractDetails) {
+    public Contract updateContract(Long id, Contract contract) {
         Contract existingContract = this.getContractById(id);
-        existingContract.setName(contractDetails.getName());
-        existingContract.setReferenceNumber(contractDetails.getReferenceNumber());
-        existingContract.setStatus(contractDetails.getStatus());
-        existingContract.setArchiveStatus(contractDetails.getArchiveStatus());
-        existingContract.setComment(contractDetails.getComment());
-        existingContract.setModifiedBy(contractDetails.getModifiedBy());
+        existingContract.setName(contract.getName());
+        existingContract.setReferenceNumber(contract.getReferenceNumber());
+        existingContract.setStatus(contract.getStatus());
+        existingContract.setArchiveStatus(contract.getArchiveStatus());
+        existingContract.setComment(contract.getComment());
+        existingContract.setModifiedBy(contract.getModifiedBy());
         return this.contractRepository.save(existingContract);
     }
 
