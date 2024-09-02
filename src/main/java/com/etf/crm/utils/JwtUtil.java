@@ -1,5 +1,6 @@
 package com.etf.crm.utils;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,20 +34,24 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateToken(String token, String username) {
-        String tokenUsername = extractUsername(token);
-        return (tokenUsername.equals(username) && !isTokenExpired(token));
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return !isTokenExpired(claims);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
+    public Claims getClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    public Date extractExpiration(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getExpiration();
+    private boolean isTokenExpired(Claims claims) {
+        Date expiration = claims.getExpiration();
+        return expiration.before(new Date());
     }
 }
