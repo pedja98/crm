@@ -9,9 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class AuthUserResponseDto {
+public class AuthUserDto {
     private String username;
     private UserType type;
     private Language language;
-
+    private String password;
 }

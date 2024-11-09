@@ -1,6 +1,6 @@
 package com.etf.crm.repositories;
 
-import com.etf.crm.dtos.AuthUserResponseDto;
+import com.etf.crm.dtos.AuthUserDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,9 +38,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
             " WHERE u.username = :username AND u.deleted = false")
     Optional<UserDto> findUserDtoByUsernameAndDeletedFalse(String username);
 
-    @Query("SELECT new com.etf.crm.dtos.AuthUserResponseDto(u.username, u.type, u.language, u.password)" +
+    @Query("SELECT new com.etf.crm.dtos.AuthUserDto(u.username, u.type, u.language, u.password)" +
             "FROM User u " +
             " WHERE u.username = :username AND u.deleted = false")
-    Optional<AuthUserResponseDto> findAuthUserResponseDtoByUsernameAndDeletedFalse(String username);
+    Optional<AuthUserDto> findAuthUserDtoByUsernameAndDeletedFalse(String username);
 
 }

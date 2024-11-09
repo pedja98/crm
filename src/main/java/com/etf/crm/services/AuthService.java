@@ -1,6 +1,6 @@
 package com.etf.crm.services;
 
-import com.etf.crm.dtos.AuthUserResponseDto;
+import com.etf.crm.dtos.AuthUserDto;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,8 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    public AuthUserResponseDto getAuthUserResponse(String username) {
-        return this.userRepository.findAuthUserResponseDtoByUsernameAndDeletedFalse(username)
+    public AuthUserDto getAuthUserData(String username) {
+        return this.userRepository.findAuthUserDtoByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
     }
 }

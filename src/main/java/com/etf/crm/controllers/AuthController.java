@@ -3,16 +3,13 @@ package com.etf.crm.controllers;
 import com.etf.crm.config.SecurityConfig;
 
 import com.etf.crm.dtos.AuthUserRequestDto;
+import com.etf.crm.dtos.AuthUserDto;
 import com.etf.crm.dtos.AuthUserResponseDto;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.etf.crm.common.CrmConstants.ErrorCodes.WRONG_PASSWORD;
 
 @RestController
@@ -23,17 +20,11 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthUserRequestDto authRequest) {
-        AuthUserResponseDto authUserResponse = authService.getAuthUserResponse(authRequest.getUsername());
-        if (!SecurityConfig.matches(authRequest.getPassword(), authUserResponse.getPassword())) {
+    public ResponseEntity<AuthUserResponseDto> login(@RequestBody AuthUserRequestDto authRequest) {
+        AuthUserDto authUserData = authService.getAuthUserData(authRequest.getUsername());
+        if (!SecurityConfig.matches(authRequest.getPassword(), authUserData.getPassword())) {
             throw new ItemNotFoundException(WRONG_PASSWORD);
         }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("username", authUserResponse.getUsername());
-        response.put("type", authUserResponse.getType());
-        response.put("language", authUserResponse.getLanguage());
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok((new AuthUserResponseDto(authUserData.getUsername(), authUserData.getType(), authUserData.getLanguage())));
     }
 }
