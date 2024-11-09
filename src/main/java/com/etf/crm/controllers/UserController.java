@@ -1,5 +1,6 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
 import com.etf.crm.exceptions.DuplicateItemException;
 import com.etf.crm.exceptions.ItemNotFoundException;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
 
 @RestController
 @RequestMapping("/users")
@@ -27,9 +30,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @GetMapping
@@ -55,11 +57,10 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<User> partialUpdateUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<String> partialUpdateUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         updates.forEach((fieldName, fieldValue) -> {
             this.userService.partialUpdateUser(id, fieldName, fieldValue);
         });
-        User updatedUser = this.userService.getUserById(id);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(USER_UPDATED);
     }
 }

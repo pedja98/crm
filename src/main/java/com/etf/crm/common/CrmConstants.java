@@ -31,4 +31,8 @@ public final class CrmConstants {
         public static String EMAIL_ALREADY_TAKEN = "emailAlreadyTaken";
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static final class SuccessCodes {
+        public static String USER_UPDATED = "userUpdated";
+    }
 }

@@ -1,5 +1,7 @@
 package com.etf.crm.entities;
 
+import com.etf.crm.enums.OpportunityStatus;
+import com.etf.crm.enums.OpportunityType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +47,14 @@ public class Opportunity {
 
     @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contract> contracts;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OpportunityStatus status = OpportunityStatus.CREATED;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OpportunityType type;
 
     @CreationTimestamp
     @Column(name = "date_created")

@@ -1,7 +1,10 @@
 package com.etf.crm.repositories;
 
+import com.etf.crm.dtos.AuthUserResponseDto;
+import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,7 +13,34 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdAndDeletedFalse(Long id);
+
     List<User> findAllByDeletedFalse();
+
     Optional<User> findByUsernameAndDeletedFalse(String username);
+
     Optional<User> findByEmailAndDeletedFalse(String email);
+
+    @Query("SELECT new com.etf.crm.dtos.UserDto(u.id, u.firstName, u.lastName, u.email, u.username, " +
+            "u.phone, u.type, u.language, u.shop, u.salesmen," +
+            " cb.id, cb.username, mb.id, mb.username, u.dateCreated, u.dateModified)" +
+            "FROM User u " +
+            "LEFT JOIN u.createdBy cb " +
+            "LEFT JOIN u.modifiedBy mb" +
+            " WHERE u.id = :id AND u.deleted = false")
+    Optional<UserDto> findUserDtoByIdAndDeletedFalse(Long id);
+
+    @Query("SELECT new com.etf.crm.dtos.UserDto(u.id, u.firstName, u.lastName, u.email, u.username, " +
+            "u.phone, u.type, u.language, u.shop, u.salesmen," +
+            " cb.id, cb.username, mb.id, mb.username, u.dateCreated, u.dateModified)" +
+            "FROM User u " +
+            "LEFT JOIN u.createdBy cb " +
+            "LEFT JOIN u.modifiedBy mb" +
+            " WHERE u.username = :username AND u.deleted = false")
+    Optional<UserDto> findUserDtoByUsernameAndDeletedFalse(String username);
+
+    @Query("SELECT new com.etf.crm.dtos.AuthUserResponseDto(u.username, u.type, u.language, u.password)" +
+            "FROM User u " +
+            " WHERE u.username = :username AND u.deleted = false")
+    Optional<AuthUserResponseDto> findAuthUserResponseDtoByUsernameAndDeletedFalse(String username);
+
 }

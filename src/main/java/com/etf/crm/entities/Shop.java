@@ -16,47 +16,21 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.Instant;
 
 @Data
-@Table(name = "users")
+@Table(name = "shops")
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Shop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, name = "first_name")
-    private String firstName;
-
-    @Column(nullable = false, name = "last_name")
-    private String lastName;
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false, unique = true)
-    private String username;
+    @Column(nullable = false)
+    private String name;
 
     @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private String phone;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserType type;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Language language = Language.EN;
-
-    @Column()
-    private String shop = null;
-
-    @Column(nullable = false)
-    private String salesmen = "";
+    private String address;
 
     @ManyToOne
     @JoinColumn(name = "created_by", updatable = false)

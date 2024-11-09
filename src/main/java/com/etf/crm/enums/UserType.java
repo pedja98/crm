@@ -3,5 +3,6 @@ package com.etf.crm.enums;
 public enum UserType {
     ADMIN,
     SALESMAN,
-    MANAGER,
+    L1_MANAGER,
+    L2_MANAGER,
 }

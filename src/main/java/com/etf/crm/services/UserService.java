@@ -3,6 +3,7 @@ package com.etf.crm.services;
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 
 import com.etf.crm.config.SecurityConfig;
+import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.exceptions.DuplicateItemException;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +37,8 @@ public class UserService {
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
     }
 
-    public User getUserById(Long id) {
-        return this.userRepository.findByIdAndDeletedFalse(id)
+    public UserDto getUserById(Long id) {
+        return this.userRepository.findUserDtoByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
     }
 
@@ -46,25 +48,26 @@ public class UserService {
 
     public User updateUser(Long id, User user) {
         Optional<User> existingUserOpt = this.userRepository.findById(id);
-        if (existingUserOpt.isPresent()) {
-            User existingUser = existingUserOpt.get();
-
-            if (!existingUser.getUsername().equals(user.getUsername()) || !existingUser.getEmail().equals(user.getEmail())) {
-                this.checkDuplicateUsernameAndEmail(user.getUsername(), user.getEmail(), id);
-            }
-
-            existingUser.setFirstName(user.getFirstName());
-            existingUser.setLastName(user.getLastName());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setUsername(user.getUsername());
-            existingUser.setPhone(user.getPhone());
-            existingUser.setModifiedBy(user.getModifiedBy());
-            existingUser.setDeleted(user.getDeleted());
-            existingUser.setPassword(SecurityConfig.encode(user.getPassword()));
-            existingUser.setType(user.getType());
-            return this.userRepository.save(existingUser);
+        if (!existingUserOpt.isPresent()) {
+            throw new ItemNotFoundException(USER_NOT_FOUND);
         }
-        throw new ItemNotFoundException(USER_NOT_FOUND);
+        User existingUser = existingUserOpt.get();
+        if (!existingUser.getUsername().equals(user.getUsername()) || !existingUser.getEmail().equals(user.getEmail())) {
+            this.checkDuplicateUsernameAndEmail(user.getUsername(), user.getEmail(), id);
+        }
+        String[] excludedFields = {"password", "createdBy", "modifiedBy", "deleted", "dateCreated", "dateM0odified"};
+        for (Field field : User.class.getDeclaredFields()) {
+            field.setAccessible(true);
+            try {
+                if (Arrays.asList(excludedFields).contains(field.getName())) {
+                    continue;
+                }
+                field.set(existingUser, field.get(user));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to copy property: " + field.getName(), e);
+            }
+        }
+        return this.userRepository.save(existingUser);
     }
 
     public void deleteUser(Long id) {
@@ -79,7 +82,11 @@ public class UserService {
     }
 
     public void partialUpdateUser(Long id, String fieldName, Object fieldValue) {
-        User existingUser = this.getUserById(id);
+        Optional<User> existingUserOptional = this.userRepository.findById(id);
+        if (existingUserOptional.isEmpty()) {
+            throw new ItemNotFoundException(USER_NOT_FOUND);
+        }
+        User existingUser = existingUserOptional.get();
         try {
             Field field = User.class.getDeclaredField(fieldName);
             field.setAccessible(true);
