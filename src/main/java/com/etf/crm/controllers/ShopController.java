@@ -4,10 +4,7 @@ import com.etf.crm.entities.Shop;
 import com.etf.crm.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +23,11 @@ public class ShopController {
     @GetMapping
     public ResponseEntity<List<Shop>> getAllShops() {
         return ResponseEntity.ok(this.shopService.getAllShops());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Shop> deleteShop(@PathVariable Long id) {
+        this.shopService.deleteShop(id);
+        return ResponseEntity.noContent().build();
     }
 }

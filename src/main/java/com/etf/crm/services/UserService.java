@@ -47,11 +47,8 @@ public class UserService {
     }
 
     public User updateUser(Long id, User user) {
-        Optional<User> existingUserOpt = this.userRepository.findById(id);
-        if (!existingUserOpt.isPresent()) {
-            throw new ItemNotFoundException(USER_NOT_FOUND);
-        }
-        User existingUser = existingUserOpt.get();
+        User existingUser = this.userRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
         if (!existingUser.getUsername().equals(user.getUsername()) || !existingUser.getEmail().equals(user.getEmail())) {
             this.checkDuplicateUsernameAndEmail(user.getUsername(), user.getEmail(), id);
         }
@@ -71,22 +68,15 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        Optional<User> existingUserOpt = this.userRepository.findByIdAndDeletedFalse(id);
-        if (existingUserOpt.isPresent()) {
-            User existingUser = existingUserOpt.get();
-            existingUser.setDeleted(true);
-            this.userRepository.save(existingUser);
-        } else {
-            throw new ItemNotFoundException(USER_NOT_FOUND);
-        }
+        User user = this.userRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+        user.setDeleted(true);
+        this.userRepository.save(user);
     }
 
     public void partialUpdateUser(Long id, String fieldName, Object fieldValue) {
-        Optional<User> existingUserOptional = this.userRepository.findById(id);
-        if (existingUserOptional.isEmpty()) {
-            throw new ItemNotFoundException(USER_NOT_FOUND);
-        }
-        User existingUser = existingUserOptional.get();
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
         try {
             Field field = User.class.getDeclaredField(fieldName);
             field.setAccessible(true);
@@ -96,14 +86,14 @@ public class UserService {
                 this.checkDuplicateEmail((String) fieldValue, id);
             } else if ("password".equals(fieldName) && fieldValue != null) {
                 String encryptedPassword = stringEncryptor.encrypt((String) fieldValue);
-                field.set(existingUser, encryptedPassword);
+                field.set(user, encryptedPassword);
             } else {
-                field.set(existingUser, fieldValue);
+                field.set(user, fieldValue);
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalArgumentException("Invalid field name: " + fieldName, e);
         }
-        this.userRepository.save(existingUser);
+        this.userRepository.save(user);
     }
 
     private void checkDuplicateUsernameAndEmail(String username, String email) {
