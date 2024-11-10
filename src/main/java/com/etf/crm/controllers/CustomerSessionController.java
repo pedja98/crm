@@ -21,28 +21,24 @@ public class CustomerSessionController {
             @PathVariable Long companyId,
             @PathVariable Long opportunityId,
             @RequestBody CustomerSession customerSession) {
-        CustomerSession savedCustomerSession = customerSessionService.saveCustomerSession(companyId, opportunityId, customerSession);
-        return ResponseEntity.ok(savedCustomerSession);
+        return ResponseEntity.ok(customerSessionService.saveCustomerSession(companyId, opportunityId, customerSession));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerSession> getCustomerSessionById(@PathVariable Long id) {
-        CustomerSession customerSession = customerSessionService.getCustomerSessionById(id);
-        return ResponseEntity.ok(customerSession);
+        return ResponseEntity.ok(customerSessionService.getCustomerSessionById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<CustomerSession>> getAllCustomerSessions() {
-        List<CustomerSession> customerSessions = customerSessionService.getAllCustomerSessions();
-        return ResponseEntity.ok(customerSessions);
+        return ResponseEntity.ok(customerSessionService.getAllCustomerSessions());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CustomerSession> updateCustomerSession(
             @PathVariable Long id,
             @RequestBody CustomerSession customerSessionDetails) {
-        CustomerSession updatedCustomerSession = customerSessionService.updateCustomerSession(id, customerSessionDetails);
-        return ResponseEntity.ok(updatedCustomerSession);
+        return ResponseEntity.ok(customerSessionService.updateCustomerSession(id, customerSessionDetails));
     }
 
     @DeleteMapping("/{id}")
@@ -56,7 +52,6 @@ public class CustomerSessionController {
         updates.forEach((fieldName, fieldValue) -> {
             this.customerSessionService.partialUpdateCustomerSession(id, fieldName, fieldValue);
         });
-        CustomerSession updatedCustomerSession = this.customerSessionService.getCustomerSessionById(id);
-        return ResponseEntity.ok(updatedCustomerSession);
+        return ResponseEntity.ok(this.customerSessionService.getCustomerSessionById(id));
     }
 }

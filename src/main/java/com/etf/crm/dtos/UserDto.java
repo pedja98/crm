@@ -22,7 +22,8 @@ public class UserDto {
     private String phone;
     private UserType type;
     private Language language;
-    private String shop;
+    private Long shopId;
+    private String shopName;
     private String salesmen;
     private Long createdById;
     private String createdByUsername;

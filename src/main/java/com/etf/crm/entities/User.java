@@ -52,11 +52,12 @@ public class User {
     @Column(nullable = false)
     private Language language = Language.EN;
 
-    @Column()
-    private String shop = null;
-
     @Column(nullable = false)
     private String salesmen = "";
+
+    @ManyToOne
+    @JoinColumn(name = "shop", updatable = false)
+    private Shop shop = null;
 
     @ManyToOne
     @JoinColumn(name = "created_by", updatable = false)

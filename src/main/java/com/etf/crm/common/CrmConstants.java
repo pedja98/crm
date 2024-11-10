@@ -22,6 +22,8 @@ public final class CrmConstants {
 
         public static String OPPORTUNITY_NOT_FOUND = "opportunityNotFound";
 
+        public static String SHOP_NOT_FOUND = "shopNotFound";
+
         public static String OFFER_NOT_FOUND = "offerNotFound";
 
         public static String CONTRACT_NOT_FOUND = "contractNotFound";

@@ -18,26 +18,22 @@ public class OpportunityController {
 
     @PostMapping("/{companyId}")
     public ResponseEntity<Opportunity> createOpportunity(@PathVariable Long companyId, @RequestBody Opportunity opportunity) {
-        Opportunity savedOpportunity = opportunityService.saveOpportunity(companyId, opportunity);
-        return ResponseEntity.ok(savedOpportunity);
+        return ResponseEntity.ok(opportunityService.saveOpportunity(companyId, opportunity));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Opportunity> getOpportunityById(@PathVariable Long id) {
-        Opportunity opportunity = opportunityService.getOpportunityById(id);
-        return ResponseEntity.ok(opportunity);
+        return ResponseEntity.ok(opportunityService.getOpportunityById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<Opportunity>> getAllOpportunities() {
-        List<Opportunity> opportunities = opportunityService.getAllOpportunities();
-        return ResponseEntity.ok(opportunities);
+        return ResponseEntity.ok(opportunityService.getAllOpportunities());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Opportunity> updateOpportunity(@PathVariable Long id, @RequestBody Opportunity opportunityDetails) {
-        Opportunity updatedOpportunity = opportunityService.updateOpportunity(id, opportunityDetails);
-        return ResponseEntity.ok(updatedOpportunity);
+        return ResponseEntity.ok(opportunityService.updateOpportunity(id, opportunityDetails));
     }
 
     @DeleteMapping("/{id}")
@@ -51,7 +47,6 @@ public class OpportunityController {
         updates.forEach((fieldName, fieldValue) -> {
             this.opportunityService.partialUpdateOpportunity(id, fieldName, fieldValue);
         });
-        Opportunity updatedOpportunity = this.opportunityService.getOpportunityById(id);
-        return ResponseEntity.ok(updatedOpportunity);
+        return ResponseEntity.ok(this.opportunityService.getOpportunityById(id));
     }
 }

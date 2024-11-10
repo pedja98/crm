@@ -23,26 +23,22 @@ public class CompanyContactRelationController {
             @RequestParam Long companyId,
             @RequestParam CompanyContactRelationType relationType,
             @RequestParam String roleDescription) {
-        CompanyContactRelation relation = relationService.saveRelation(contactId, companyId, relationType, roleDescription);
-        return ResponseEntity.ok(relation);
+        return ResponseEntity.ok(relationService.saveRelation(contactId, companyId, relationType, roleDescription));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CompanyContactRelation> getRelationById(@PathVariable Long id) {
-        CompanyContactRelation relation = relationService.getRelationById(id);
-        return ResponseEntity.ok(relation);
+        return ResponseEntity.ok(relationService.getRelationById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<CompanyContactRelation>> getAllRelations() {
-        List<CompanyContactRelation> relations = relationService.getAllRelations();
-        return ResponseEntity.ok(relations);
+        return ResponseEntity.ok(relationService.getAllRelations());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CompanyContactRelation> updateRelation(@PathVariable Long id, @RequestBody CompanyContactRelation relationDetails) {
-        CompanyContactRelation updatedRelation = relationService.updateRelation(id, relationDetails);
-        return ResponseEntity.ok(updatedRelation);
+        return ResponseEntity.ok(relationService.updateRelation(id, relationDetails));
     }
 
     @DeleteMapping("/{id}")
@@ -56,7 +52,6 @@ public class CompanyContactRelationController {
         updates.forEach((fieldName, fieldValue) -> {
             this.relationService.partialUpdateCompanyContactRelation(id, fieldName, fieldValue);
         });
-        CompanyContactRelation updatedRelation = this.relationService.getRelationById(id);
-        return ResponseEntity.ok(updatedRelation);
+        return ResponseEntity.ok(this.relationService.getRelationById(id));
     }
 }

@@ -21,26 +21,22 @@ public class ContactController {
 
     @PostMapping
     public ResponseEntity<Contact> createContact(@RequestBody Contact contact) {
-        Contact savedContact = contactService.saveContact(contact);
-        return ResponseEntity.ok(savedContact);
+        return ResponseEntity.ok(contactService.saveContact(contact));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Contact> getContactById(@PathVariable Long id) {
-        Contact contact = contactService.getContactById(id);
-        return ResponseEntity.ok(contact);
+        return ResponseEntity.ok(contactService.getContactById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<Contact>> getAllContacts() {
-        List<Contact> contacts = contactService.getAllContacts();
-        return ResponseEntity.ok(contacts);
+        return ResponseEntity.ok(contactService.getAllContacts());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Contact> updateContact(@PathVariable Long id, @RequestBody Contact contactDetails) {
-        Contact updatedContact = contactService.updateContact(id, contactDetails);
-        return ResponseEntity.ok(updatedContact);
+        return ResponseEntity.ok(contactService.updateContact(id, contactDetails));
     }
 
     @DeleteMapping("/{id}")
@@ -54,7 +50,6 @@ public class ContactController {
         updates.forEach((fieldName, fieldValue) -> {
             contactService.partialUpdateContact(id, fieldName, fieldValue);
         });
-        Contact updatedContact = contactService.getContactById(id);
-        return ResponseEntity.ok(updatedContact);
+        return ResponseEntity.ok(contactService.getContactById(id));
     }
 }

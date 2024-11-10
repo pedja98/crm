@@ -21,18 +21,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndDeletedFalse(String email);
 
     @Query("SELECT new com.etf.crm.dtos.UserDto(u.id, u.firstName, u.lastName, u.email, u.username, " +
-            "u.phone, u.type, u.language, u.shop, u.salesmen," +
+            "u.phone, u.type, u.language, s.id, s.name, u.salesmen," +
             " cb.id, cb.username, mb.id, mb.username, u.dateCreated, u.dateModified)" +
             "FROM User u " +
+            "LEFT JOIN u.shop s " +
             "LEFT JOIN u.createdBy cb " +
             "LEFT JOIN u.modifiedBy mb" +
             " WHERE u.id = :id AND u.deleted = false")
     Optional<UserDto> findUserDtoByIdAndDeletedFalse(Long id);
 
     @Query("SELECT new com.etf.crm.dtos.UserDto(u.id, u.firstName, u.lastName, u.email, u.username, " +
-            "u.phone, u.type, u.language, u.shop, u.salesmen," +
+            "u.phone, u.type, u.language, s.id, s.name, u.salesmen," +
             " cb.id, cb.username, mb.id, mb.username, u.dateCreated, u.dateModified)" +
             "FROM User u " +
+            "LEFT JOIN u.shop s " +
             "LEFT JOIN u.createdBy cb " +
             "LEFT JOIN u.modifiedBy mb" +
             " WHERE u.username = :username AND u.deleted = false")

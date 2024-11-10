@@ -18,26 +18,22 @@ public class ContractController {
 
     @PostMapping("/{companyId}/{opportunityId}")
     public ResponseEntity<Contract> createContract(@PathVariable Long companyId, @PathVariable Long opportunityId, @RequestBody Contract contract) {
-        Contract savedContract = contractService.saveContract(companyId, opportunityId, contract);
-        return ResponseEntity.ok(savedContract);
+        return ResponseEntity.ok(contractService.saveContract(companyId, opportunityId, contract));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Contract> getContractById(@PathVariable Long id) {
-        Contract contract = contractService.getContractById(id);
-        return ResponseEntity.ok(contract);
+        return ResponseEntity.ok(contractService.getContractById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<Contract>> getAllContracts() {
-        List<Contract> contracts = contractService.getAllContracts();
-        return ResponseEntity.ok(contracts);
+        return ResponseEntity.ok(contractService.getAllContracts());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Contract> updateContract(@PathVariable Long id, @RequestBody Contract contractDetails) {
-        Contract updatedContract = contractService.updateContract(id, contractDetails);
-        return ResponseEntity.ok(updatedContract);
+        return ResponseEntity.ok(contractService.updateContract(id, contractDetails));
     }
 
     @DeleteMapping("/{id}")
@@ -51,7 +47,6 @@ public class ContractController {
         updates.forEach((fieldName, fieldValue) -> {
             this.contractService.partialUpdateContract(id, fieldName, fieldValue);
         });
-        Contract updatedContract = this.contractService.getContractById(id);
-        return ResponseEntity.ok(updatedContract);
+        return ResponseEntity.ok(this.contractService.getContractById(id));
     }
 }

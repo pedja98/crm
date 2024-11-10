@@ -37,6 +37,10 @@ public class Shop {
     private User createdBy;
 
     @ManyToOne
+    @JoinColumn(name = "shop_leader")
+    private User shopLeader;
+
+    @ManyToOne
     @JoinColumn(name = "modified_by")
     private User modifiedBy;
 

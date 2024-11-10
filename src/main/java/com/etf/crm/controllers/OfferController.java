@@ -18,26 +18,22 @@ public class OfferController {
 
     @PostMapping("/{companyId}")
     public ResponseEntity<Offer> createOffer(@PathVariable Long companyId, @RequestBody Offer offer) {
-        Offer savedOffer = offerService.saveOffer(companyId, offer);
-        return ResponseEntity.ok(savedOffer);
+        return ResponseEntity.ok(offerService.saveOffer(companyId, offer));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Offer> getOfferById(@PathVariable Long id) {
-        Offer offer = offerService.getOfferById(id);
-        return ResponseEntity.ok(offer);
+        return ResponseEntity.ok(offerService.getOfferById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<Offer>> getAllOffers() {
-        List<Offer> offers = offerService.getAllOffers();
-        return ResponseEntity.ok(offers);
+        return ResponseEntity.ok(offerService.getAllOffers());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Offer> updateOffer(@PathVariable Long id, @RequestBody Offer offerDetails) {
-        Offer updatedOffer = offerService.updateOffer(id, offerDetails);
-        return ResponseEntity.ok(updatedOffer);
+        return ResponseEntity.ok(offerService.updateOffer(id, offerDetails));
     }
 
     @DeleteMapping("/{id}")
@@ -51,7 +47,6 @@ public class OfferController {
         updates.forEach((fieldName, fieldValue) -> {
             this.offerService.partialUpdateOffer(id, fieldName, fieldValue);
         });
-        Offer updatedOffer = this.offerService.getOfferById(id);
-        return ResponseEntity.ok(updatedOffer);
+        return ResponseEntity.ok(this.offerService.getOfferById(id));
     }
 }

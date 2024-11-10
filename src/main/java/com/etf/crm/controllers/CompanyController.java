@@ -24,20 +24,17 @@ public class CompanyController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Company> getCompanyById(@PathVariable Long id) {
-        Company company = companyService.getCompanyById(id);
-        return ResponseEntity.ok(company);
+        return ResponseEntity.ok(companyService.getCompanyById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<Company>> getAllCompanies() {
-        List<Company> companies = companyService.getAllCompanies();
-        return ResponseEntity.ok(companies);
+        return ResponseEntity.ok(companyService.getAllCompanies());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Company> updateCompany(@PathVariable Long id, @RequestBody Company companyDetails) {
-        Company updatedCompany = companyService.updateCompany(id, companyDetails);
-        return ResponseEntity.ok(updatedCompany);
+        return ResponseEntity.ok(companyService.updateCompany(id, companyDetails));
     }
 
     @DeleteMapping("/{id}")
@@ -51,7 +48,6 @@ public class CompanyController {
         updates.forEach((fieldName, fieldValue) -> {
             this.companyService.partialUpdateCompany(id, fieldName, fieldValue);
         });
-        Company updatedCompany = this.companyService.getCompanyById(id);
-        return ResponseEntity.ok(updatedCompany);
+        return ResponseEntity.ok(this.companyService.getCompanyById(id));
     }
 }
