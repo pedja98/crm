@@ -2,7 +2,6 @@ package com.etf.crm.services;
 
 import com.etf.crm.entities.Opportunity;
 import com.etf.crm.entities.Company;
-import com.etf.crm.entities.User;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.repositories.OpportunityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Optional;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.OPPORTUNITY_NOT_FOUND;
 

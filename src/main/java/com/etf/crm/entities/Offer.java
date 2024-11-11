@@ -29,6 +29,10 @@ public class Offer {
     @Column(nullable = false)
     private OfferStatus status;
 
+    @OneToOne
+    @JoinColumn(name = "contract_id")
+    private Contract contract = null;
+
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;

@@ -1,24 +1,25 @@
 package com.etf.crm.entities;
 
-import com.etf.crm.enums.ContractStatus;
+import com.etf.crm.enums.VerificationStatus;
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.util.List;
 
 @Data
-@Table(name = "contracts")
+@Table(name = "verifications")
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Contract {
+public class Verification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,37 +27,16 @@ public class Contract {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "reference_number", unique = true)
-    private String referenceNumber;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ContractStatus status;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "archive_status")
-    private ContractStatus archiveStatus;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String comment;
+    private VerificationStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "company_id", nullable = false)
-    private Company company;
+    @JoinColumn(name = "contract_id", nullable = false)
+    private Contract contract;
 
     @ManyToOne
-    @JoinColumn(name = "opportunity_id", nullable = false)
-    private Opportunity opportunity;
-
-    @OneToOne
-    @JoinColumn(name="offer_id", nullable = false)
-    private Offer offer;
-
-    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Verification> verifications;
-
-    @ManyToOne
-    @JoinColumn(name = "created_by", nullable = false, updatable = false)
+    @JoinColumn(name = "created_by", updatable = false)
     private User createdBy;
 
     @ManyToOne

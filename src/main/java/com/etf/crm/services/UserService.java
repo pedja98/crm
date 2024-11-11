@@ -1,7 +1,5 @@
 package com.etf.crm.services;
 
-import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
-
 import com.etf.crm.config.SecurityConfig;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
@@ -15,7 +13,8 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+
+import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 
 @Service
 public class UserService {
@@ -32,27 +31,23 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
-    public User getUserByUsername(String username) {
-        return this.userRepository.findByUsernameAndDeletedFalse(username)
+    public UserDto getUserByUsername(String username) {
+        return this.userRepository.findUserDtoByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
     }
 
-    public UserDto getUserById(Long id) {
-        return this.userRepository.findUserDtoByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+    public List<UserDto> getAllUsers() {
+        return this.userRepository.findAllUserDtoByDeletedFalse()
+                .orElseThrow(() -> new ItemNotFoundException(NO_USERS_FOUND));
     }
 
-    public List<User> getAllUsers() {
-        return this.userRepository.findAllByDeletedFalse();
-    }
-
-    public User updateUser(Long id, User user) {
-        User existingUser = this.userRepository.findById(id)
+    public User updateUser(String username, User user) {
+        User existingUser = this.userRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
         if (!existingUser.getUsername().equals(user.getUsername()) || !existingUser.getEmail().equals(user.getEmail())) {
-            this.checkDuplicateUsernameAndEmail(user.getUsername(), user.getEmail(), id);
+            this.checkDuplicateUsernameAndEmail(user.getUsername(), user.getEmail(), existingUser.getId());
         }
-        String[] excludedFields = {"password", "createdBy", "modifiedBy", "deleted", "dateCreated", "dateM0odified"};
+        String[] excludedFields = {"password", "createdBy", "modifiedBy", "deleted", "dateCreated", "dateModified"};
         for (Field field : User.class.getDeclaredFields()) {
             field.setAccessible(true);
             try {
@@ -67,31 +62,36 @@ public class UserService {
         return this.userRepository.save(existingUser);
     }
 
-    public void deleteUser(Long id) {
-        User user = this.userRepository.findByIdAndDeletedFalse(id)
+    public void deleteUser(String username) {
+        User user = this.userRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
         user.setDeleted(true);
         this.userRepository.save(user);
     }
 
-    public void partialUpdateUser(Long id, String fieldName, Object fieldValue) {
-        User user = this.userRepository.findById(id)
+    public void partialUpdateUser(String username, String fieldName, Object fieldValue) {
+        User user = this.userRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
         try {
+            if("id".equals(fieldName)) {
+                throw new IllegalAccessException("Invalid field access");
+            }
             Field field = User.class.getDeclaredField(fieldName);
             field.setAccessible(true);
             if ("username".equals(fieldName)) {
-                this.checkDuplicateUsername((String) fieldValue, id);
+                this.checkDuplicateUsername((String) fieldValue, user.getId());
             } else if ("email".equals(fieldName)) {
-                this.checkDuplicateEmail((String) fieldValue, id);
+                this.checkDuplicateEmail((String) fieldValue, user.getId());
             } else if ("password".equals(fieldName) && fieldValue != null) {
                 String encryptedPassword = stringEncryptor.encrypt((String) fieldValue);
                 field.set(user, encryptedPassword);
             } else {
                 field.set(user, fieldValue);
             }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException e) {
             throw new IllegalArgumentException("Invalid field name: " + fieldName, e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
         this.userRepository.save(user);
     }
