@@ -2,12 +2,9 @@ package com.etf.crm.controllers;
 
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
-import com.etf.crm.exceptions.DuplicateItemException;
-import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
