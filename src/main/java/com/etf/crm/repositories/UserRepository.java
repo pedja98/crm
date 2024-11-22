@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsernameAndDeletedFalse(String username);
     Optional<User> findByEmailAndDeletedFalse(String email);
 
-    @Query("SELECT new com.etf.crm.dtos.UserDto(u.id, u.firstName, u.lastName, u.email, u.username, " +
+    @Query("SELECT new com.etf.crm.dtos.UserDto(u.firstName, u.lastName, u.email, u.username, " +
             "u.phone, u.type, u.language, s.id, s.name, u.salesmen," +
             " cb.id, cb.username, mb.id, mb.username, u.dateCreated, u.dateModified)" +
             "FROM User u " +
@@ -30,7 +30,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE u.username = :username AND u.deleted = false")
     Optional<AuthUserDto> findAuthUserDtoByUsernameAndDeletedFalse(String username);
 
-    @Query("SELECT new com.etf.crm.dtos.UserDto(u.id, u.firstName, u.lastName, u.email, u.username, " +
+    @Query("SELECT new com.etf.crm.dtos.UserDto(u.firstName, u.lastName, u.email, u.username, " +
             "u.phone, u.type, u.language, s.id, s.name, u.salesmen," +
             " cb.id, cb.username, mb.id, mb.username, u.dateCreated, u.dateModified)" +
             "FROM User u " +
