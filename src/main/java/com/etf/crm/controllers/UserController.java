@@ -1,5 +1,6 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.UpdateUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
 import com.etf.crm.services.UserService;
@@ -36,7 +37,7 @@ public class UserController {
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User user) {
+    public ResponseEntity<String> updateUser(@PathVariable String username, @RequestBody UpdateUserRequestDto user) {
         return ResponseEntity.ok(userService.updateUser(username, user));
     }
 
@@ -44,13 +45,5 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable String username) {
         userService.deleteUser(username);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{username}")
-    public ResponseEntity<String> partialUpdateUser(@PathVariable String username, @RequestBody Map<String, Object> updates) {
-        updates.forEach((fieldName, fieldValue) -> {
-            this.userService.partialUpdateUser(username, fieldName, fieldValue);
-        });
-        return ResponseEntity.ok(USER_UPDATED);
     }
 }

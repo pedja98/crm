@@ -33,6 +33,8 @@ public final class CrmConstants {
         public static String USERNAME_ALREADY_TAKEN = "usernameAlreadyTaken";
 
         public static String EMAIL_ALREADY_TAKEN = "emailAlreadyTaken";
+
+        public static String ENTITY_UPDATE_ERROR = "entityUpdateError";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
