@@ -1,5 +1,6 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.UpdateUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
@@ -37,8 +38,8 @@ public class UserController {
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<String> updateUser(@PathVariable String username, @RequestBody UpdateUserRequestDto user) {
-        return ResponseEntity.ok(userService.updateUser(username, user));
+    public ResponseEntity<MessageResponse> updateUser(@PathVariable String username, @RequestBody UpdateUserRequestDto user) {
+        return ResponseEntity.ok(new MessageResponse(userService.updateUser(username, user)));
     }
 
     @DeleteMapping("/{username}")

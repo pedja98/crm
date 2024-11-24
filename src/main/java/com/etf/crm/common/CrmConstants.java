@@ -34,6 +34,8 @@ public final class CrmConstants {
 
         public static String EMAIL_ALREADY_TAKEN = "emailAlreadyTaken";
 
+        public static String CAN_NOT_INSERT_EMPTY_VALUE = "canNotInsertEmptyValue";
+
         public static String ENTITY_UPDATE_ERROR = "entityUpdateError";
     }
 

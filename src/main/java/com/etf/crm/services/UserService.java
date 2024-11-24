@@ -4,6 +4,7 @@ import com.etf.crm.config.SecurityConfig;
 import com.etf.crm.dtos.UpdateUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
+import com.etf.crm.exceptions.InvalidAttributeValueException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.exceptions.DuplicateItemException;
 import com.etf.crm.exceptions.PropertyCopyException;
@@ -58,12 +59,14 @@ public class UserService {
             try {
                 field.setAccessible(true);
                 Object newValue = field.get(userRequestData);
-                if (newValue != null) {
-                    Field userField = User.class.getDeclaredField(field.getName());
-                    userField.setAccessible(true);
-                    userField.set(user, newValue);
+                if (String.valueOf(newValue != null ? newValue: "").isEmpty()) {
+                    throw new InvalidAttributeValueException(CAN_NOT_INSERT_EMPTY_VALUE);
                 }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+
+                Field userField = User.class.getDeclaredField(field.getName());
+                userField.setAccessible(true);
+                userField.set(user, newValue);
+            } catch (NoSuchFieldException | IllegalAccessException | PropertyCopyException e) {
                 throw new PropertyCopyException(ENTITY_UPDATE_ERROR);
             }
         }
