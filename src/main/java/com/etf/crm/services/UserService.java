@@ -60,6 +60,7 @@ public class UserService {
                 field.setAccessible(true);
                 Object newValue = field.get(userRequestData);
                 if (String.valueOf(newValue != null ? newValue: "").isEmpty()) {
+                    System.out.println("J");
                     throw new InvalidAttributeValueException(CAN_NOT_INSERT_EMPTY_VALUE);
                 }
 
