@@ -2,10 +2,7 @@ package com.etf.crm.controllers;
 
 import com.etf.crm.config.SecurityConfig;
 
-import com.etf.crm.dtos.AuthUserRequestDto;
-import com.etf.crm.dtos.AuthUserDto;
-import com.etf.crm.dtos.AuthUserResponseDto;
-import com.etf.crm.dtos.ChangePasswordRequestDto;
+import com.etf.crm.dtos.*;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +27,7 @@ public class AuthController {
     }
 
     @PatchMapping("change-password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequestDto changePasswordData) {
-        return ResponseEntity.ok(this.authService.changePassword(changePasswordData));
+    public ResponseEntity<MessageResponse> changePassword(@RequestBody ChangePasswordRequestDto changePasswordData) {
+        return ResponseEntity.ok(new MessageResponse(this.authService.changePassword(changePasswordData)));
     }
 }
