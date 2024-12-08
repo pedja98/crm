@@ -1,9 +1,6 @@
 package com.etf.crm.exceptionHandler;
 
-import com.etf.crm.exceptions.DuplicateItemException;
-import com.etf.crm.exceptions.InvalidAttributeValueException;
-import com.etf.crm.exceptions.ItemNotFoundException;
-import com.etf.crm.exceptions.PropertyCopyException;
+import com.etf.crm.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,19 +9,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({ItemNotFoundException.class, DuplicateItemException.class, PropertyCopyException.class, InvalidAttributeValueException.class})
-    public ResponseEntity<String> handleExceptions(RuntimeException ex) {
-        HttpStatus status;
-
-        if (ex instanceof ItemNotFoundException) {
-            status = HttpStatus.NOT_FOUND;
-        } else if (ex instanceof DuplicateItemException) {
-            status = HttpStatus.CONFLICT;
-        } else if (ex instanceof PropertyCopyException || ex instanceof InvalidAttributeValueException) {
-            status = HttpStatus.BAD_REQUEST;
-        } else {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
+    @ExceptionHandler({
+            ItemNotFoundException.class,
+            DuplicateItemException.class,
+            PropertyCopyException.class,
+            InvalidAttributeValueException.class,
+            RuntimeException.class,
+            BadRequestException.class
+    })
+    public ResponseEntity<String> handleExceptions(Exception ex) {
+        HttpStatus status = switch (ex.getClass().getSimpleName()) {
+            case "ItemNotFoundException" -> HttpStatus.NOT_FOUND;
+            case "DuplicateItemException" -> HttpStatus.CONFLICT;
+            case "PropertyCopyException",
+                 "InvalidAttributeValueException",
+                 "BadRequestException" -> HttpStatus.BAD_REQUEST;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
 
         return ResponseEntity.status(status).body(ex.getMessage());
     }

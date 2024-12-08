@@ -29,6 +29,7 @@ public class UserService {
     @Autowired
     private StringEncryptor stringEncryptor;
 
+    @Transactional
     public User saveUser(User user) {
         this.checkDuplicateUsernameAndEmail(user.getUsername(), user.getEmail());
         user.setPassword(SecurityConfig.encode(user.getPassword()));
