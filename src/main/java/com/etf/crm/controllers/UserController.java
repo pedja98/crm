@@ -4,6 +4,8 @@ import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.UpdateUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
+import com.etf.crm.enums.Language;
+import com.etf.crm.enums.UserType;
 import com.etf.crm.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +35,24 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<List<UserDto>> getAllUsers(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) UserType type,
+            @RequestParam(required = false) Language language,
+            @RequestParam(required = false) String shopName,
+            @RequestParam(required = false) String createdByUsername) {
+
+        List<UserDto> users = userService.getFilteredAndSortedUsers(
+                sortBy, sortOrder, firstName, lastName, email, username,
+                phone, type, shopName, createdByUsername
+        );
+        return ResponseEntity.ok(users);
     }
 
     @PutMapping("/{username}")
