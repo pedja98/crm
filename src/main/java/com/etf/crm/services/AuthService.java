@@ -6,6 +6,7 @@ import com.etf.crm.dtos.ChangePasswordRequestDto;
 import com.etf.crm.entities.User;
 import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.exceptions.ItemNotFoundException;
+import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,8 @@ public class AuthService {
         }
 
         user.setPassword(SecurityConfig.encode(changePasswordData.getNewPassword()));
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        user.setModifiedBy(currentUser);
         this.userRepository.save(user);
 
         return PASSWORD_CHANGED;

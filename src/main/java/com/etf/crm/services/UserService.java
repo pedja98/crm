@@ -5,10 +5,7 @@ import com.etf.crm.dtos.UpdateUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
 import com.etf.crm.enums.UserType;
-import com.etf.crm.exceptions.InvalidAttributeValueException;
-import com.etf.crm.exceptions.ItemNotFoundException;
-import com.etf.crm.exceptions.DuplicateItemException;
-import com.etf.crm.exceptions.PropertyCopyException;
+import com.etf.crm.exceptions.*;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,7 @@ import java.util.List;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
+import static com.etf.crm.common.RegexConstants.PASSWORD_REGEX;
 
 @Service
 public class UserService {
@@ -31,15 +29,24 @@ public class UserService {
     @Transactional
     public String saveUser(User user) {
         this.checkDuplicateUsernameAndEmail(user.getUsername(), user.getEmail());
+        if (!user.getPassword().matches(PASSWORD_REGEX)) {
+            throw new BadRequestException(INVALID_PASSWORD_FORMAT);
+        }
         user.setPassword(SecurityConfig.encode(user.getPassword()));
         User currentUser = SetCurrentUserFilter.getCurrentUser();
         user.setCreatedBy(currentUser);
         this.userRepository.save(user);
+
         return USER_CREATED;
     }
 
     public UserDto getUserByUsername(String username) {
         return this.userRepository.findUserDtoByUsernameAndDeletedFalse(username)
+                .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+    }
+
+    public User getByUsernameAndDeletedFalse(String username) {
+        return this.userRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
     }
 
@@ -135,11 +142,14 @@ public class UserService {
             }
         }
 
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        user.setModifiedBy(currentUser);
+
         this.userRepository.save(user);
         return USER_UPDATED;
     }
 
-
+    @Transactional
     public void deleteUser(String username) {
         User user = this.userRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));

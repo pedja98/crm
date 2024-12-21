@@ -1,7 +1,7 @@
 package com.etf.crm.filters;
 
 import com.etf.crm.entities.User;
-import com.etf.crm.repositories.UserRepository;
+import com.etf.crm.services.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ public class SetCurrentUserFilter extends OncePerRequestFilter {
     private static final String LOGIN_PATH = "/auth/login";
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     private static final ThreadLocal<User> currentUserThreadLocal = new ThreadLocal<>();
 
@@ -38,8 +38,7 @@ public class SetCurrentUserFilter extends OncePerRequestFilter {
         ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
         String usernameHeader = wrappedRequest.getHeader("X-Username");
         if (usernameHeader != null && !usernameHeader.isEmpty()) {
-            Optional<User> currentUserOptional = this.userRepository.findByUsernameAndDeletedFalse(usernameHeader);
-            currentUserOptional.ifPresent(currentUser -> currentUserThreadLocal.set(currentUser));
+            currentUserThreadLocal.set(this.userService.getByUsernameAndDeletedFalse(usernameHeader));
         }
         filterChain.doFilter(wrappedRequest, response);
         currentUserThreadLocal.remove();
