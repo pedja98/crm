@@ -13,9 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
 
 @RestController
 @RequestMapping("/users")
@@ -25,8 +22,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.saveUser(user));
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        return ResponseEntity.ok(new MessageResponse(userService.saveUser(user)));
     }
 
     @GetMapping("/{username}")

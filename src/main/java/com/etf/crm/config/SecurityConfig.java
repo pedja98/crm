@@ -1,5 +1,6 @@
 package com.etf.crm.config;
 
+import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.filters.HeaderValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +20,12 @@ public class SecurityConfig {
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10, new SecureRandom());
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, HeaderValidationFilter headerValidationFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, HeaderValidationFilter headerValidationFilter, SetCurrentUserFilter setCurrentUserFilter) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
-                ).addFilterBefore(headerValidationFilter, UsernamePasswordAuthenticationFilter.class);
+                ).addFilterBefore(headerValidationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(setCurrentUserFilter, HeaderValidationFilter.class);
         ;
         return http.build();
     }

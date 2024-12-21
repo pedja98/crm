@@ -9,8 +9,8 @@ import com.etf.crm.exceptions.InvalidAttributeValueException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.exceptions.DuplicateItemException;
 import com.etf.crm.exceptions.PropertyCopyException;
+import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.UserRepository;
-import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,24 +28,19 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private StringEncryptor stringEncryptor;
-
     @Transactional
-    public User saveUser(User user) {
+    public String saveUser(User user) {
         this.checkDuplicateUsernameAndEmail(user.getUsername(), user.getEmail());
         user.setPassword(SecurityConfig.encode(user.getPassword()));
-        return this.userRepository.save(user);
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        user.setCreatedBy(currentUser);
+        this.userRepository.save(user);
+        return USER_CREATED;
     }
 
     public UserDto getUserByUsername(String username) {
         return this.userRepository.findUserDtoByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
-    }
-
-    public List<UserDto> getAllUsers() {
-        return this.userRepository.findAllUserDtoByDeletedFalse()
-                .orElseThrow(() -> new ItemNotFoundException(NO_USERS_FOUND));
     }
 
     public List<UserDto> getFilteredAndSortedUsers(

@@ -47,6 +47,8 @@ public final class CrmConstants {
     public static final class SuccessCodes {
         public static String USER_UPDATED = "userUpdated";
 
+        public static String USER_CREATED = "userCreated";
+
         public static String PASSWORD_CHANGED = "passwordChanged";
     }
 }
