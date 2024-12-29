@@ -39,7 +39,7 @@ public class UserController {
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String phone,
-            @RequestParam(required = false) List<UserType> types,
+            @RequestParam(required = false, value = "type") List<UserType> types,
             @RequestParam(required = false) String shopName,
             @RequestParam(required = false) String createdByUsername) {
 
