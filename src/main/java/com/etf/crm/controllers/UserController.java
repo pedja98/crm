@@ -4,7 +4,6 @@ import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.UpdateUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
-import com.etf.crm.enums.Language;
 import com.etf.crm.enums.UserType;
 import com.etf.crm.services.UserService;
 
@@ -40,14 +39,13 @@ public class UserController {
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String phone,
-            @RequestParam(required = false) UserType type,
-            @RequestParam(required = false) Language language,
+            @RequestParam(required = false) List<UserType> types,
             @RequestParam(required = false) String shopName,
             @RequestParam(required = false) String createdByUsername) {
 
         List<UserDto> users = userService.getFilteredAndSortedUsers(
                 sortBy, sortOrder, firstName, lastName, email, username,
-                phone, type, shopName, createdByUsername
+                phone, types, shopName, createdByUsername
         );
         return ResponseEntity.ok(users);
     }

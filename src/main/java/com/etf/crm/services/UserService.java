@@ -53,7 +53,7 @@ public class UserService {
     public List<UserDto> getFilteredAndSortedUsers(
             String sortBy, String sortOrder,
             String firstName, String lastName, String email, String username,
-            String phone, UserType type, String shopName, String createdByUsername) {
+            String phone, List<UserType> types, String shopName, String createdByUsername) {
 
         List<UserDto> users = userRepository.findAllUserDtoByDeletedFalse()
                 .orElseThrow(() -> new ItemNotFoundException(NO_USERS_FOUND));
@@ -83,9 +83,9 @@ public class UserService {
                     .filter(user -> user.getPhone() != null && user.getPhone().contains(phone))
                     .toList();
         }
-        if (type != null) {
+        if (types != null && !types.isEmpty()) {
             users = users.stream()
-                    .filter(user -> user.getType() == type)
+                    .filter(user -> user.getType() != null && types.contains(user.getType()))
                     .toList();
         }
         if (shopName != null) {
