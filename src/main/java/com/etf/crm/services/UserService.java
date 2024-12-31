@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
@@ -58,45 +58,43 @@ public class UserService {
         List<UserDto> users = userRepository.findAllUserDtoByDeletedFalse()
                 .orElseThrow(() -> new ItemNotFoundException(NO_USERS_FOUND));
 
-        if (firstName != null) {
-            users = users.stream()
-                    .filter(user -> user.getFirstName() != null && user.getFirstName().toLowerCase().contains(firstName.toLowerCase()))
-                    .toList();
-        }
-        if (lastName != null) {
-            users = users.stream()
-                    .filter(user -> user.getLastName() != null && user.getLastName().toLowerCase().contains(lastName.toLowerCase()))
-                    .toList();
-        }
-        if (email != null) {
-            users = users.stream()
-                    .filter(user -> user.getEmail() != null && user.getEmail().toLowerCase().contains(email.toLowerCase()))
-                    .toList();
-        }
-        if (username != null) {
-            users = users.stream()
-                    .filter(user -> user.getUsername() != null && user.getUsername().toLowerCase().contains(username.toLowerCase()))
-                    .toList();
-        }
-        if (phone != null) {
-            users = users.stream()
-                    .filter(user -> user.getPhone() != null && user.getPhone().contains(phone))
-                    .toList();
-        }
-        if (types != null && !types.isEmpty()) {
-            users = users.stream()
-                    .filter(user -> user.getType() != null && types.contains(user.getType()))
-                    .toList();
-        }
-        if (shopName != null) {
-            users = users.stream()
-                    .filter(user -> user.getShopName() != null && user.getShopName().toLowerCase().contains(shopName.toLowerCase()))
-                    .toList();
-        }
-        if (createdByUsername != null) {
-            users = users.stream()
-                    .filter(user -> user.getCreatedByUsername() != null && user.getCreatedByUsername().toLowerCase().contains(createdByUsername.toLowerCase()))
-                    .toList();
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("firstName", firstName);
+        filters.put("lastName", lastName);
+        filters.put("email", email);
+        filters.put("username", username);
+        filters.put("phone", phone);
+        filters.put("type", types);
+        filters.put("shopName", shopName);
+        filters.put("createdByUsername", createdByUsername);
+
+        List<Predicate<UserDto>> predicates = filters.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .map(entry -> {
+                    String fieldName = entry.getKey();
+                    Object value = entry.getValue();
+
+                    return (Predicate<UserDto>) user -> {
+                        try {
+                            Field field = UserDto.class.getDeclaredField(fieldName);
+                            field.setAccessible(true);
+                            Object fieldValue = field.get(user);
+
+                            if (value instanceof String stringValue) {
+                                return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
+                            } else if (value instanceof List<?> listValue) {
+                                return fieldValue != null && listValue.contains(fieldValue);
+                            }
+                            return false;
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            throw new RuntimeException(ILLEGAL_SORT_PARAMETER + ": " + fieldName, e);
+                        }
+                    };
+                })
+                .toList();
+
+        for (Predicate<UserDto> predicate : predicates) {
+            users = users.stream().filter(predicate).toList();
         }
 
         if (sortBy != null) {
@@ -132,7 +130,7 @@ public class UserService {
             try {
                 field.setAccessible(true);
                 Object newValue = field.get(userRequestData);
-                if (String.valueOf(newValue != null ? newValue: "").isEmpty()) {
+                if (String.valueOf(newValue != null ? newValue : "").isEmpty()) {
                     System.out.println("J");
                     throw new InvalidAttributeValueException(CAN_NOT_INSERT_EMPTY_VALUE);
                 }
