@@ -100,12 +100,15 @@ public class UserService {
         }
 
         if (sortBy != null) {
-            Comparator<UserDto> comparator = switch (sortBy.toLowerCase()) {
-                case "username" -> Comparator.comparing(UserDto::getUsername);
-                case "dateCreated" -> Comparator.comparing(UserDto::getDateCreated);
-                case "email" -> Comparator.comparing(UserDto::getEmail);
-                default -> throw new IllegalArgumentException("Invalid sort parameter: " + sortBy);
-            };
+            Comparator<UserDto> comparator = Comparator.comparing(user -> {
+                try {
+                    Field field = UserDto.class.getDeclaredField(sortBy);
+                    field.setAccessible(true);
+                    return (Comparable) field.get(user);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new IllegalArgumentException(ILLEGAL_SORT_PARAMETER + ": " + sortBy, e);
+                }
+            });
 
             if ("desc".equalsIgnoreCase(sortOrder)) {
                 comparator = comparator.reversed();

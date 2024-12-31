@@ -41,6 +41,8 @@ public final class CrmConstants {
         public static String CAN_NOT_INSERT_EMPTY_VALUE = "canNotInsertEmptyValue";
 
         public static String ENTITY_UPDATE_ERROR = "entityUpdateError";
+
+        public static String ILLEGAL_SORT_PARAMETER = "illegalSortParameter";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
