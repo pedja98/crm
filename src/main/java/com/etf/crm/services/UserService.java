@@ -102,7 +102,7 @@ public class UserService {
         if (sortBy != null) {
             Comparator<UserDto> comparator = switch (sortBy.toLowerCase()) {
                 case "username" -> Comparator.comparing(UserDto::getUsername);
-                case "datecreated" -> Comparator.comparing(UserDto::getDateCreated);
+                case "dateCreated" -> Comparator.comparing(UserDto::getDateCreated);
                 case "email" -> Comparator.comparing(UserDto::getEmail);
                 default -> throw new IllegalArgumentException("Invalid sort parameter: " + sortBy);
             };
