@@ -151,11 +151,12 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(String username) {
+    public String deleteUser(String username) {
         User user = this.userRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
         user.setDeleted(true);
         this.userRepository.save(user);
+        return USER_DELETED;
     }
 
     private void checkDuplicateUsernameAndEmail(String username, String email) {

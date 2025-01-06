@@ -43,6 +43,10 @@ public final class CrmConstants {
         public static String ENTITY_UPDATE_ERROR = "entityUpdateError";
 
         public static String ILLEGAL_SORT_PARAMETER = "illegalSortParameter";
+
+        public static String REGION_ALREADY_EXISTS = "regionAlreadyExists";
+
+        public static String NO_REGION_FOUND = "noRegionFound";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -52,5 +56,9 @@ public final class CrmConstants {
         public static String USER_CREATED = "userCreated";
 
         public static String PASSWORD_CHANGED = "passwordChanged";
+
+        public static String REGION_CREATED = "regionCreated";
+
+        public static String USER_DELETED = "userDeleted";
     }
 }
