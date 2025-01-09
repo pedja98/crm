@@ -1,5 +1,6 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.entities.Region;
 import com.etf.crm.services.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,8 @@ public class RegionController {
     private RegionService regionService;
 
     @PostMapping
-    public ResponseEntity<String> saveRegion(@RequestBody Region region) {
-        String response = regionService.saveRegion(region);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<MessageResponse> saveRegion(@RequestBody Region region) {
+        return ResponseEntity.ok(new MessageResponse(regionService.saveRegion(region)));
     }
 
     @GetMapping("/{id}")
