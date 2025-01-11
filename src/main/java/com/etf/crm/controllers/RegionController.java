@@ -1,6 +1,8 @@
 package com.etf.crm.controllers;
 
 import com.etf.crm.dtos.MessageResponse;
+import com.etf.crm.dtos.RegionDto;
+import com.etf.crm.dtos.UpdateRegionRequestDto;
 import com.etf.crm.entities.Region;
 import com.etf.crm.services.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +24,26 @@ public class RegionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Region> getRegionById(@PathVariable Long id) {
-        Region region = regionService.getRegionById(id);
-        return ResponseEntity.ok(region);
+    public ResponseEntity<RegionDto> getRegionById(@PathVariable Long id) {
+        return ResponseEntity.ok(regionService.getRegionById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Region>> getFilteredAndSortedRegions(
+    public ResponseEntity<List<RegionDto>> getFilteredAndSortedRegions(
             @RequestParam(required = false) String filterByName,
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String sortOrder) {
-        List<Region> regions = regionService.getFilteredAndSortedRegions(filterByName, sortBy, sortOrder);
+        List<RegionDto> regions = regionService.getFilteredAndSortedRegions(filterByName, sortBy, sortOrder);
         return ResponseEntity.ok(regions);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRegion(@PathVariable Long id) {
-        regionService.deleteRegion(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<MessageResponse> deleteRegion(@PathVariable Long id) {
+        return ResponseEntity.ok(new MessageResponse(regionService.deleteRegion(id)));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MessageResponse> updateRegion(@PathVariable Long id, @RequestBody UpdateRegionRequestDto updatedRegionData) {
+        return ResponseEntity.ok(new MessageResponse(regionService.updateRegion(id, updatedRegionData)));
     }
 }

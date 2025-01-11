@@ -1,5 +1,7 @@
 package com.etf.crm.services;
 
+import com.etf.crm.dtos.RegionDto;
+import com.etf.crm.dtos.UpdateRegionRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.Region;
 import com.etf.crm.exceptions.DuplicateItemException;
@@ -33,16 +35,16 @@ public class RegionService {
         return REGION_CREATED;
     }
 
-    public Region getRegionById(Long id) {
-        return regionRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new ItemNotFoundException("REGION_NOT_FOUND"));
+    public RegionDto getRegionById(Long id) {
+        return regionRepository.findRegionDtoById(id)
+                .orElseThrow(() -> new ItemNotFoundException(REGION_NOT_FOUND));
     }
 
-    public List<Region> getFilteredAndSortedRegions(String filterByName, String sortBy, String sortOrder) {
-        List<Region> regions = regionRepository.findAllRegionsNotDeleted();
+    public List<RegionDto> getFilteredAndSortedRegions(String filterByName, String sortBy, String sortOrder) {
+        List<RegionDto> regions = regionRepository.findAllRegionDtoByDeletedFalse();
 
         if (regions.isEmpty()) {
-            throw new ItemNotFoundException(NO_REGION_FOUND);
+            throw new ItemNotFoundException(REGION_NOT_FOUND);
         }
 
         if (filterByName != null && !filterByName.trim().isEmpty()) {
@@ -53,7 +55,7 @@ public class RegionService {
         }
 
         if (sortBy != null) {
-            Comparator<Region> comparator = Comparator.comparing(user -> {
+            Comparator<RegionDto> comparator = Comparator.comparing(user -> {
                 try {
                     Field field = UserDto.class.getDeclaredField(sortBy);
                     field.setAccessible(true);
@@ -72,12 +74,27 @@ public class RegionService {
         return regions;
     }
 
-
     @Transactional
-    public void deleteRegion(Long id) {
+    public String deleteRegion(Long id) {
         Region region = regionRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new ItemNotFoundException("REGION_NOT_FOUND"));
+                .orElseThrow(() -> new ItemNotFoundException(REGION_NOT_FOUND));
         region.setDeleted(true);
         regionRepository.save(region);
+        return REGION_DELETED;
+    }
+
+    @Transactional
+    public String updateRegion(Long id, UpdateRegionRequestDto updatedRegionData) {
+        if (regionRepository.findByNameAndDeletedFalse(updatedRegionData.getName()).isPresent()) {
+            throw new DuplicateItemException(REGION_ALREADY_EXISTS);
+        }
+
+        Region region = regionRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ItemNotFoundException(REGION_NOT_FOUND));
+
+        region.setName(updatedRegionData.getName());
+        region.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        regionRepository.save(region);
+        return REGION_UPDATED;
     }
 }

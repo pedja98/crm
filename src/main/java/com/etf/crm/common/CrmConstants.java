@@ -46,7 +46,7 @@ public final class CrmConstants {
 
         public static String REGION_ALREADY_EXISTS = "regionAlreadyExists";
 
-        public static String NO_REGION_FOUND = "noRegionFound";
+        public static String REGION_NOT_FOUND = "regionNotFound";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -60,5 +60,9 @@ public final class CrmConstants {
         public static String REGION_CREATED = "regionCreated";
 
         public static String USER_DELETED = "userDeleted";
+
+        public static String REGION_DELETED = "regionDeleted";
+
+        public static String REGION_UPDATED = "regionUpdated";
     }
 }
