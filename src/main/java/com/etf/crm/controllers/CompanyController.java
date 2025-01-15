@@ -1,5 +1,6 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.entities.Company;
 import com.etf.crm.services.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,8 @@ public class CompanyController {
     private CompanyService companyService;
 
     @PostMapping
-    public ResponseEntity<Company> createCompany(@RequestBody Company company) {
-        Company savedCompany = companyService.saveCompany(company);
-        return ResponseEntity.ok(savedCompany);
+    public ResponseEntity<MessageResponse> createCompany(@RequestBody Company company) {
+        return ResponseEntity.ok(new MessageResponse(companyService.saveCompany(company)));
     }
 
     @GetMapping("/{id}")

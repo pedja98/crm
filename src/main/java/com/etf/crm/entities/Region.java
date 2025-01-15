@@ -25,7 +25,6 @@ public class Region {
     @Column(nullable = false)
     private String name;
 
-
     @ManyToOne
     @JoinColumn(name = "created_by", updatable = false)
     @JsonIgnore

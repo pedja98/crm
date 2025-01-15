@@ -5,5 +5,4 @@ public enum UserType {
     SALESMAN,
     L1_MANAGER,
     L2_MANAGER,
-    L3_MANAGER,
 }

@@ -2,13 +2,16 @@ package com.etf.crm.services;
 
 import com.etf.crm.entities.Company;
 import com.etf.crm.exceptions.ItemNotFoundException;
+import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
+import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.COMPANY_NOT_FOUND;
 
@@ -17,8 +20,11 @@ public class CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
-    public Company saveCompany(Company company) {
-        return this.companyRepository.save(company);
+    @Transactional
+    public String saveCompany(Company company) {
+        company.setCreatedBy(SetCurrentUserFilter.getCurrentUser());
+        this.companyRepository.save(company);
+        return COMPANY_CREATED;
     }
 
     public Company getCompanyById(Long id) {
