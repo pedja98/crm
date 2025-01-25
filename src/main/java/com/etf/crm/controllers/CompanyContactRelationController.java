@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/company-contact-relations")
@@ -45,13 +44,5 @@ public class CompanyContactRelationController {
     public ResponseEntity<Void> deleteRelation(@PathVariable Long id) {
         relationService.deleteRelation(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<CompanyContactRelation> partialUpdateCompanyContactRelation(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
-        updates.forEach((fieldName, fieldValue) -> {
-            this.relationService.partialUpdateCompanyContactRelation(id, fieldName, fieldValue);
-        });
-        return ResponseEntity.ok(this.relationService.getRelationById(id));
     }
 }

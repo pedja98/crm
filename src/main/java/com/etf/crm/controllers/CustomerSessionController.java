@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/customer-sessions")
@@ -45,13 +44,5 @@ public class CustomerSessionController {
     public ResponseEntity<Void> deleteCustomerSession(@PathVariable Long id) {
         customerSessionService.deleteCustomerSession(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<CustomerSession> partialUpdateCustomerSession(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
-        updates.forEach((fieldName, fieldValue) -> {
-            this.customerSessionService.partialUpdateCustomerSession(id, fieldName, fieldValue);
-        });
-        return ResponseEntity.ok(this.customerSessionService.getCustomerSessionById(id));
     }
 }

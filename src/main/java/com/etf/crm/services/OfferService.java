@@ -22,8 +22,6 @@ public class OfferService {
     private CompanyService companyService;
 
     public Offer saveOffer(Long companyId, Offer offer) {
-        Company company = companyService.getCompanyById(companyId);
-        offer.setCompany(company);
         return this.offerRepository.save(offer);
     }
 
@@ -48,17 +46,5 @@ public class OfferService {
         existingOffer.setStatus(offer.getStatus());
         existingOffer.setModifiedBy(offer.getModifiedBy());
         return this.offerRepository.save(existingOffer);
-    }
-
-    public void partialUpdateOffer(Long id, String fieldName, Object fieldValue) {
-        Offer existingOffer = this.getOfferById(id);
-        try {
-            Field field = Offer.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(existingOffer, fieldValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Invalid field name: " + fieldName, e);
-        }
-        this.offerRepository.save(existingOffer);
     }
 }

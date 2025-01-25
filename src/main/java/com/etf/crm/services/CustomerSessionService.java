@@ -26,9 +26,7 @@ public class CustomerSessionService {
     private OpportunityService opportunityService;
 
     public CustomerSession saveCustomerSession(Long companyId, Long opportunityId, CustomerSession customerSession) {
-        Company company = companyService.getCompanyById(companyId);
         Opportunity opportunity = opportunityService.getOpportunityById(opportunityId);
-        customerSession.setCompany(company);
         customerSession.setOpportunity(opportunity);
         return this.customerSessionRepository.save(customerSession);
     }
@@ -60,17 +58,4 @@ public class CustomerSessionService {
         existingCustomerSession.setModifiedBy(customerSession.getModifiedBy());
         return this.customerSessionRepository.save(existingCustomerSession);
     }
-
-    public void partialUpdateCustomerSession(Long id, String fieldName, Object fieldValue) {
-        CustomerSession existingCustomerSession = this.getCustomerSessionById(id);
-        try {
-            Field field = CustomerSession.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(existingCustomerSession, fieldValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Invalid field name: " + fieldName, e);
-        }
-        this.customerSessionRepository.save(existingCustomerSession);
-    }
-
 }

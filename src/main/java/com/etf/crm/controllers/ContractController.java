@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/contracts")
@@ -40,13 +39,5 @@ public class ContractController {
     public ResponseEntity<Void> deleteContract(@PathVariable Long id) {
         contractService.deleteContract(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<Contract> partialUpdateContract(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
-        updates.forEach((fieldName, fieldValue) -> {
-            this.contractService.partialUpdateContract(id, fieldName, fieldValue);
-        });
-        return ResponseEntity.ok(this.contractService.getContractById(id));
     }
 }

@@ -26,9 +26,7 @@ public class ContractService {
     private OpportunityService opportunityService;
 
     public Contract saveContract(Long companyId, Long opportunityId, Contract contract) {
-        Company company = companyService.getCompanyById(companyId);
         Opportunity opportunity = opportunityService.getOpportunityById(opportunityId);
-        contract.setCompany(company);
         contract.setOpportunity(opportunity);
         return this.contractRepository.save(contract);
     }
@@ -57,17 +55,5 @@ public class ContractService {
         existingContract.setComment(contract.getComment());
         existingContract.setModifiedBy(contract.getModifiedBy());
         return this.contractRepository.save(existingContract);
-    }
-
-    public void partialUpdateContract(Long id, String fieldName, Object fieldValue) {
-        Contract existingContract = this.getContractById(id);
-        try {
-            Field field = Contract.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(existingContract, fieldValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Invalid field name: " + fieldName, e);
-        }
-        this.contractRepository.save(existingContract);
     }
 }

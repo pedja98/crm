@@ -22,8 +22,6 @@ public class OpportunityService {
     private CompanyService companyService;
 
     public Opportunity saveOpportunity(Long companyId, Opportunity opportunity) {
-        Company company = companyService.getCompanyById(companyId);
-        opportunity.setCompany(company);
         return this.opportunityRepository.save(opportunity);
     }
 
@@ -47,17 +45,5 @@ public class OpportunityService {
         existingOpportunity.setName(opportunity.getName());
         existingOpportunity.setModifiedBy(opportunity.getModifiedBy());
         return this.opportunityRepository.save(existingOpportunity);
-    }
-
-    public void partialUpdateOpportunity(Long id, String fieldName, Object fieldValue) {
-        Opportunity existingOpportunity = this.getOpportunityById(id);
-        try {
-            Field field = Opportunity.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(existingOpportunity, fieldValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Invalid field name: " + fieldName, e);
-        }
-        this.opportunityRepository.save(existingOpportunity);
     }
 }

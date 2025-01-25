@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.lang.reflect.Field;
 
+import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 
 @Service
@@ -18,9 +18,10 @@ public class ContactService {
     @Autowired
     private ContactRepository contactRepository;
 
-    public Contact saveContact(Contact contact) {
+    public String saveContact(Contact contact) {
         this.checkDuplicateEmail(contact.getEmail());
-        return this.contactRepository.save(contact);
+        this.contactRepository.save(contact);
+        return CONTACT_CREATED;
     }
 
     public Contact getContactById(Long id) {
@@ -32,13 +33,14 @@ public class ContactService {
         return this.contactRepository.findAllByDeletedFalse();
     }
 
-    public void deleteContact(Long id) {
+    public String deleteContact(Long id) {
         Contact existingContact = this.getContactById(id);
         existingContact.setDeleted(true);
         this.contactRepository.save(existingContact);
+        return CONTACT_DELETED;
     }
 
-    public Contact updateContact(Long id, Contact contact) {
+    public String updateContact(Long id, Contact contact) {
         Contact existingContact = this.getContactById(id);
 
         if (!existingContact.getEmail().equals(contact.getEmail())) {
@@ -52,23 +54,8 @@ public class ContactService {
         existingContact.setDocumentType(contact.getDocumentType());
         existingContact.setDocumentId(contact.getDocumentId());
         existingContact.setModifiedBy(contact.getModifiedBy());
-        return this.contactRepository.save(existingContact);
-    }
-
-    public void partialUpdateContact(Long id, String fieldName, Object fieldValue) {
-        Contact existingContact = this.getContactById(id);
-        try {
-            if ("email".equals(fieldName)) {
-                this.checkDuplicateEmail((String) fieldValue, id);
-            }
-
-            Field field = Contact.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(existingContact, fieldValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Invalid field name: " + fieldName, e);
-        }
         this.contactRepository.save(existingContact);
+        return CONTACT_UPDATED;
     }
 
     private void checkDuplicateEmail(String email, Long id) {

@@ -1,5 +1,6 @@
 package com.etf.crm.entities;
 
+import com.etf.crm.enums.CompanyStatus;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -29,6 +30,10 @@ public class Company {
 
     @Column(nullable = false, name = "hq_address")
     private String hqAddress;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CompanyStatus status = CompanyStatus.POTENTIAL;
 
     @Column(nullable = false)
     private String industry;

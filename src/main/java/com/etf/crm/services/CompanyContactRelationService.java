@@ -23,16 +23,11 @@ public class CompanyContactRelationService {
     @Autowired
     private ContactService contactService;
 
-    @Autowired
-    private CompanyService companyService;
-
     public CompanyContactRelation saveRelation(Long contactId, Long companyId, CompanyContactRelationType relationType, String roleDescription) {
         Contact contact = contactService.getContactById(contactId);
-        Company company = companyService.getCompanyById(companyId);
 
         CompanyContactRelation relation = CompanyContactRelation.builder()
                 .contact(contact)
-                .company(company)
                 .relationType(relationType)
                 .roleDescription(roleDescription)
                 .build();
@@ -60,17 +55,5 @@ public class CompanyContactRelationService {
         existingRelation.setRoleDescription(relation.getRoleDescription());
         existingRelation.setRelationType(relation.getRelationType());
         return this.relationRepository.save(existingRelation);
-    }
-
-    public void partialUpdateCompanyContactRelation(Long id, String fieldName, Object fieldValue) {
-        CompanyContactRelation existingRelation = this.getRelationById(id);
-        try {
-            Field field = CompanyContactRelation.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(existingRelation, fieldValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Invalid field name: " + fieldName, e);
-        }
-        this.relationRepository.save(existingRelation);
     }
 }

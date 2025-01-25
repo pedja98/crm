@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/offers")
@@ -40,13 +39,5 @@ public class OfferController {
     public ResponseEntity<Void> deleteOffer(@PathVariable Long id) {
         offerService.deleteOffer(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<Offer> partialUpdate_(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
-        updates.forEach((fieldName, fieldValue) -> {
-            this.offerService.partialUpdateOffer(id, fieldName, fieldValue);
-        });
-        return ResponseEntity.ok(this.offerService.getOfferById(id));
     }
 }

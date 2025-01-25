@@ -66,5 +66,13 @@ public final class CrmConstants {
         public static String REGION_UPDATED = "regionUpdated";
 
         public static String COMPANY_CREATED = "companyCreated";
+
+        public static String COMPANY_UPDATED = "companyUpdated";
+
+        public static String CONTACT_CREATED = "contactCreated";
+
+        public static String CONTACT_UPDATED = "contactUpdated";
+
+        public static String CONTACT_DELETED = "contactDeleted";
     }
 }
