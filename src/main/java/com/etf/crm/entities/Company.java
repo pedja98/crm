@@ -47,13 +47,13 @@ public class Company {
     @Column(nullable = false, unique = true)
     private Integer tin;
 
-    @Column(nullable = false, name = "bank_name")
+    @Column(name = "bank_name")
     private String bankName;
 
-    @Column(nullable = false, name = "bank_account_number")
+    @Column(name = "bank_account_number")
     private String bankAccountNumber;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String comment;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
