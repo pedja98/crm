@@ -20,9 +20,8 @@ public class CompanyContactRelationController {
     public ResponseEntity<CompanyContactRelation> createRelation(
             @RequestParam Long contactId,
             @RequestParam Long companyId,
-            @RequestParam CompanyContactRelationType relationType,
-            @RequestParam String roleDescription) {
-        return ResponseEntity.ok(relationService.saveRelation(contactId, companyId, relationType, roleDescription));
+            @RequestParam CompanyContactRelationType relationType) {
+        return ResponseEntity.ok(relationService.saveRelation(contactId, companyId, relationType));
     }
 
     @GetMapping("/{id}")

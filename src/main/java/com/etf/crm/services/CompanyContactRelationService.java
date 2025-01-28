@@ -23,13 +23,12 @@ public class CompanyContactRelationService {
     @Autowired
     private ContactService contactService;
 
-    public CompanyContactRelation saveRelation(Long contactId, Long companyId, CompanyContactRelationType relationType, String roleDescription) {
+    public CompanyContactRelation saveRelation(Long contactId, Long companyId, CompanyContactRelationType relationType) {
         Contact contact = contactService.getContactById(contactId);
 
         CompanyContactRelation relation = CompanyContactRelation.builder()
                 .contact(contact)
                 .relationType(relationType)
-                .roleDescription(roleDescription)
                 .build();
 
         return relationRepository.save(relation);
@@ -52,7 +51,6 @@ public class CompanyContactRelationService {
 
     public CompanyContactRelation updateRelation(Long id, CompanyContactRelation relation) {
         CompanyContactRelation existingRelation = this.getRelationById(id);
-        existingRelation.setRoleDescription(relation.getRoleDescription());
         existingRelation.setRelationType(relation.getRelationType());
         return this.relationRepository.save(existingRelation);
     }

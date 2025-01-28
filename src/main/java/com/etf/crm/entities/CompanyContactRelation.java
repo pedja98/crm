@@ -32,9 +32,6 @@ public class CompanyContactRelation {
     @JoinColumn(name = "contact_id", nullable = false)
     private Contact contact;
 
-    @Column(nullable = false, name = "role_description")
-    private String roleDescription;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CompanyContactRelationType relationType;
