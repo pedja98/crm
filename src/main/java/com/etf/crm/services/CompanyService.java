@@ -146,19 +146,26 @@ public class CompanyService {
     }
 
     @Transactional
-    public String updateCompany(Long id, CompanyDto companyDetails) {
+    public String updateCompany(Long id, SaveCompanyDto companyDetails) {
         Company company = this.companyRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
-        for (Field field : CompanyDto.class.getDeclaredFields()) {
+        for (Field field : SaveCompanyDto.class.getDeclaredFields()) {
             try {
                 field.setAccessible(true);
                 Object newValue = field.get(companyDetails);
-
-                if (String.valueOf(newValue != null ? newValue : "").isEmpty()) {
-                    throw new InvalidAttributeValueException(CAN_NOT_INSERT_EMPTY_VALUE);
+                if (field.getName().equals("status") && newValue == null) {
+                    continue;
                 }
-
+                if (field.getName().equals("assignedTo")) {
+                    newValue = userRepository.findById((Long) field.get(companyDetails))
+                            .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+                } else if (field.getName().equals("temporaryAssignedTo")) {
+                    newValue = newValue == null
+                            ? null
+                            : userRepository.findById((Long) field.get(companyDetails))
+                            .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+                }
                 Field companyField = Company.class.getDeclaredField(field.getName());
                 companyField.setAccessible(true);
                 companyField.set(company, newValue);

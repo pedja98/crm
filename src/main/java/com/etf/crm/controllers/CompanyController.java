@@ -51,7 +51,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MessageResponse> updateCompany(@PathVariable Long id, @RequestBody CompanyDto companyDetails) {
+    public ResponseEntity<MessageResponse> updateCompany(@PathVariable Long id, @RequestBody SaveCompanyDto companyDetails) {
         return ResponseEntity.ok(new MessageResponse(this.companyService.updateCompany(id, companyDetails)));
     }
 }

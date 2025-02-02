@@ -21,6 +21,7 @@ public class CompanyDto {
     private Integer tin;
     private String bankName;
     private String bankAccountNumber;
+    private String industry;
     private String comment;
     private CompanyStatus status;
     private Long assignedToId;
