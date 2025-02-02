@@ -1,6 +1,7 @@
 package com.etf.crm.repositories;
 
 import com.etf.crm.dtos.AuthUserDto;
+import com.etf.crm.dtos.AssignToDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,4 +44,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "LEFT JOIN u.modifiedBy mb " +
             "WHERE u.deleted = false")
     Optional<List<UserDto>> findAllUserDtoByDeletedFalse();
+
+    @Query("SELECT new com.etf.crm.dtos.AssignToDto(u.id, u.username) " +
+            "FROM User u " +
+            "WHERE u.type = 'SALESMAN' AND u.deleted = false")
+    Optional<List<AssignToDto>> findAllAssignToDtoDeletedFalse();
 }

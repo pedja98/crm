@@ -56,6 +56,14 @@ public class Company {
     @Column(columnDefinition = "TEXT")
     private String comment;
 
+    @ManyToOne
+    @JoinColumn(name = "assigned_to", nullable = false)
+    private User assignedTo;
+
+    @ManyToOne
+    @JoinColumn(name = "temporary_assigned_to")
+    private User temporaryAssignedTo = null;
+
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Opportunity> opportunities;
 

@@ -28,6 +28,8 @@ public class CompanyService {
     @Transactional
     public String saveCompany(Company company) {
         company.setCreatedBy(SetCurrentUserFilter.getCurrentUser());
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        company.setCreatedBy(currentUser);
         this.companyRepository.save(company);
         return COMPANY_CREATED;
     }

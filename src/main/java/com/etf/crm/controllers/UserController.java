@@ -1,6 +1,7 @@
 package com.etf.crm.controllers;
 
 import com.etf.crm.dtos.MessageResponse;
+import com.etf.crm.dtos.AssignToDto;
 import com.etf.crm.dtos.UpdateUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
@@ -58,5 +59,10 @@ public class UserController {
     @DeleteMapping("/{username}")
     public ResponseEntity<MessageResponse> deleteUser(@PathVariable String username) {
         return ResponseEntity.ok(new MessageResponse(userService.deleteUser(username)));
+    }
+
+    @GetMapping("/assign-to")
+    public ResponseEntity<List<AssignToDto>> getAllAssignTo() {
+        return ResponseEntity.ok(this.userService.getAllAssignToDto());
     }
 }

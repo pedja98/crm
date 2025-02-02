@@ -1,6 +1,7 @@
 package com.etf.crm.services;
 
 import com.etf.crm.config.SecurityConfig;
+import com.etf.crm.dtos.AssignToDto;
 import com.etf.crm.dtos.UpdateUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
@@ -165,5 +166,10 @@ public class UserService {
         if (this.userRepository.findByEmailAndDeletedFalse(email).isPresent()) {
             throw new DuplicateItemException(EMAIL_ALREADY_TAKEN);
         }
+    }
+
+    public List<AssignToDto> getAllAssignToDto() {
+        return this.userRepository.findAllAssignToDtoDeletedFalse()
+                .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
     }
 }

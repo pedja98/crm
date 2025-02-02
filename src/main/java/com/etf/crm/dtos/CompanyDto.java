@@ -23,6 +23,10 @@ public class CompanyDto {
     private String bankAccountNumber;
     private String comment;
     private CompanyStatus status;
+    private Long assignedToId;
+    private String assignedToUsername;
+    private Long temporaryAssignedToId;
+    private String temporaryAssignedToUsername;
     private Long createdById;
     private String createdByUsername;
     private Long modifiedById;
