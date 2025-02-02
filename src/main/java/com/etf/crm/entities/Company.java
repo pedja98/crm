@@ -41,8 +41,8 @@ public class Company {
     @Column(nullable = false, name = "contact_phone")
     private String contactPhone;
 
-    @Column(nullable = false, name = "number_of_employees")
-    private Integer numberOfEmployees;
+    @Column(name = "number_of_employees")
+    private Integer numberOfEmployees = null;
 
     @Column(nullable = false, unique = true)
     private Integer tin;

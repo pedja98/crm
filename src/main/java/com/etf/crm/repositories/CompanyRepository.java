@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface CompanyRepository extends JpaRepository<Company, Long> {
     Optional<Company> findByIdAndDeletedFalse(Long id);
     List<Company> findAllByDeletedFalse();
+    Optional<Company> findByTinAndDeletedFalse(Integer tin);
 
     @Query("SELECT new com.etf.crm.dtos.CompanyDto(c.id, c.name, c.hqAddress, c.contactPhone, " +
             "c.numberOfEmployees, c.tin, c.bankName, c.bankAccountNumber, c.comment, c.status, ass.id, ass.username, tas.id, tas.username, " +

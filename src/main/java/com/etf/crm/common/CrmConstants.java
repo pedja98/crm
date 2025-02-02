@@ -38,6 +38,10 @@ public final class CrmConstants {
 
         public static String EMAIL_ALREADY_TAKEN = "emailAlreadyTaken";
 
+        public static String TIN_ALREADY_TAKEN = "tinAlreadyTaken";
+
+        public static final String ASSIGNED_TO_SAME_AS_TEMPORARY = "assignedToSameAsTemporary";
+
         public static String CAN_NOT_INSERT_EMPTY_VALUE = "canNotInsertEmptyValue";
 
         public static String ENTITY_UPDATE_ERROR = "entityUpdateError";

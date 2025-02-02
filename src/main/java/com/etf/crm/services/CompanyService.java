@@ -1,14 +1,14 @@
 package com.etf.crm.services;
 
 import com.etf.crm.dtos.CompanyDto;
+import com.etf.crm.dtos.SaveCompanyDto;
 import com.etf.crm.entities.Company;
 import com.etf.crm.entities.User;
 import com.etf.crm.enums.CompanyStatus;
-import com.etf.crm.exceptions.InvalidAttributeValueException;
-import com.etf.crm.exceptions.ItemNotFoundException;
-import com.etf.crm.exceptions.PropertyCopyException;
+import com.etf.crm.exceptions.*;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.CompanyRepository;
+import com.etf.crm.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +25,47 @@ public class CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Transactional
-    public String saveCompany(Company company) {
-        company.setCreatedBy(SetCurrentUserFilter.getCurrentUser());
-        User currentUser = SetCurrentUserFilter.getCurrentUser();
-        company.setCreatedBy(currentUser);
-        this.companyRepository.save(company);
+    public String saveCompany(SaveCompanyDto companyDto) {
+        if (companyRepository.findByTinAndDeletedFalse(companyDto.getTin()).isPresent()) {
+            throw new DuplicateItemException(TIN_ALREADY_TAKEN);
+        }
+
+        if (companyDto.getAssignedTo() == companyDto.getTemporaryAssignedTo()) {
+            throw new BadRequestException(ASSIGNED_TO_SAME_AS_TEMPORARY);
+        }
+
+        User assignedTo = userRepository.findById(companyDto.getAssignedTo())
+                .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+
+        User temporaryAssignedTo = companyDto.getTemporaryAssignedTo() != null
+                ? userRepository.findById(companyDto.getTemporaryAssignedTo())
+                .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND))
+                : null;
+
+        User createdBy = SetCurrentUserFilter.getCurrentUser();
+
+        Company company = Company.builder()
+                .name(companyDto.getName())
+                .hqAddress(companyDto.getHqAddress())
+                .contactPhone(companyDto.getContactPhone())
+                .numberOfEmployees(companyDto.getNumberOfEmployees())
+                .tin(companyDto.getTin())
+                .bankName(companyDto.getBankName())
+                .bankAccountNumber(companyDto.getBankAccountNumber())
+                .industry(companyDto.getIndustry())
+                .status(CompanyStatus.POTENTIAL)
+                .comment(companyDto.getComment())
+                .assignedTo(assignedTo)
+                .temporaryAssignedTo(temporaryAssignedTo)
+                .createdBy(createdBy)
+                .deleted(false)
+                .build();
+
+        companyRepository.save(company);
         return COMPANY_CREATED;
     }
 
