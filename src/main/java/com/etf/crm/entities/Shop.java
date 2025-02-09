@@ -37,6 +37,10 @@ public class Shop {
     private User shopLeader;
 
     @ManyToOne
+    @JoinColumn(name = "region")
+    private Region region;
+
+    @ManyToOne
     @JoinColumn(name = "created_by", updatable = false)
     private User createdBy;
 

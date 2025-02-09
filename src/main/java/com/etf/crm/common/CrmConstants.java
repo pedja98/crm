@@ -57,6 +57,8 @@ public final class CrmConstants {
     public static final class SuccessCodes {
         public static  String SHOP_DELETED = "shopDeleted";
 
+        public static  String SHOP_CREATED = "shopCreated";
+
         public static String USER_UPDATED = "userUpdated";
 
         public static String USER_CREATED = "userCreated";

@@ -13,19 +13,21 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     Optional<Shop> findByIdAndDeletedFalse(Long id);
     List<Shop> findAllByDeletedFalse();
 
-    @Query("SELECT new com.etf.crm.dtos.ShopDto(s.id, s.name, s.address, s.createdBy.id, u.username, u.id, cb.username, s.modifiedBy.id, mb.username, s.dateCreated, s.dateModified) " +
+    @Query("SELECT new com.etf.crm.dtos.ShopDto(s.id, s.name, s.address, u.id, u.username, r.id, r.name, cb.id, cb.username, mb.id, mb.username, s.dateCreated, s.dateModified) " +
             "FROM Shop s " +
             "LEFT JOIN s.shopLeader u " +
             "LEFT JOIN s.createdBy cb " +
             "LEFT JOIN s.modifiedBy mb " +
+            "LEFT JOIN s.region r " +
             "WHERE s.id = :id AND s.deleted = false")
     Optional<ShopDto> findShopDtoByUsernameAndDeletedFalse(@Param("id") Long id);
 
-    @Query("SELECT new com.etf.crm.dtos.ShopDto(s.id, s.name, s.address, s.createdBy.id, u.username, u.id, cb.username, s.modifiedBy.id, mb.username, s.dateCreated, s.dateModified) " +
+    @Query("SELECT new com.etf.crm.dtos.ShopDto(s.id, s.name, s.address, u.id, u.username, r.id, r.name, cb.id, cb.username, mb.id, mb.username, s.dateCreated, s.dateModified) " +
             "FROM Shop s " +
             "LEFT JOIN s.shopLeader u " +
             "LEFT JOIN s.createdBy cb " +
             "LEFT JOIN s.modifiedBy mb " +
+            "LEFT JOIN s.region r " +
             "WHERE s.deleted = false")
     Optional<List<ShopDto>> findAllShopDtoByDeletedFalse();
 }

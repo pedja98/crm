@@ -15,9 +15,11 @@ public class ShopDto {
     private Long id;
     private String name;
     private String address;
-    private Long createdById;
-    private String shopLeaderUsername;
     private Long shopLeaderId;
+    private String shopLeaderUsername;
+    private Long regionId;
+    private String regionName;
+    private Long createdById;
     private String createdByUsername;
     private Long modifiedById;
     private String modifiedByUsername;
