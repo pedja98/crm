@@ -55,6 +55,8 @@ public final class CrmConstants {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class SuccessCodes {
+        public static  String SHOP_DELETED = "shopDeleted";
+
         public static String USER_UPDATED = "userUpdated";
 
         public static String USER_CREATED = "userCreated";

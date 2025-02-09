@@ -168,8 +168,8 @@ public class UserService {
         }
     }
 
-    public List<AssignToDto> getAllAssignToDto() {
-        return this.userRepository.findAllAssignToDtoDeletedFalse()
+    public List<AssignToDto> getAllAssignToDto(UserType type) {
+        return this.userRepository.findAllAssignToDtoDeletedFalse(type)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
     }
 }

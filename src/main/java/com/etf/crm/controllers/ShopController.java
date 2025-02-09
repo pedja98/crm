@@ -1,5 +1,7 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.MessageResponse;
+import com.etf.crm.dtos.ShopDto;
 import com.etf.crm.entities.Shop;
 import com.etf.crm.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ public class ShopController {
     private ShopService shopService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Shop> getCompanyById(@PathVariable Long id) {
+    public ResponseEntity<ShopDto> getCompanyById(@PathVariable Long id) {
         return ResponseEntity.ok(this.shopService.getShopById(id));
     }
 
@@ -26,8 +28,7 @@ public class ShopController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Shop> deleteShop(@PathVariable Long id) {
-        this.shopService.deleteShop(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<MessageResponse> deleteShop(@PathVariable Long id) {
+        return ResponseEntity.ok(new MessageResponse(this.shopService.deleteShop(id)));
     }
 }

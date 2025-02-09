@@ -4,6 +4,7 @@ import com.etf.crm.dtos.AuthUserDto;
 import com.etf.crm.dtos.AssignToDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
+import com.etf.crm.enums.UserType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -47,6 +48,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT new com.etf.crm.dtos.AssignToDto(u.id, u.username) " +
             "FROM User u " +
-            "WHERE u.type = 'SALESMAN' AND u.deleted = false")
-    Optional<List<AssignToDto>> findAllAssignToDtoDeletedFalse();
+            "WHERE u.type = :type AND u.deleted = false")
+    Optional<List<AssignToDto>> findAllAssignToDtoDeletedFalse(@Param("type") UserType type);
 }

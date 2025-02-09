@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @GetMapping("/assign-to")
-    public ResponseEntity<List<AssignToDto>> getAllAssignTo() {
-        return ResponseEntity.ok(this.userService.getAllAssignToDto());
+    public ResponseEntity<List<AssignToDto>> getAllAssignTo(@RequestParam(required = false, value = "type") UserType type) {
+        return ResponseEntity.ok(this.userService.getAllAssignToDto(type));
     }
 }
