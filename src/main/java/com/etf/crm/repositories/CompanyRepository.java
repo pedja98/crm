@@ -15,7 +15,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     @Query("SELECT new com.etf.crm.dtos.CompanyDto(c.id, c.name, c.hqAddress, c.contactPhone, " +
             "c.numberOfEmployees, c.tin, c.bankName, c.bankAccountNumber, c.industry, c.comment, c.status, ass.id, ass.username, tas.id, tas.username, " +
-            " cb.id, cb.username, mb.id, mb.username, c.dateCreated, c.dateModified)" +
+            " cb.username, mb.username, c.dateCreated, c.dateModified)" +
             "FROM Company c " +
             "LEFT JOIN c.createdBy cb " +
             "LEFT JOIN c.modifiedBy mb " +
@@ -26,7 +26,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     @Query("SELECT new com.etf.crm.dtos.CompanyDto(c.id, c.name, c.hqAddress, c.contactPhone, " +
             "c.numberOfEmployees, c.tin, c.bankName, c.industry, c.bankAccountNumber, c.comment, c.status, ass.id, ass.username, tas.id, tas.username, " +
-            " cb.id, cb.username, mb.id, mb.username, c.dateCreated, c.dateModified)" +
+            " cb.username, mb.username, c.dateCreated, c.dateModified)" +
             "FROM Company c " +
             "LEFT JOIN c.createdBy cb " +
             "LEFT JOIN c.modifiedBy mb " +

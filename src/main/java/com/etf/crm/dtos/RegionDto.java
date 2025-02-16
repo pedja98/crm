@@ -14,9 +14,7 @@ import java.time.Instant;
 public class RegionDto {
     private Long id;
     private String name;
-    private Long createdById;
     private String createdByUsername;
-    private Long modifiedById;
     private String modifiedByUsername;
     private Instant dateCreated;
     private Instant dateModified;

@@ -28,9 +28,7 @@ public class CompanyDto {
     private String assignedToUsername;
     private Long temporaryAssignedToId;
     private String temporaryAssignedToUsername;
-    private Long createdById;
     private String createdByUsername;
-    private Long modifiedById;
     private String modifiedByUsername;
     private Instant dateCreated;
     private Instant dateModified;

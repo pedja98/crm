@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT new com.etf.crm.dtos.UserDto(u.firstName, u.lastName, u.email, u.username, " +
             "u.phone, u.type, u.language, s.id, s.name, u.salesmen," +
-            " cb.id, cb.username, mb.id, mb.username, u.dateCreated, u.dateModified)" +
+            " cb.username, mb.username, u.dateCreated, u.dateModified)" +
             "FROM User u " +
             "LEFT JOIN u.shop s " +
             "LEFT JOIN u.createdBy cb " +
@@ -38,7 +38,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT new com.etf.crm.dtos.UserDto(u.firstName, u.lastName, u.email, u.username, " +
             "u.phone, u.type, u.language, s.id, s.name, u.salesmen," +
-            " cb.id, cb.username, mb.id, mb.username, u.dateCreated, u.dateModified)" +
+            "  cb.username, mb.username, u.dateCreated, u.dateModified)" +
             "FROM User u " +
             "LEFT JOIN u.shop s " +
             "LEFT JOIN u.createdBy cb " +

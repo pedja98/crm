@@ -19,9 +19,7 @@ public class ShopDto {
     private String shopLeaderUsername;
     private Long regionId;
     private String regionName;
-    private Long createdById;
     private String createdByUsername;
-    private Long modifiedById;
     private String modifiedByUsername;
     private Instant dateCreated;
     private Instant dateModified;

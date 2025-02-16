@@ -24,9 +24,7 @@ public class UserDto {
     private Long shopId;
     private String shopName;
     private String salesmen;
-    private Long createdById;
     private String createdByUsername;
-    private Long modifiedById;
     private String modifiedByUsername;
     private Instant dateCreated;
     private Instant dateModified;
