@@ -3,7 +3,6 @@ package com.etf.crm.controllers;
 import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.SaveShopDto;
 import com.etf.crm.dtos.ShopDto;
-import com.etf.crm.entities.Shop;
 import com.etf.crm.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +41,10 @@ public class ShopController {
     @PostMapping
     public ResponseEntity<MessageResponse> createShop(@RequestBody SaveShopDto shopData) {
         return ResponseEntity.ok(new MessageResponse(this.shopService.createShop(shopData)));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MessageResponse> updateCompany(@PathVariable Long id, @RequestBody SaveShopDto shopDetails) {
+        return ResponseEntity.ok(new MessageResponse(this.shopService.updateShop(id, shopDetails)));
     }
 }

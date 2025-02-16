@@ -77,6 +77,8 @@ public final class CrmConstants {
 
         public static String COMPANY_UPDATED = "companyUpdated";
 
+        public static String SHOP_UPDATED = "shopUpdated";
+
         public static String CONTACT_CREATED = "contactCreated";
 
         public static String CONTACT_UPDATED = "contactUpdated";

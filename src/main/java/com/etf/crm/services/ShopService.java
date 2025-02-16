@@ -6,6 +6,7 @@ import com.etf.crm.entities.Region;
 import com.etf.crm.entities.Shop;
 import com.etf.crm.entities.User;
 import com.etf.crm.exceptions.ItemNotFoundException;
+import com.etf.crm.exceptions.PropertyCopyException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.RegionRepository;
 import com.etf.crm.repositories.ShopRepository;
@@ -135,5 +136,32 @@ public class ShopService {
 
         shopRepository.save(shop);
         return SHOP_CREATED;
+    }
+
+    @Transactional
+    public String updateShop(Long id, SaveShopDto shopDetails) {
+        Shop shop = this.shopRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ItemNotFoundException(SHOP_NOT_FOUND));
+
+        for (Field field : SaveShopDto.class.getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                Object newValue = field.get(shopDetails);
+                if (field.getName().equals("shopLeader")) {
+                    newValue = userRepository.findById((Long) field.get(shopDetails))
+                            .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+                } else if (field.getName().equals("region")) {
+                    newValue = regionRepository.findById((Long) field.get(shopDetails))
+                            .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+                }
+                Field shopField = Shop.class.getDeclaredField(field.getName());
+                shopField.setAccessible(true);
+                shopField.set(shop, newValue);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new PropertyCopyException(ENTITY_UPDATE_ERROR);
+            }
+        }
+
+        return SHOP_UPDATED;
     }
 }
