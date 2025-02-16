@@ -2,6 +2,7 @@ package com.etf.crm.services;
 
 import com.etf.crm.dtos.SaveShopDto;
 import com.etf.crm.dtos.ShopDto;
+import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.Region;
 import com.etf.crm.entities.Shop;
 import com.etf.crm.entities.User;
@@ -13,8 +14,15 @@ import com.etf.crm.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.lang.reflect.Field;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
 
@@ -35,8 +43,68 @@ public class ShopService {
                 .orElseThrow(() -> new ItemNotFoundException(SHOP_NOT_FOUND));
     }
 
-    public List<Shop> getAllShops() {
-        return this.shopRepository.findAllByDeletedFalse();
+    public List<ShopDto> getFilteredAndSortedShops(
+            String sortBy,
+            String sortOrder,
+            List<Long> regions,
+            List<Long> shopLeaders,
+            String name) {
+
+        List<ShopDto> shops = this.shopRepository.findAllShopDtoByDeletedFalse()
+                .orElseThrow(() -> new ItemNotFoundException(SHOP_NOT_FOUND));
+
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("name", name);
+        filters.put("shopLeaderId", shopLeaders);
+        filters.put("regionId", regions);
+
+        List<Predicate<ShopDto>> predicates = filters.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .map(entry -> {
+                    String fieldName = entry.getKey();
+                    Object value = entry.getValue();
+
+                    return (Predicate<ShopDto>) user -> {
+                        try {
+                            Field field = ShopDto.class.getDeclaredField(fieldName);
+                            field.setAccessible(true);
+                            Object fieldValue = field.get(user);
+
+                            if (value instanceof String stringValue) {
+                                return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
+                            } else if (value instanceof List<?> listValue) {
+                                return fieldValue != null && listValue.contains(fieldValue);
+                            }
+                            return false;
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            throw new RuntimeException(ILLEGAL_SORT_PARAMETER + ": " + fieldName, e);
+                        }
+                    };
+                })
+                .toList();
+
+        for (Predicate<ShopDto> predicate : predicates) {
+            shops = shops.stream().filter(predicate).toList();
+        }
+
+        if (sortBy != null) {
+            Comparator<ShopDto> comparator = Comparator.comparing(shop -> {
+                try {
+                    Field field = ShopDto.class.getDeclaredField(sortBy);
+                    field.setAccessible(true);
+                    return (Comparable) field.get(shop);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new IllegalArgumentException(ILLEGAL_SORT_PARAMETER + ": " + sortBy, e);
+                }
+            });
+
+            if ("desc".equalsIgnoreCase(sortOrder)) {
+                comparator = comparator.reversed();
+            }
+            shops = shops.stream().sorted(comparator).toList();
+        }
+
+        return shops;
     }
 
     @Transactional

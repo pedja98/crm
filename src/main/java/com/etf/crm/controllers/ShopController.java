@@ -24,8 +24,14 @@ public class ShopController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Shop>> getAllShops() {
-        return ResponseEntity.ok(this.shopService.getAllShops());
+    public ResponseEntity<List<ShopDto>> getAllShops(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false, value = "region") List<Long> regions,
+            @RequestParam(required = false, value = "shopLeader") List<Long> shopLeaders,
+            @RequestParam(required = false) String name
+    ) {
+        return ResponseEntity.ok(this.shopService.getFilteredAndSortedShops(sortBy, sortOrder, regions, shopLeaders, name));
     }
 
     @DeleteMapping("/{id}")
