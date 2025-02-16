@@ -2,7 +2,6 @@ package com.etf.crm.services;
 
 import com.etf.crm.dtos.SaveShopDto;
 import com.etf.crm.dtos.ShopDto;
-import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.Region;
 import com.etf.crm.entities.Shop;
 import com.etf.crm.entities.User;
@@ -14,7 +13,6 @@ import com.etf.crm.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.lang.reflect.Field;
 import java.util.Comparator;
