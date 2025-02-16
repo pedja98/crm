@@ -30,10 +30,10 @@ public class RegionController {
 
     @GetMapping
     public ResponseEntity<List<RegionDto>> getFilteredAndSortedRegions(
-            @RequestParam(required = false) String filterByName,
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String sortOrder) {
-        List<RegionDto> regions = regionService.getFilteredAndSortedRegions(filterByName, sortBy, sortOrder);
+        List<RegionDto> regions = regionService.getFilteredAndSortedRegions(name, sortBy, sortOrder);
         return ResponseEntity.ok(regions);
     }
 

@@ -40,15 +40,15 @@ public class RegionService {
                 .orElseThrow(() -> new ItemNotFoundException(REGION_NOT_FOUND));
     }
 
-    public List<RegionDto> getFilteredAndSortedRegions(String filterByName, String sortBy, String sortOrder) {
+    public List<RegionDto> getFilteredAndSortedRegions(String name, String sortBy, String sortOrder) {
         List<RegionDto> regions = regionRepository.findAllRegionDtoByDeletedFalse();
 
         if (regions.isEmpty()) {
             throw new ItemNotFoundException(REGION_NOT_FOUND);
         }
 
-        if (filterByName != null && !filterByName.trim().isEmpty()) {
-            String filter = filterByName.trim().toLowerCase();
+        if (name != null && !name.trim().isEmpty()) {
+            String filter = name.trim().toLowerCase();
             regions = regions.stream()
                     .filter(region -> region.getName() != null && region.getName().toLowerCase().contains(filter))
                     .toList();
