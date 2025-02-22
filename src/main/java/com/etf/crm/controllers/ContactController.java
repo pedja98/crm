@@ -1,5 +1,6 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.ContactDto;
 import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.entities.Contact;
 import com.etf.crm.services.ContactService;
@@ -22,7 +23,7 @@ public class ContactController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Contact> getContactById(@PathVariable Long id) {
+    public ResponseEntity<ContactDto> getContactById(@PathVariable Long id) {
         return ResponseEntity.ok(contactService.getContactById(id));
     }
 

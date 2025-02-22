@@ -2,7 +2,6 @@ package com.etf.crm.services;
 
 import com.etf.crm.dtos.RegionDto;
 import com.etf.crm.dtos.UpdateRegionRequestDto;
-import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.Region;
 import com.etf.crm.exceptions.DuplicateItemException;
 import com.etf.crm.exceptions.ItemNotFoundException;
@@ -55,11 +54,11 @@ public class RegionService {
         }
 
         if (sortBy != null) {
-            Comparator<RegionDto> comparator = Comparator.comparing(user -> {
+            Comparator<RegionDto> comparator = Comparator.comparing(region -> {
                 try {
-                    Field field = UserDto.class.getDeclaredField(sortBy);
+                    Field field = RegionDto.class.getDeclaredField(sortBy);
                     field.setAccessible(true);
-                    return (Comparable) field.get(user);
+                    return (Comparable) field.get(region);
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     throw new IllegalArgumentException(ILLEGAL_SORT_PARAMETER + ": " + sortBy, e);
                 }

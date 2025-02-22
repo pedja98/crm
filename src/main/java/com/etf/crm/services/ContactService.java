@@ -1,5 +1,6 @@
 package com.etf.crm.services;
 
+import com.etf.crm.dtos.ContactDto;
 import com.etf.crm.entities.Contact;
 import com.etf.crm.exceptions.DuplicateItemException;
 import com.etf.crm.exceptions.ItemNotFoundException;
@@ -19,13 +20,12 @@ public class ContactService {
     private ContactRepository contactRepository;
 
     public String saveContact(Contact contact) {
-        this.checkDuplicateEmail(contact.getEmail());
         this.contactRepository.save(contact);
         return CONTACT_CREATED;
     }
 
-    public Contact getContactById(Long id) {
-        return this.contactRepository.findByIdAndDeletedFalse(id)
+    public ContactDto getContactById(Long id) {
+        return this.contactRepository.findContactDtoByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(CONTACT_NOT_FOUND));
     }
 
@@ -34,40 +34,14 @@ public class ContactService {
     }
 
     public String deleteContact(Long id) {
-        Contact existingContact = this.getContactById(id);
-        existingContact.setDeleted(true);
-        this.contactRepository.save(existingContact);
+        Contact contact = this.contactRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ItemNotFoundException(CONTACT_NOT_FOUND));
+        contact.setDeleted(true);
+        this.contactRepository.save(contact);
         return CONTACT_DELETED;
     }
 
     public String updateContact(Long id, Contact contact) {
-        Contact existingContact = this.getContactById(id);
-
-        if (!existingContact.getEmail().equals(contact.getEmail())) {
-            this.checkDuplicateEmail(contact.getEmail(), id);
-        }
-
-        existingContact.setFirstName(contact.getFirstName());
-        existingContact.setLastName(contact.getLastName());
-        existingContact.setEmail(contact.getEmail());
-        existingContact.setPhone(contact.getPhone());
-        existingContact.setDocumentType(contact.getDocumentType());
-        existingContact.setDocumentId(contact.getDocumentId());
-        existingContact.setModifiedBy(contact.getModifiedBy());
-        this.contactRepository.save(existingContact);
         return CONTACT_UPDATED;
-    }
-
-    private void checkDuplicateEmail(String email, Long id) {
-        if (this.contactRepository.findByEmailAndDeletedFalse(email)
-                .filter(contact -> !contact.getId().equals(id)).isPresent()) {
-            throw new DuplicateItemException(EMAIL_ALREADY_TAKEN);
-        }
-    }
-
-    private void checkDuplicateEmail(String email) {
-        if (this.contactRepository.findByEmailAndDeletedFalse(email).isPresent()) {
-            throw new DuplicateItemException(EMAIL_ALREADY_TAKEN);
-        }
     }
 }
