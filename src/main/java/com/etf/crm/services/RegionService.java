@@ -78,6 +78,7 @@ public class RegionService {
         Region region = regionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(REGION_NOT_FOUND));
         region.setDeleted(true);
+        region.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         regionRepository.save(region);
         return REGION_DELETED;
     }

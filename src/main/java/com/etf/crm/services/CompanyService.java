@@ -174,8 +174,7 @@ public class CompanyService {
             }
         }
 
-        User currentUser = SetCurrentUserFilter.getCurrentUser();
-        company.setModifiedBy(currentUser);
+        company.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         this.companyRepository.save(company);
 
         return COMPANY_UPDATED;

@@ -63,11 +63,11 @@ public class ShopService {
                     String fieldName = entry.getKey();
                     Object value = entry.getValue();
 
-                    return (Predicate<ShopDto>) user -> {
+                    return (Predicate<ShopDto>) shop -> {
                         try {
                             Field field = ShopDto.class.getDeclaredField(fieldName);
                             field.setAccessible(true);
-                            Object fieldValue = field.get(user);
+                            Object fieldValue = field.get(shop);
 
                             if (value instanceof String stringValue) {
                                 return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
@@ -161,6 +161,9 @@ public class ShopService {
                 throw new PropertyCopyException(ENTITY_UPDATE_ERROR);
             }
         }
+
+        shop.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        this.shopRepository.save(shop);
 
         return SHOP_UPDATED;
     }

@@ -155,6 +155,7 @@ public class UserService {
         User user = this.userRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
         user.setDeleted(true);
+        user.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         this.userRepository.save(user);
         return USER_DELETED;
     }
