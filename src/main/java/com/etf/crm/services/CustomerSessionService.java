@@ -1,17 +1,18 @@
 package com.etf.crm.services;
 
+import com.etf.crm.dtos.CustomerSessionDto;
+import com.etf.crm.dtos.SaveCustomerSessionDto;
 import com.etf.crm.entities.CustomerSession;
-import com.etf.crm.entities.Company;
 import com.etf.crm.entities.Opportunity;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.repositories.CustomerSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.CUSTOMER_SESSION_NOT_FOUND;
+import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
 
 @Service
 public class CustomerSessionService {
@@ -25,14 +26,12 @@ public class CustomerSessionService {
     @Autowired
     private OpportunityService opportunityService;
 
-    public CustomerSession saveCustomerSession(Long companyId, Long opportunityId, CustomerSession customerSession) {
-        Opportunity opportunity = opportunityService.getOpportunityById(opportunityId);
-        customerSession.setOpportunity(opportunity);
-        return this.customerSessionRepository.save(customerSession);
+    public String saveCustomerSession(SaveCustomerSessionDto customerSession) {
+        return CUSTOMER_SESSION_CREATED;
     }
 
-    public CustomerSession getCustomerSessionById(Long id) {
-        return this.customerSessionRepository.findByIdAndDeletedFalse(id)
+    public CustomerSessionDto getCustomerSessionById(Long id) {
+        return this.customerSessionRepository.findCustomerSessionDtoByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(CUSTOMER_SESSION_NOT_FOUND));
     }
 
@@ -40,22 +39,7 @@ public class CustomerSessionService {
         return this.customerSessionRepository.findAllByDeletedFalse();
     }
 
-    public void deleteCustomerSession(Long id) {
-        CustomerSession customerSession = this.getCustomerSessionById(id);
-        customerSession.setDeleted(true);
-        this.customerSessionRepository.save(customerSession);
-    }
-
-    public CustomerSession updateCustomerSession(Long id, CustomerSession customerSession) {
-        CustomerSession existingCustomerSession = this.getCustomerSessionById(id);
-        existingCustomerSession.setName(customerSession.getName());
-        existingCustomerSession.setDescription(customerSession.getDescription());
-        existingCustomerSession.setStatus(customerSession.getStatus());
-        existingCustomerSession.setType(customerSession.getType());
-        existingCustomerSession.setMode(customerSession.getMode());
-        existingCustomerSession.setSessionStart(customerSession.getSessionStart());
-        existingCustomerSession.setSessionEnd(customerSession.getSessionEnd());
-        existingCustomerSession.setModifiedBy(customerSession.getModifiedBy());
-        return this.customerSessionRepository.save(existingCustomerSession);
+    public String updateCustomerSession(Long id, CustomerSession customerSession) {
+        return CUSTOMER_SESSION_UPDATED;
     }
 }

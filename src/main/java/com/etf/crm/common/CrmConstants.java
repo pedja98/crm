@@ -84,5 +84,9 @@ public final class CrmConstants {
         public static String CONTACT_UPDATED = "contactUpdated";
 
         public static String CONTACT_DELETED = "contactDeleted";
+
+        public static String CUSTOMER_SESSION_CREATED = "customerSessionCreated";
+
+        public static String CUSTOMER_SESSION_UPDATED = "customerSessionUpdated";
     }
 }
