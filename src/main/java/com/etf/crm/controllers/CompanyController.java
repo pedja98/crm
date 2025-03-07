@@ -20,7 +20,7 @@ public class CompanyController {
 
     @PostMapping
     public ResponseEntity<MessageResponse> createCompany(@RequestBody SaveCompanyDto company) {
-        return ResponseEntity.ok(new MessageResponse(companyService.saveCompany(company)));
+        return ResponseEntity.ok(new MessageResponse(companyService.createCompany(company)));
     }
 
     @GetMapping("/{id}")

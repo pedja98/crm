@@ -3,7 +3,6 @@ package com.etf.crm.controllers;
 import com.etf.crm.dtos.ContactDto;
 import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.SaveContactDto;
-import com.etf.crm.entities.Contact;
 import com.etf.crm.enums.ContactDocumentType;
 import com.etf.crm.services.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ public class ContactController {
 
     @PostMapping
     public ResponseEntity<MessageResponse> createContact(@RequestBody SaveContactDto contact) {
-        return ResponseEntity.ok(new MessageResponse(contactService.saveContact(contact)));
+        return ResponseEntity.ok(new MessageResponse(contactService.createContact(contact)));
     }
 
     @GetMapping("/{id}")

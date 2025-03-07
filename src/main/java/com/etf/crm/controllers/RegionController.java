@@ -19,8 +19,8 @@ public class RegionController {
     private RegionService regionService;
 
     @PostMapping
-    public ResponseEntity<MessageResponse> saveRegion(@RequestBody Region region) {
-        return ResponseEntity.ok(new MessageResponse(regionService.saveRegion(region)));
+    public ResponseEntity<MessageResponse> createRegion(@RequestBody Region region) {
+        return ResponseEntity.ok(new MessageResponse(regionService.createRegion(region)));
     }
 
     @GetMapping("/{id}")

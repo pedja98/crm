@@ -1,14 +1,12 @@
 package com.etf.crm.services;
 
 import com.etf.crm.entities.Contract;
-import com.etf.crm.entities.Company;
 import com.etf.crm.entities.Opportunity;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.repositories.ContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.CONTRACT_NOT_FOUND;
@@ -25,7 +23,7 @@ public class ContractService {
     @Autowired
     private OpportunityService opportunityService;
 
-    public Contract saveContract(Long companyId, Long opportunityId, Contract contract) {
+    public Contract createContract(Long companyId, Long opportunityId, Contract contract) {
         Opportunity opportunity = opportunityService.getOpportunityById(opportunityId);
         contract.setOpportunity(opportunity);
         return this.contractRepository.save(contract);

@@ -28,7 +28,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Transactional
-    public String saveUser(User user) {
+    public String createUser(User user) {
         this.checkDuplicateUsernameAndEmail(user.getUsername(), user.getEmail());
         if (!user.getPassword().matches(PASSWORD_REGEX)) {
             throw new BadRequestException(INVALID_PASSWORD_FORMAT);

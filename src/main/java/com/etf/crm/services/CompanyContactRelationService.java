@@ -6,6 +6,7 @@ import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.repositories.CompanyContactRelationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class CompanyContactRelationService {
     @Autowired
     private CompanyContactRelationRepository relationRepository;
 
+    @Transactional
     public CompanyContactRelation saveRelation(Long contactId, Long companyId, CompanyContactRelationType relationType) {
         CompanyContactRelation relation = CompanyContactRelation.builder()
 //                .contact(contact)
@@ -35,12 +37,14 @@ public class CompanyContactRelationService {
         return this.relationRepository.findAllByDeletedFalse();
     }
 
+    @Transactional
     public void deleteRelation(Long id) {
         CompanyContactRelation relation = this.getRelationById(id);
         relation.setDeleted(true);
         this.relationRepository.save(relation);
     }
 
+    @Transactional
     public CompanyContactRelation updateRelation(Long id, CompanyContactRelation relation) {
         CompanyContactRelation existingRelation = this.getRelationById(id);
         existingRelation.setRelationType(relation.getRelationType());

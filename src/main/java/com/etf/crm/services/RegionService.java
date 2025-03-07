@@ -25,7 +25,7 @@ public class RegionService {
     private RegionRepository regionRepository;
 
     @Transactional
-    public String saveRegion(Region region) {
+    public String createRegion(Region region) {
         if (regionRepository.findByNameAndDeletedFalse(region.getName()).isPresent()) {
             throw new DuplicateItemException(REGION_ALREADY_EXISTS);
         }

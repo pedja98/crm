@@ -23,7 +23,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<MessageResponse> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(new MessageResponse(userService.saveUser(user)));
+        return ResponseEntity.ok(new MessageResponse(userService.createUser(user)));
     }
 
     @GetMapping("/{username}")

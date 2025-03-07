@@ -17,7 +17,7 @@ public class ContractController {
 
     @PostMapping("/{companyId}/{opportunityId}")
     public ResponseEntity<Contract> createContract(@PathVariable Long companyId, @PathVariable Long opportunityId, @RequestBody Contract contract) {
-        return ResponseEntity.ok(contractService.saveContract(companyId, opportunityId, contract));
+        return ResponseEntity.ok(contractService.createContract(companyId, opportunityId, contract));
     }
 
     @GetMapping("/{id}")

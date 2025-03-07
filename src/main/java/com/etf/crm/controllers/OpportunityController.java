@@ -17,7 +17,7 @@ public class OpportunityController {
 
     @PostMapping("/{companyId}")
     public ResponseEntity<Opportunity> createOpportunity(@PathVariable Long companyId, @RequestBody Opportunity opportunity) {
-        return ResponseEntity.ok(opportunityService.saveOpportunity(companyId, opportunity));
+        return ResponseEntity.ok(opportunityService.createOpportunity(companyId, opportunity));
     }
 
     @GetMapping("/{id}")

@@ -3,11 +3,11 @@ package com.etf.crm.services;
 import com.etf.crm.dtos.CustomerSessionDto;
 import com.etf.crm.dtos.SaveCustomerSessionDto;
 import com.etf.crm.entities.CustomerSession;
-import com.etf.crm.entities.Opportunity;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.repositories.CustomerSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,7 +26,8 @@ public class CustomerSessionService {
     @Autowired
     private OpportunityService opportunityService;
 
-    public String saveCustomerSession(SaveCustomerSessionDto customerSession) {
+    @Transactional
+    public String createCustomerSession(SaveCustomerSessionDto customerSession) {
         return CUSTOMER_SESSION_CREATED;
     }
 
@@ -39,6 +40,7 @@ public class CustomerSessionService {
         return this.customerSessionRepository.findAllByDeletedFalse();
     }
 
+    @Transactional
     public String updateCustomerSession(Long id, CustomerSession customerSession) {
         return CUSTOMER_SESSION_UPDATED;
     }

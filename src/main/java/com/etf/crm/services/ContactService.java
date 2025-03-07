@@ -29,7 +29,7 @@ public class ContactService {
     private ContactRepository contactRepository;
 
     @Transactional
-    public String saveContact(SaveContactDto saveContactData) {
+    public String createContact(SaveContactDto saveContactData) {
         User createdBy = SetCurrentUserFilter.getCurrentUser();
         Contact contact = Contact.builder()
                 .firstName(saveContactData.getFirstName())

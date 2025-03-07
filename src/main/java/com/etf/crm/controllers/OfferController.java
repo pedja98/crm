@@ -17,7 +17,7 @@ public class OfferController {
 
     @PostMapping("/{companyId}")
     public ResponseEntity<Offer> createOffer(@PathVariable Long companyId, @RequestBody Offer offer) {
-        return ResponseEntity.ok(offerService.saveOffer(companyId, offer));
+        return ResponseEntity.ok(offerService.createOffer(companyId, offer));
     }
 
     @GetMapping("/{id}")

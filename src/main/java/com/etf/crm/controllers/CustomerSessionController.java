@@ -19,7 +19,7 @@ public class CustomerSessionController {
 
     @PostMapping
     public ResponseEntity<String> createCustomerSession(@RequestBody SaveCustomerSessionDto customerSession) {
-        return ResponseEntity.ok(customerSessionService.saveCustomerSession(customerSession));
+        return ResponseEntity.ok(customerSessionService.createCustomerSession(customerSession));
     }
 
     @GetMapping("/{id}")

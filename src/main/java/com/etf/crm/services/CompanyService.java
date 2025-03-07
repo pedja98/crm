@@ -29,7 +29,7 @@ public class CompanyService {
     private UserRepository userRepository;
 
     @Transactional
-    public String saveCompany(SaveCompanyDto companyDto) {
+    public String createCompany(SaveCompanyDto companyDto) {
         if (companyRepository.findByTinAndDeletedFalse(companyDto.getTin()).isPresent()) {
             throw new DuplicateItemException(TIN_ALREADY_TAKEN);
         }
