@@ -39,13 +39,13 @@ public class CompanyController {
             @RequestParam(required = false) Integer tin,
             @RequestParam(required = false) String bankName,
             @RequestParam(required = false) String bankAccountNumber,
-            @RequestParam(required = false) CompanyStatus status,
+            @RequestParam(required = false, value = "status") List<CompanyStatus> statuses,
             @RequestParam(required = false) String createdByUsername,
             @RequestParam(required = false) String modifiedByUsername) {
 
         List<CompanyDto> companies = companyService.getFilteredAndSortedCompanies(
                 sortBy, sortOrder, name, hqAddress, contactPhone, numberOfEmployees, tin,
-                bankName, bankAccountNumber, status, createdByUsername, modifiedByUsername
+                bankName, bankAccountNumber, statuses, createdByUsername, modifiedByUsername
         );
         return ResponseEntity.ok(companies);
     }

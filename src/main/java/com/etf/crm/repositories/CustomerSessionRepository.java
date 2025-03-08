@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerSessionRepository extends JpaRepository<CustomerSession, Long> {
-    List<CustomerSession> findAllByDeletedFalse();
     Optional<CustomerSession> findByIdAndDeletedFalse(Long id);
 
     @Query("SELECT new com.etf.crm.dtos.CustomerSessionDto(cs.id, cs.name, cs.description, cs.status, cs.type, cs.mode, cs.sessionStart," +

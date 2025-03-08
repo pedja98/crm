@@ -2,7 +2,6 @@ package com.etf.crm.controllers;
 
 import com.etf.crm.dtos.CustomerSessionDto;
 import com.etf.crm.dtos.SaveCustomerSessionDto;
-import com.etf.crm.entities.CustomerSession;
 import com.etf.crm.services.CustomerSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +27,14 @@ public class CustomerSessionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerSession>> getAllCustomerSessions() {
+    public ResponseEntity<List<CustomerSessionDto>> getAllCustomerSessions() {
         return ResponseEntity.ok(customerSessionService.getAllCustomerSessions());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateCustomerSession(
             @PathVariable Long id,
-            @RequestBody CustomerSession customerSessionDetails) {
+            @RequestBody SaveCustomerSessionDto customerSessionDetails) {
         return ResponseEntity.ok(customerSessionService.updateCustomerSession(id, customerSessionDetails));
     }
 }

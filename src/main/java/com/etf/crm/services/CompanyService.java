@@ -34,7 +34,7 @@ public class CompanyService {
             throw new DuplicateItemException(TIN_ALREADY_TAKEN);
         }
 
-        if (companyDto.getAssignedTo() == companyDto.getTemporaryAssignedTo()) {
+        if (Objects.equals(companyDto.getAssignedTo(), companyDto.getTemporaryAssignedTo())) {
             throw new BadRequestException(ASSIGNED_TO_SAME_AS_TEMPORARY);
         }
 
@@ -45,8 +45,6 @@ public class CompanyService {
                 ? userRepository.findById(companyDto.getTemporaryAssignedTo())
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND))
                 : null;
-
-        User createdBy = SetCurrentUserFilter.getCurrentUser();
 
         Company company = Company.builder()
                 .name(companyDto.getName())
@@ -61,7 +59,7 @@ public class CompanyService {
                 .comment(companyDto.getComment())
                 .assignedTo(assignedTo)
                 .temporaryAssignedTo(temporaryAssignedTo)
-                .createdBy(createdBy)
+                .createdBy(SetCurrentUserFilter.getCurrentUser())
                 .deleted(false)
                 .build();
 
@@ -77,7 +75,7 @@ public class CompanyService {
     public List<CompanyDto> getFilteredAndSortedCompanies(
             String sortBy, String sortOrder,
             String name, String hqAddress, String contactPhone, Integer numberOfEmployees, Integer tin,
-            String bankName, String bankAccountNumber, CompanyStatus status, String createdByUsername, String modifiedByUsername) {
+            String bankName, String bankAccountNumber, List<CompanyStatus> statuses, String createdByUsername, String modifiedByUsername) {
 
         List<CompanyDto> companies = companyRepository.findAllCompanyDtoByDeletedFalse()
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
@@ -90,7 +88,7 @@ public class CompanyService {
         filters.put("tin", tin);
         filters.put("bankName", bankName);
         filters.put("bankAccountNumber", bankAccountNumber);
-        filters.put("status", status);
+        filters.put("status", statuses);
         filters.put("createdByUsername", createdByUsername);
         filters.put("modifiedByUsername", modifiedByUsername);
 
@@ -110,8 +108,8 @@ public class CompanyService {
                                 return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
                             } else if (value instanceof Integer intValue) {
                                 return fieldValue != null && fieldValue.equals(intValue);
-                            } else if (value instanceof CompanyStatus statusValue) {
-                                return fieldValue != null && fieldValue.equals(statusValue);
+                            } else if (value instanceof List<?> listValue) {
+                                return fieldValue != null && listValue.contains(fieldValue);
                             }
                             return false;
                         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -179,5 +177,4 @@ public class CompanyService {
 
         return COMPANY_UPDATED;
     }
-
 }
