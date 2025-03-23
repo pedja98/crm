@@ -47,6 +47,7 @@ public class CustomerSessionService {
                 .status(customerSessionDetails.getStatus())
                 .type(customerSessionDetails.getType())
                 .mode(customerSessionDetails.getMode())
+                .outcome(customerSessionDetails.getOutcome())
                 .sessionStart(customerSessionDetails.getSessionStart())
                 .sessionEnd(customerSessionDetails.getSessionEnd())
                 .company(company)
@@ -85,6 +86,7 @@ public class CustomerSessionService {
         customerSession.setStatus(customerSessionDetails.getStatus());
         customerSession.setType(customerSessionDetails.getType());
         customerSession.setMode(customerSessionDetails.getMode());
+        customerSession.setOutcome(customerSessionDetails.getOutcome());
         customerSession.setSessionStart(customerSessionDetails.getSessionStart());
         customerSession.setSessionEnd(customerSessionDetails.getSessionEnd());
         customerSession.setCompany(company);

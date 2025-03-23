@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface CustomerSessionRepository extends JpaRepository<CustomerSession, Long> {
     Optional<CustomerSession> findByIdAndDeletedFalse(Long id);
 
-    @Query("SELECT new com.etf.crm.dtos.CustomerSessionDto(cs.id, cs.name, cs.description, cs.status, cs.type, cs.mode, cs.sessionStart," +
+    @Query("SELECT new com.etf.crm.dtos.CustomerSessionDto(cs.id, cs.name, cs.description, cs.status, cs.type, cs.mode, cs.outcome, cs.sessionStart," +
             " cs.sessionEnd, c.id, c.name, o.id, o.name, cb.username, mb.username, c.dateCreated, c.dateModified)" +
             "FROM CustomerSession cs " +
             "LEFT JOIN cs.createdBy cb " +
@@ -23,7 +23,7 @@ public interface CustomerSessionRepository extends JpaRepository<CustomerSession
             "WHERE cs.id = :id AND cs.deleted = false")
     Optional<CustomerSessionDto> findCustomerSessionDtoByIdAndDeletedFalse(Long id);
 
-    @Query("SELECT new com.etf.crm.dtos.CustomerSessionDto(cs.id, cs.name, cs.description, cs.status, cs.type, cs.mode, cs.sessionStart," +
+    @Query("SELECT new com.etf.crm.dtos.CustomerSessionDto(cs.id, cs.name, cs.description, cs.status, cs.type, cs.mode, cs.outcome, cs.sessionStart," +
             " cs.sessionEnd, c.id, c.name, o.id, o.name, cb.username, mb.username, c.dateCreated, c.dateModified)" +
             "FROM CustomerSession cs " +
             "LEFT JOIN cs.createdBy cb " +

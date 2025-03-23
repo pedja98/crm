@@ -1,6 +1,7 @@
 package com.etf.crm.entities;
 
 import com.etf.crm.enums.CustomerSessionMode;
+import com.etf.crm.enums.CustomerSessionOutcome;
 import com.etf.crm.enums.CustomerSessionType;
 import com.etf.crm.enums.CustomerSessionsStatus;
 import jakarta.persistence.*;
@@ -39,6 +40,10 @@ public class CustomerSession {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CustomerSessionMode mode;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CustomerSessionOutcome outcome;
 
     @Column(nullable = false, name = "session_start", updatable = false)
     private LocalDateTime sessionStart = LocalDateTime.now();
