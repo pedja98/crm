@@ -33,11 +33,11 @@ public class CustomerSessionService {
 
     @Transactional
     public String createCustomerSession(SaveCustomerSessionDto customerSessionDetails) {
-        Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompanyId())
+        Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompany())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
-        Opportunity opportunity = customerSessionDetails.getOpportunityId() != null
-                ? opportunityRepository.findByIdAndDeletedFalse(customerSessionDetails.getOpportunityId())
+        Opportunity opportunity = customerSessionDetails.getOpportunity() != null
+                ? opportunityRepository.findByIdAndDeletedFalse(customerSessionDetails.getOpportunity())
                     .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND))
                 : null;
 
@@ -53,6 +53,7 @@ public class CustomerSessionService {
                 .company(company)
                 .opportunity(opportunity)
                 .createdBy(SetCurrentUserFilter.getCurrentUser())
+                .deleted(false)
                 .build();
 
         this.customerSessionRepository.save(customerSession);
@@ -73,11 +74,11 @@ public class CustomerSessionService {
         CustomerSession customerSession = this.customerSessionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(CUSTOMER_SESSION_NOT_FOUND));
 
-        Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompanyId())
+        Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompany())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
-        Opportunity opportunity = customerSessionDetails.getOpportunityId() != null
-                ? opportunityRepository.findByIdAndDeletedFalse(customerSessionDetails.getOpportunityId())
+        Opportunity opportunity = customerSessionDetails.getOpportunity() != null
+                ? opportunityRepository.findByIdAndDeletedFalse(customerSessionDetails.getOpportunity())
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND))
                 : null;
 

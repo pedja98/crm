@@ -24,6 +24,6 @@ public class SaveCustomerSessionDto {
     private CustomerSessionOutcome outcome;
     private LocalDateTime sessionStart;
     private LocalDateTime sessionEnd;
-    private Long companyId;
-    private Long opportunityId;
+    private Long company;
+    private Long opportunity;
 }

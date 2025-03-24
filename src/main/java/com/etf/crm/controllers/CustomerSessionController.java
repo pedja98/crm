@@ -1,6 +1,7 @@
 package com.etf.crm.controllers;
 
 import com.etf.crm.dtos.CustomerSessionDto;
+import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.SaveCustomerSessionDto;
 import com.etf.crm.services.CustomerSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ public class CustomerSessionController {
     private CustomerSessionService customerSessionService;
 
     @PostMapping
-    public ResponseEntity<String> createCustomerSession(@RequestBody SaveCustomerSessionDto customerSession) {
-        return ResponseEntity.ok(customerSessionService.createCustomerSession(customerSession));
+    public ResponseEntity<MessageResponse> createCustomerSession(@RequestBody SaveCustomerSessionDto customerSession) {
+        return ResponseEntity.ok(new MessageResponse(customerSessionService.createCustomerSession(customerSession)));
     }
 
     @GetMapping("/{id}")
@@ -32,9 +33,9 @@ public class CustomerSessionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCustomerSession(
+    public ResponseEntity<MessageResponse> updateCustomerSession(
             @PathVariable Long id,
             @RequestBody SaveCustomerSessionDto customerSessionDetails) {
-        return ResponseEntity.ok(customerSessionService.updateCustomerSession(id, customerSessionDetails));
+        return ResponseEntity.ok(new MessageResponse(customerSessionService.updateCustomerSession(id, customerSessionDetails)));
     }
 }
