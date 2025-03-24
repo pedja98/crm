@@ -3,7 +3,7 @@ package com.etf.crm.entities;
 import com.etf.crm.enums.CustomerSessionMode;
 import com.etf.crm.enums.CustomerSessionOutcome;
 import com.etf.crm.enums.CustomerSessionType;
-import com.etf.crm.enums.CustomerSessionsStatus;
+import com.etf.crm.enums.CustomerSessionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,7 +31,7 @@ public class CustomerSession {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CustomerSessionsStatus status;
+    private CustomerSessionStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -3,6 +3,7 @@ package com.etf.crm.controllers;
 import com.etf.crm.dtos.CustomerSessionDto;
 import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.SaveCustomerSessionDto;
+import com.etf.crm.enums.*;
 import com.etf.crm.services.CustomerSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,16 @@ public class CustomerSessionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerSessionDto>> getAllCustomerSessions() {
-        return ResponseEntity.ok(customerSessionService.getAllCustomerSessions());
+    public ResponseEntity<List<CustomerSessionDto>> getAllCustomerSessions(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false, value = "type") List<CustomerSessionType> types,
+            @RequestParam(required = false, value = "mode") List<CustomerSessionMode> modes,
+            @RequestParam(required = false, value = "outcome") List<CustomerSessionOutcome> outcomes,
+            @RequestParam(required = false, value = "status") List<CustomerSessionStatus> statuses
+    ) {
+        return ResponseEntity.ok(customerSessionService.getAllCustomerSessions(sortBy, sortOrder, name, types, modes, outcomes, statuses));
     }
 
     @PutMapping("/{id}")

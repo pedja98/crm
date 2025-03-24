@@ -1,6 +1,6 @@
 package com.etf.crm.enums;
 
-public enum CustomerSessionsStatus {
+public enum CustomerSessionStatus {
     PLANNED,
     HELD,
     NOT_HELD

@@ -3,7 +3,7 @@ package com.etf.crm.dtos;
 import com.etf.crm.enums.CustomerSessionMode;
 import com.etf.crm.enums.CustomerSessionOutcome;
 import com.etf.crm.enums.CustomerSessionType;
-import com.etf.crm.enums.CustomerSessionsStatus;
+import com.etf.crm.enums.CustomerSessionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class SaveCustomerSessionDto {
     private String name;
     private String description;
-    private CustomerSessionsStatus status;
+    private CustomerSessionStatus status;
     private CustomerSessionType type;
     private CustomerSessionMode mode;
     private CustomerSessionOutcome outcome;
