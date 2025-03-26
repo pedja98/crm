@@ -31,7 +31,7 @@ public class Verification {
     @Column(nullable = false)
     private VerificationStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 

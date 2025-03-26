@@ -40,11 +40,11 @@ public class Contract {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String comment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opportunity_id", nullable = false)
     private Opportunity opportunity;
 
