@@ -2,7 +2,7 @@ package com.etf.crm.controllers;
 
 import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.RegionDto;
-import com.etf.crm.dtos.UpdateRegionRequestDto;
+import com.etf.crm.dtos.SaveRegionRequestDto;
 import com.etf.crm.entities.Region;
 import com.etf.crm.services.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class RegionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MessageResponse> updateRegion(@PathVariable Long id, @RequestBody UpdateRegionRequestDto updatedRegionData) {
+    public ResponseEntity<MessageResponse> updateRegion(@PathVariable Long id, @RequestBody SaveRegionRequestDto updatedRegionData) {
         return ResponseEntity.ok(new MessageResponse(regionService.updateRegion(id, updatedRegionData)));
     }
 }

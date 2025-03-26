@@ -1,7 +1,7 @@
 package com.etf.crm.services;
 
 import com.etf.crm.dtos.RegionDto;
-import com.etf.crm.dtos.UpdateRegionRequestDto;
+import com.etf.crm.dtos.SaveRegionRequestDto;
 import com.etf.crm.entities.Region;
 import com.etf.crm.exceptions.DuplicateItemException;
 import com.etf.crm.exceptions.ItemNotFoundException;
@@ -84,7 +84,7 @@ public class RegionService {
     }
 
     @Transactional
-    public String updateRegion(Long id, UpdateRegionRequestDto updatedRegionData) {
+    public String updateRegion(Long id, SaveRegionRequestDto updatedRegionData) {
         if (regionRepository.findByNameAndDeletedFalse(updatedRegionData.getName()).isPresent()) {
             throw new DuplicateItemException(REGION_ALREADY_EXISTS);
         }

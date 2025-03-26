@@ -2,7 +2,7 @@ package com.etf.crm.services;
 
 import com.etf.crm.config.SecurityConfig;
 import com.etf.crm.dtos.AssignToDto;
-import com.etf.crm.dtos.UpdateUserRequestDto;
+import com.etf.crm.dtos.SaveUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
 import com.etf.crm.enums.UserType;
@@ -119,7 +119,7 @@ public class UserService {
     }
 
     @Transactional
-    public String updateUser(String username, UpdateUserRequestDto userRequestData) {
+    public String updateUser(String username, SaveUserRequestDto userRequestData) {
         if (this.userRepository.findUserByDifferentUsernameAndSameEmail(username, userRequestData.getEmail()).isPresent()) {
             throw new DuplicateItemException(EMAIL_ALREADY_TAKEN);
         }
@@ -127,7 +127,7 @@ public class UserService {
         User user = this.userRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
 
-        for (Field field : UpdateUserRequestDto.class.getDeclaredFields()) {
+        for (Field field : SaveUserRequestDto.class.getDeclaredFields()) {
             try {
                 field.setAccessible(true);
                 Object newValue = field.get(userRequestData);

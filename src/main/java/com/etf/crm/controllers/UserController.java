@@ -2,7 +2,7 @@ package com.etf.crm.controllers;
 
 import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.AssignToDto;
-import com.etf.crm.dtos.UpdateUserRequestDto;
+import com.etf.crm.dtos.SaveUserRequestDto;
 import com.etf.crm.dtos.UserDto;
 import com.etf.crm.entities.User;
 import com.etf.crm.enums.UserType;
@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<MessageResponse> updateUser(@PathVariable String username, @RequestBody UpdateUserRequestDto user) {
+    public ResponseEntity<MessageResponse> updateUser(@PathVariable String username, @RequestBody SaveUserRequestDto user) {
         return ResponseEntity.ok(new MessageResponse(userService.updateUser(username, user)));
     }
 

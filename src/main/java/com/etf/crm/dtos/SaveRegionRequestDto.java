@@ -7,6 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UpdateRegionRequestDto {
+public class SaveRegionRequestDto {
     private String name;
 }

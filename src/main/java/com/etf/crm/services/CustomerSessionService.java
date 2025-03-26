@@ -9,6 +9,7 @@ import com.etf.crm.enums.CustomerSessionMode;
 import com.etf.crm.enums.CustomerSessionOutcome;
 import com.etf.crm.enums.CustomerSessionStatus;
 import com.etf.crm.enums.CustomerSessionType;
+import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.CompanyRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,9 @@ public class CustomerSessionService {
 
     @Transactional
     public String createCustomerSession(SaveCustomerSessionDto customerSessionDetails) {
+        if(customerSessionDetails.getSessionEnd().isBefore(customerSessionDetails.getSessionStart())) {
+            throw new BadRequestException(INVALID_SESSION_DATE_TIME);
+        }
         Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompany())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
@@ -143,30 +148,34 @@ public class CustomerSessionService {
 
     @Transactional
     public String updateCustomerSession(Long id, SaveCustomerSessionDto customerSessionDetails) {
-        CustomerSession customerSession = this.customerSessionRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new ItemNotFoundException(CUSTOMER_SESSION_NOT_FOUND));
+        if(customerSessionDetails.getSessionEnd().isBefore(customerSessionDetails.getSessionStart())) {
+            throw new BadRequestException(INVALID_SESSION_DATE_TIME);
+        }
 
-        Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompany())
-                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
-
-        Opportunity opportunity = customerSessionDetails.getOpportunity() != null
-                ? opportunityRepository.findByIdAndDeletedFalse(customerSessionDetails.getOpportunity())
-                .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND))
-                : null;
-
-        customerSession.setName(customerSessionDetails.getName());
-        customerSession.setDescription(customerSessionDetails.getDescription());
-        customerSession.setStatus(customerSessionDetails.getStatus());
-        customerSession.setType(customerSessionDetails.getType());
-        customerSession.setMode(customerSessionDetails.getMode());
-        customerSession.setOutcome(customerSessionDetails.getOutcome());
-        customerSession.setSessionStart(customerSessionDetails.getSessionStart());
-        customerSession.setSessionEnd(customerSessionDetails.getSessionEnd());
-        customerSession.setCompany(company);
-        customerSession.setOpportunity(opportunity);
-        customerSession.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
-
-        this.customerSessionRepository.save(customerSession);
+//        CustomerSession customerSession = this.customerSessionRepository.findByIdAndDeletedFalse(id)
+//                .orElseThrow(() -> new ItemNotFoundException(CUSTOMER_SESSION_NOT_FOUND));
+//
+//        Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompany())
+//                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+//
+//        Opportunity opportunity = customerSessionDetails.getOpportunity() != null
+//                ? opportunityRepository.findByIdAndDeletedFalse(customerSessionDetails.getOpportunity())
+//                .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND))
+//                : null;
+//
+//        customerSession.setName(customerSessionDetails.getName());
+//        customerSession.setDescription(customerSessionDetails.getDescription());
+//        customerSession.setStatus(customerSessionDetails.getStatus());
+//        customerSession.setType(customerSessionDetails.getType());
+//        customerSession.setMode(customerSessionDetails.getMode());
+//        customerSession.setOutcome(customerSessionDetails.getOutcome());
+//        customerSession.setSessionStart(customerSessionDetails.getSessionStart());
+//        customerSession.setSessionEnd(customerSessionDetails.getSessionEnd());
+//        customerSession.setCompany(company);
+//        customerSession.setOpportunity(opportunity);
+//        customerSession.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+//
+//        this.customerSessionRepository.save(customerSession);
         return CUSTOMER_SESSION_UPDATED;
     }
 }

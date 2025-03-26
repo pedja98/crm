@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UpdateUserRequestDto {
+public class SaveUserRequestDto {
     private String firstName;
     private String lastName;
     private String email;
