@@ -14,7 +14,7 @@ public interface CustomerSessionRepository extends JpaRepository<CustomerSession
     Optional<CustomerSession> findByIdAndDeletedFalse(Long id);
 
     @Query("SELECT new com.etf.crm.dtos.CustomerSessionDto(cs.id, cs.name, cs.description, cs.status, cs.type, cs.mode, cs.outcome, cs.sessionStart," +
-            " cs.sessionEnd, c.id, c.name, o.id, o.name, cb.username, mb.username, c.dateCreated, c.dateModified)" +
+            " cs.sessionEnd, c.id, c.name, o.id, o.name, cb.username, mb.username, cs.dateCreated, cs.dateModified)" +
             "FROM CustomerSession cs " +
             "LEFT JOIN cs.createdBy cb " +
             "LEFT JOIN cs.modifiedBy mb " +
@@ -24,7 +24,7 @@ public interface CustomerSessionRepository extends JpaRepository<CustomerSession
     Optional<CustomerSessionDto> findCustomerSessionDtoByIdAndDeletedFalse(Long id);
 
     @Query("SELECT new com.etf.crm.dtos.CustomerSessionDto(cs.id, cs.name, cs.description, cs.status, cs.type, cs.mode, cs.outcome, cs.sessionStart," +
-            " cs.sessionEnd, c.id, c.name, o.id, o.name, cb.username, mb.username, c.dateCreated, c.dateModified)" +
+            " cs.sessionEnd, c.id, c.name, o.id, o.name, cb.username, mb.username, cs.dateCreated, cs.dateModified)" +
             "FROM CustomerSession cs " +
             "LEFT JOIN cs.createdBy cb " +
             "LEFT JOIN cs.modifiedBy mb " +
