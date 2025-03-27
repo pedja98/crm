@@ -25,20 +25,20 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, name = "hq_address")
+    @Column(nullable = false, name = "hq_address", length = 50)
     private String hqAddress;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private CompanyStatus status = CompanyStatus.POTENTIAL;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String industry;
 
-    @Column(nullable = false, name = "contact_phone")
+    @Column(nullable = false, name = "contact_phone", length = 20)
     private String contactPhone;
 
     @Column(name = "number_of_employees")
@@ -47,10 +47,10 @@ public class Company {
     @Column(nullable = false, unique = true)
     private Integer tin;
 
-    @Column(name = "bank_name")
+    @Column(name = "bank_name", length = 25)
     private String bankName;
 
-    @Column(name = "bank_account_number")
+    @Column(name = "bank_account_number", length = 25)
     private String bankAccountNumber;
 
     @Column(columnDefinition = "TEXT")

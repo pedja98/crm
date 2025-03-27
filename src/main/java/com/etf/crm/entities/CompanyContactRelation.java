@@ -33,7 +33,7 @@ public class CompanyContactRelation {
     private Contact contact;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 25, name = "relation_type")
     private CompanyContactRelationType relationType;
 
     @CreationTimestamp

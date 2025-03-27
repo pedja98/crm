@@ -25,23 +25,23 @@ public class Contact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, name = "first_name")
+    @Column(nullable = false, name = "first_name", length = 20)
     private String firstName;
 
-    @Column(nullable = false, name = "last_name")
+    @Column(nullable = false, name = "last_name", length = 20)
     private String lastName;
 
-    @Column(nullable = false, unique = true, name = "email")
+    @Column(nullable = false, unique = true, name = "email", length = 20)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "document_type")
+    @Column(nullable = false, name = "document_type", length = 15)
     private ContactDocumentType documentType;
 
-    @Column(nullable = false, name = "document_id")
+    @Column(nullable = false, name = "document_id", length = 20)
     private String documentId;
 
     @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)

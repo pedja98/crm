@@ -24,16 +24,16 @@ public class Opportunity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by", nullable = false, updatable = false)
-    private User createdBy;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 15)
+    private OpportunityStatus status = OpportunityStatus.CREATED;
 
-    @ManyToOne
-    @JoinColumn(name = "modified_by")
-    private User modifiedBy;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 15)
+    private OpportunityType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
@@ -48,13 +48,13 @@ public class Opportunity {
     @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contract> contracts;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OpportunityStatus status = OpportunityStatus.CREATED;
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false, updatable = false)
+    private User createdBy;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OpportunityType type;
+    @ManyToOne
+    @JoinColumn(name = "modified_by")
+    private User modifiedBy;
 
     @CreationTimestamp
     @Column(name = "date_created")
