@@ -36,6 +36,14 @@ public class CompanyContactRelation {
     @Column(nullable = false, length = 25, name = "relation_type")
     private CompanyContactRelationType relationType;
 
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false, updatable = false)
+    private User createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "modified_by")
+    private User modifiedBy;
+
     @CreationTimestamp
     @Column(name = "date_created")
     private Instant dateCreated;

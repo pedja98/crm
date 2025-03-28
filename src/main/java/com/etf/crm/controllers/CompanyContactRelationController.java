@@ -1,7 +1,9 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.CompanyContactRelationDto;
+import com.etf.crm.dtos.CreateCompanyContactRelationDto;
+import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.entities.CompanyContactRelation;
-import com.etf.crm.enums.CompanyContactRelationType;
 import com.etf.crm.services.CompanyContactRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,31 +19,22 @@ public class CompanyContactRelationController {
     private CompanyContactRelationService relationService;
 
     @PostMapping
-    public ResponseEntity<CompanyContactRelation> createRelation(
-            @RequestParam Long contactId,
-            @RequestParam Long companyId,
-            @RequestParam CompanyContactRelationType relationType) {
-        return ResponseEntity.ok(relationService.saveRelation(contactId, companyId, relationType));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<CompanyContactRelation> getRelationById(@PathVariable Long id) {
-        return ResponseEntity.ok(relationService.getRelationById(id));
+    public ResponseEntity<MessageResponse> createRelation(@RequestBody CreateCompanyContactRelationDto relation) {
+        return ResponseEntity.ok(new MessageResponse(relationService.createRelation(relation)));
     }
 
     @GetMapping
-    public ResponseEntity<List<CompanyContactRelation>> getAllRelations() {
-        return ResponseEntity.ok(relationService.getAllRelations());
+    public ResponseEntity<List<CompanyContactRelationDto>> getAllRelationByContactId(@RequestParam(required = true) Long contactId) {
+        return ResponseEntity.ok(relationService.getAllRelationByContactId(contactId));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CompanyContactRelation> updateRelation(@PathVariable Long id, @RequestBody CompanyContactRelation relationDetails) {
-        return ResponseEntity.ok(relationService.updateRelation(id, relationDetails));
+    public ResponseEntity<MessageResponse> updateRelation(@PathVariable Long id, @RequestBody CompanyContactRelation relationDetails) {
+        return ResponseEntity.ok(new MessageResponse(relationService.updateRelation(id, relationDetails)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRelation(@PathVariable Long id) {
-        relationService.deleteRelation(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<MessageResponse> deleteRelation(@PathVariable Long id) {
+        return ResponseEntity.ok(new MessageResponse(this.relationService.deleteRelation(id)));
     }
 }
