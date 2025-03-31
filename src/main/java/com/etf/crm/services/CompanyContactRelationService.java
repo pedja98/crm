@@ -2,6 +2,7 @@ package com.etf.crm.services;
 
 import com.etf.crm.dtos.CompanyContactRelationDto;
 import com.etf.crm.dtos.CreateCompanyContactRelationDto;
+import com.etf.crm.dtos.UpdateCompanyContactRelation;
 import com.etf.crm.entities.Company;
 import com.etf.crm.entities.CompanyContactRelation;
 import com.etf.crm.entities.Contact;
@@ -58,7 +59,7 @@ public class CompanyContactRelationService {
 
     public List<CompanyContactRelationDto> getAllRelationByContactId(Long contactId) {
         return this.relationRepository.findAllCompanyContactRelationDtoByContactIdAndDeletedFalse(contactId)
-                .orElseThrow(() -> new ItemNotFoundException("KAKO JE"));
+                .orElseThrow(() -> new ItemNotFoundException(RELATION_NOT_FOUND));
     }
 
     @Transactional
@@ -66,12 +67,23 @@ public class CompanyContactRelationService {
         CompanyContactRelation relation = this.relationRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(RELATION_NOT_FOUND));
         relation.setDeleted(true);
+        relation.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         this.relationRepository.save(relation);
         return RELATION_DELETED;
     }
 
     @Transactional
-    public String updateRelation(Long id, CompanyContactRelation relation) {
+    public String updateRelation(Long id, UpdateCompanyContactRelation updateRelationData) {
+        CompanyContactRelation relation = this.relationRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ItemNotFoundException(RELATION_NOT_FOUND));
+
+        Company company = companyRepository.findByIdAndDeletedFalse(updateRelationData.getCompanyId())
+                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+        relation.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        relation.setCompany(company);
+        relation.setRelationType(updateRelationData.getRelationType());
+
+        this.relationRepository.save(relation);
         return RELATION_UPDATED;
     }
 }

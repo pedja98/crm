@@ -34,10 +34,4 @@ public class OpportunityController {
     public ResponseEntity<Opportunity> updateOpportunity(@PathVariable Long id, @RequestBody Opportunity opportunityDetails) {
         return ResponseEntity.ok(opportunityService.updateOpportunity(id, opportunityDetails));
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOpportunity(@PathVariable Long id) {
-        opportunityService.deleteOpportunity(id);
-        return ResponseEntity.noContent().build();
-    }
 }

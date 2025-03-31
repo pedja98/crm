@@ -35,13 +35,6 @@ public class OpportunityService {
     }
 
     @Transactional
-    public void deleteOpportunity(Long id) {
-        Opportunity opportunity = this.getOpportunityById(id);
-        opportunity.setDeleted(true);
-        this.opportunityRepository.save(opportunity);
-    }
-
-    @Transactional
     public Opportunity updateOpportunity(Long id, Opportunity opportunity) {
         Opportunity existingOpportunity = this.getOpportunityById(id);
         existingOpportunity.setName(opportunity.getName());

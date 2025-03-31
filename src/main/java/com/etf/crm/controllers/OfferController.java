@@ -34,10 +34,4 @@ public class OfferController {
     public ResponseEntity<Offer> updateOffer(@PathVariable Long id, @RequestBody Offer offerDetails) {
         return ResponseEntity.ok(offerService.updateOffer(id, offerDetails));
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOffer(@PathVariable Long id) {
-        offerService.deleteOffer(id);
-        return ResponseEntity.noContent().build();
-    }
 }

@@ -3,6 +3,7 @@ package com.etf.crm.controllers;
 import com.etf.crm.dtos.CompanyContactRelationDto;
 import com.etf.crm.dtos.CreateCompanyContactRelationDto;
 import com.etf.crm.dtos.MessageResponse;
+import com.etf.crm.dtos.UpdateCompanyContactRelation;
 import com.etf.crm.entities.CompanyContactRelation;
 import com.etf.crm.services.CompanyContactRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class CompanyContactRelationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MessageResponse> updateRelation(@PathVariable Long id, @RequestBody CompanyContactRelation relationDetails) {
+    public ResponseEntity<MessageResponse> updateRelation(@PathVariable Long id, @RequestBody UpdateCompanyContactRelation relationDetails) {
         return ResponseEntity.ok(new MessageResponse(relationService.updateRelation(id, relationDetails)));
     }
 

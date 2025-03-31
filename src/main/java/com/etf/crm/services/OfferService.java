@@ -35,13 +35,6 @@ public class OfferService {
     }
 
     @Transactional
-    public void deleteOffer(Long id) {
-        Offer offer = this.getOfferById(id);
-        offer.setDeleted(true);
-        this.offerRepository.save(offer);
-    }
-
-    @Transactional
     public Offer updateOffer(Long id, Offer offer) {
         Offer existingOffer = this.getOfferById(id);
         existingOffer.setName(offer.getName());

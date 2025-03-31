@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCompanyContactRelation {
-    private String companyId;
+    private Long companyId;
     private CompanyContactRelationType relationType;
 }

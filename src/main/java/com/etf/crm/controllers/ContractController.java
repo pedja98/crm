@@ -34,10 +34,4 @@ public class ContractController {
     public ResponseEntity<Contract> updateContract(@PathVariable Long id, @RequestBody Contract contractDetails) {
         return ResponseEntity.ok(contractService.updateContract(id, contractDetails));
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteContract(@PathVariable Long id) {
-        contractService.deleteContract(id);
-        return ResponseEntity.noContent().build();
-    }
 }

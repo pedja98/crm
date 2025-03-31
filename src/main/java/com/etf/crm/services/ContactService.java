@@ -2,11 +2,13 @@ package com.etf.crm.services;
 
 import com.etf.crm.dtos.ContactDto;
 import com.etf.crm.dtos.SaveContactDto;
+import com.etf.crm.entities.CompanyContactRelation;
 import com.etf.crm.entities.Contact;
 import com.etf.crm.entities.User;
 import com.etf.crm.enums.ContactDocumentType;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
+import com.etf.crm.repositories.CompanyContactRelationRepository;
 import com.etf.crm.repositories.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class ContactService {
 
     @Autowired
     private ContactRepository contactRepository;
+
+    @Autowired
+    private CompanyContactRelationRepository relationRepository;
 
     @Transactional
     public String createContact(SaveContactDto saveContactData) {
@@ -120,11 +125,18 @@ public class ContactService {
 
     @Transactional
     public String deleteContact(Long id) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
         Contact contact = this.contactRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(CONTACT_NOT_FOUND));
         contact.setDeleted(true);
-        contact.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        contact.setModifiedBy(currentUser);
         this.contactRepository.save(contact);
+
+        List<CompanyContactRelation> relations = this.relationRepository.findAllByContactIdAndDeletedFalse(id);
+        for(CompanyContactRelation relation : relations){
+            relation.setDeleted(true);
+            relation.setModifiedBy(currentUser);
+        }
         return CONTACT_DELETED;
     }
 

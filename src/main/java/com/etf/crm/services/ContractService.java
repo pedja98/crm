@@ -38,12 +38,6 @@ public class ContractService {
         return this.contractRepository.findAllByDeletedFalse();
     }
 
-    public void deleteContract(Long id) {
-        Contract contract = this.getContractById(id);
-        contract.setDeleted(true);
-        this.contractRepository.save(contract);
-    }
-
     public Contract updateContract(Long id, Contract contract) {
         Contract existingContract = this.getContractById(id);
         existingContract.setName(contract.getName());
