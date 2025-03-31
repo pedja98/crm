@@ -93,7 +93,7 @@ public final class CrmConstants {
 
         public static final String RELATION_DELETED = "relationDeleted";
 
-        public static final String RELATION_UPDATED = "customerSessionUpdated";
+        public static final String RELATION_UPDATED = "relationUpdated";
 
         public static final String ALL_RELATIONS_CREATED = "allRelationsCreated";
     }
