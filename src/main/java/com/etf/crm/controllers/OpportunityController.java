@@ -1,5 +1,7 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.CreateOpportunityDto;
+import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.entities.Opportunity;
 import com.etf.crm.services.OpportunityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +17,9 @@ public class OpportunityController {
     @Autowired
     private OpportunityService opportunityService;
 
-    @PostMapping("/{companyId}")
-    public ResponseEntity<Opportunity> createOpportunity(@PathVariable Long companyId, @RequestBody Opportunity opportunity) {
-        return ResponseEntity.ok(opportunityService.createOpportunity(companyId, opportunity));
+    @PostMapping
+    public ResponseEntity<MessageResponse> createOpportunity(@RequestBody CreateOpportunityDto opportunity) {
+        return ResponseEntity.ok(new MessageResponse(opportunityService.createOpportunity(opportunity)));
     }
 
     @GetMapping("/{id}")

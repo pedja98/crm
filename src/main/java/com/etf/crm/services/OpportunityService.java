@@ -1,11 +1,18 @@
 package com.etf.crm.services;
 
+import com.etf.crm.dtos.CreateOpportunityDto;
+import com.etf.crm.entities.Company;
 import com.etf.crm.entities.Opportunity;
 import com.etf.crm.exceptions.ItemNotFoundException;
+import com.etf.crm.filters.SetCurrentUserFilter;
+import com.etf.crm.repositories.CompanyRepository;
 import com.etf.crm.repositories.OpportunityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
+import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 
 import java.util.List;
 
@@ -18,11 +25,23 @@ public class OpportunityService {
     private OpportunityRepository opportunityRepository;
 
     @Autowired
-    private CompanyService companyService;
+    private CompanyRepository companyRepository;
 
     @Transactional
-    public Opportunity createOpportunity(Long companyId, Opportunity opportunity) {
-        return this.opportunityRepository.save(opportunity);
+    public String createOpportunity(CreateOpportunityDto opportunityDetails) {
+        Company company = companyRepository.findByIdAndDeletedFalse(opportunityDetails.getCompanyId())
+                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+
+        Opportunity opportunity = Opportunity.builder()
+                .company(company)
+                .name(opportunityDetails.getName())
+                .type(opportunityDetails.getType())
+                .createdBy(SetCurrentUserFilter.getCurrentUser())
+                .deleted(false)
+                .build();
+
+        this.opportunityRepository.save(opportunity);
+        return OPPORTUNITY_CREATED;
     }
 
     public Opportunity getOpportunityById(Long id) {
