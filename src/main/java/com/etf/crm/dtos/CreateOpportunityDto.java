@@ -12,6 +12,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateOpportunityDto {
     private Long companyId;
-    private String name;
     private OpportunityType type;
 }

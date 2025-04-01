@@ -20,10 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
@@ -55,7 +53,7 @@ public class CustomerSessionService {
                 : null;
 
         CustomerSession customerSession = CustomerSession.builder()
-                .name(customerSessionDetails.getName())
+                .name(customerSessionDetails.getMode() + " " + company.getName() + " " + (new SimpleDateFormat("dd/MM/yyyy")).format(new Date()))
                 .description(customerSessionDetails.getDescription())
                 .status(customerSessionDetails.getStatus())
                 .type(customerSessionDetails.getType())
@@ -162,7 +160,6 @@ public class CustomerSessionService {
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND))
                 : null;
 
-        customerSession.setName(customerSessionDetails.getName());
         customerSession.setDescription(customerSessionDetails.getDescription());
         customerSession.setStatus(customerSessionDetails.getStatus());
         customerSession.setType(customerSessionDetails.getType());

@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.OPPORTUNITY_NOT_FOUND;
@@ -34,7 +36,7 @@ public class OpportunityService {
 
         Opportunity opportunity = Opportunity.builder()
                 .company(company)
-                .name(opportunityDetails.getName())
+                .name("OPP " + company.getName() + " " + (new SimpleDateFormat("dd-MM-yyyy")).format(new Date()))
                 .type(opportunityDetails.getType())
                 .createdBy(SetCurrentUserFilter.getCurrentUser())
                 .deleted(false)

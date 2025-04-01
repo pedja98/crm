@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SaveCustomerSessionDto {
-    private String name;
     private String description;
     private CustomerSessionStatus status;
     private CustomerSessionType type;
