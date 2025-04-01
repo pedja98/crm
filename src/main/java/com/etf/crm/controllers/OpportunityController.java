@@ -17,11 +17,6 @@ public class OpportunityController {
     @Autowired
     private OpportunityService opportunityService;
 
-    @PostMapping
-    public ResponseEntity<MessageResponse> createOpportunity(@RequestBody CreateOpportunityDto opportunity) {
-        return ResponseEntity.ok(new MessageResponse(opportunityService.createOpportunity(opportunity)));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Opportunity> getOpportunityById(@PathVariable Long id) {
         return ResponseEntity.ok(opportunityService.getOpportunityById(id));

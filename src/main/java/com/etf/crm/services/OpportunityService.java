@@ -26,26 +26,6 @@ public class OpportunityService {
     @Autowired
     private OpportunityRepository opportunityRepository;
 
-    @Autowired
-    private CompanyRepository companyRepository;
-
-    @Transactional
-    public String createOpportunity(CreateOpportunityDto opportunityDetails) {
-        Company company = companyRepository.findByIdAndDeletedFalse(opportunityDetails.getCompanyId())
-                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
-
-        Opportunity opportunity = Opportunity.builder()
-                .company(company)
-                .name("OPP " + company.getName() + " " + (new SimpleDateFormat("dd-MM-yyyy")).format(new Date()))
-                .type(opportunityDetails.getType())
-                .createdBy(SetCurrentUserFilter.getCurrentUser())
-                .deleted(false)
-                .build();
-
-        this.opportunityRepository.save(opportunity);
-        return OPPORTUNITY_CREATED;
-    }
-
     public Opportunity getOpportunityById(Long id) {
         return this.opportunityRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));

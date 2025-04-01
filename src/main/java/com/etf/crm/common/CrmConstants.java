@@ -10,6 +10,8 @@ public final class CrmConstants {
     public static final class ErrorCodes {
         public static final String INVALID_SESSION_DATE_TIME = "invalidSessionDateTime";
 
+        public static final String NOT_EDITABLE = "notEditable";
+
         public static final String USER_NOT_FOUND = "userNotFound";
 
         public static final String NO_USERS_FOUND = "noUsersFound";

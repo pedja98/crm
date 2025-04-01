@@ -1,9 +1,6 @@
 package com.etf.crm.dtos;
 
-import com.etf.crm.enums.CustomerSessionMode;
-import com.etf.crm.enums.CustomerSessionOutcome;
-import com.etf.crm.enums.CustomerSessionType;
-import com.etf.crm.enums.CustomerSessionStatus;
+import com.etf.crm.enums.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,5 +21,5 @@ public class SaveCustomerSessionDto {
     private LocalDateTime sessionStart;
     private LocalDateTime sessionEnd;
     private Long company;
-    private Long opportunity;
+    private OpportunityType opportunityType;
 }
