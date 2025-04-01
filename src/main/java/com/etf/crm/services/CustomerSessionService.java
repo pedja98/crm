@@ -49,8 +49,8 @@ public class CustomerSessionService {
 
         Opportunity newOpportunity = null;
         if (customerSessionDetails.getOpportunityType() != null
-                && customerSessionDetails.getOutcome() == CustomerSessionOutcome.NEW_OFFER
-                && customerSessionDetails.getStatus() == CustomerSessionStatus.HELD) {
+                && customerSessionDetails.getOutcome().equals(CustomerSessionOutcome.NEW_OFFER)
+                && customerSessionDetails.getStatus().equals(CustomerSessionStatus.HELD)) {
             Opportunity opportunity = Opportunity.builder()
                     .name("OPP " + company.getName() + " " + (new SimpleDateFormat("dd/MM/yyyy")).format(new Date()))
                     .type(customerSessionDetails.getOpportunityType())

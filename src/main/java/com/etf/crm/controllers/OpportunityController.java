@@ -1,8 +1,8 @@
 package com.etf.crm.controllers;
 
-import com.etf.crm.dtos.CreateOpportunityDto;
-import com.etf.crm.dtos.MessageResponse;
-import com.etf.crm.entities.Opportunity;
+import com.etf.crm.dtos.OpportunityDto;
+import com.etf.crm.enums.OpportunityStatus;
+import com.etf.crm.enums.OpportunityType;
 import com.etf.crm.services.OpportunityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +18,22 @@ public class OpportunityController {
     private OpportunityService opportunityService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Opportunity> getOpportunityById(@PathVariable Long id) {
+    public ResponseEntity<OpportunityDto> getOpportunityById(@PathVariable Long id) {
         return ResponseEntity.ok(opportunityService.getOpportunityById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Opportunity>> getAllOpportunities() {
-        return ResponseEntity.ok(opportunityService.getAllOpportunities());
+    public ResponseEntity<List<OpportunityDto>> getAllOpportunities(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false, value = "type") List<OpportunityType> types,
+            @RequestParam(required = false, value = "status") List<OpportunityStatus> statuses) {
+        return ResponseEntity.ok(opportunityService.getAllOpportunities(sortBy, sortOrder, name, types, statuses));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Opportunity> updateOpportunity(@PathVariable Long id, @RequestBody Opportunity opportunityDetails) {
-        return ResponseEntity.ok(opportunityService.updateOpportunity(id, opportunityDetails));
+    @PatchMapping("/{id}/close")
+    public ResponseEntity<String> closeOpportunity(@PathVariable Long id) {
+        return ResponseEntity.ok(opportunityService.closeOpportunity(id));
     }
 }

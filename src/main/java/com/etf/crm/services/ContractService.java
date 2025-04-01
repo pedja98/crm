@@ -24,8 +24,6 @@ public class ContractService {
     private OpportunityService opportunityService;
 
     public Contract createContract(Long companyId, Long opportunityId, Contract contract) {
-        Opportunity opportunity = opportunityService.getOpportunityById(opportunityId);
-        contract.setOpportunity(opportunity);
         return this.contractRepository.save(contract);
     }
 
