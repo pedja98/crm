@@ -1,5 +1,6 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.OpportunityDto;
 import com.etf.crm.enums.OpportunityStatus;
 import com.etf.crm.enums.OpportunityType;
@@ -33,7 +34,7 @@ public class OpportunityController {
     }
 
     @PatchMapping("/{id}/close")
-    public ResponseEntity<String> closeOpportunity(@PathVariable Long id) {
-        return ResponseEntity.ok(opportunityService.closeOpportunity(id));
+    public ResponseEntity<MessageResponse> closeOpportunity(@PathVariable Long id) {
+        return ResponseEntity.ok(new MessageResponse(opportunityService.closeOpportunity(id)));
     }
 }

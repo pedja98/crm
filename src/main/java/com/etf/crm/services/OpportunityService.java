@@ -4,6 +4,7 @@ import com.etf.crm.dtos.OpportunityDto;
 import com.etf.crm.entities.Opportunity;
 import com.etf.crm.enums.OpportunityStatus;
 import com.etf.crm.enums.OpportunityType;
+import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.OpportunityRepository;
@@ -98,6 +99,9 @@ public class OpportunityService {
     public String closeOpportunity(Long id) {
         Opportunity opportunity = this.opportunityRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
+        if(opportunity.getStatus().equals(OpportunityStatus.CLOSE_LOST)) {
+            throw new BadRequestException(NOT_EDITABLE);
+        }
         opportunity.setStatus(OpportunityStatus.CLOSE_LOST);
         opportunity.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         this.opportunityRepository.save(opportunity);
