@@ -32,8 +32,8 @@ public class HeaderValidationFilter extends OncePerRequestFilter {
                 || usernameHeader.isEmpty()
                 || userTypeHeader == null
                 || userTypeHeader.isEmpty()
-                || !Arrays.stream(UserType.values())
-                    .anyMatch(type -> type.name().equals(userTypeHeader))) {
+                || Arrays.stream(UserType.values())
+                .noneMatch(type -> type.name().equals(userTypeHeader))) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Invalid header parameters");
             return;
