@@ -1,15 +1,23 @@
 package com.etf.crm.services;
 
+import com.etf.crm.dtos.CreateOfferDto;
+import com.etf.crm.entities.Company;
 import com.etf.crm.entities.Offer;
+import com.etf.crm.entities.Opportunity;
+import com.etf.crm.enums.OfferStatus;
 import com.etf.crm.exceptions.ItemNotFoundException;
+import com.etf.crm.filters.SetCurrentUserFilter;
+import com.etf.crm.repositories.CompanyRepository;
 import com.etf.crm.repositories.OfferRepository;
+import com.etf.crm.repositories.OpportunityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.etf.crm.common.CrmConstants.ErrorCodes.OFFER_NOT_FOUND;
+import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
+import static com.etf.crm.common.CrmConstants.SuccessCodes.OFFER_CREATED;
 
 @Service
 public class OfferService {
@@ -18,11 +26,30 @@ public class OfferService {
     private OfferRepository offerRepository;
 
     @Autowired
-    private CompanyService companyService;
+    private CompanyRepository companyRepository;
+
+    @Autowired
+    private OpportunityRepository opportunityRepository;
 
     @Transactional
-    public Offer createOffer(Long companyId, Offer offer) {
-        return this.offerRepository.save(offer);
+    public String createOffer(CreateOfferDto offerDetails) {
+        Opportunity opportunity = this.opportunityRepository.findById(offerDetails.getOpportunityId())
+                .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
+
+        Company company = this.companyRepository.findById(offerDetails.getCompanyId())
+                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+
+        Offer offer = Offer.builder()
+                .company(company)
+                .name(offerDetails.getName())
+                .opportunity(opportunity)
+                .omOfferId(offerDetails.getOmOfferId())
+                .status(OfferStatus.DRAFT)
+                .createdBy(SetCurrentUserFilter.getCurrentUser())
+                .deleted(false)
+                .build();
+
+        return OFFER_CREATED;
     }
 
     public Offer getOfferById(Long id) {
@@ -32,14 +59,5 @@ public class OfferService {
 
     public List<Offer> getAllOffers() {
         return this.offerRepository.findAllByDeletedFalse();
-    }
-
-    @Transactional
-    public Offer updateOffer(Long id, Offer offer) {
-        Offer existingOffer = this.getOfferById(id);
-        existingOffer.setName(offer.getName());
-        existingOffer.setStatus(offer.getStatus());
-        existingOffer.setModifiedBy(offer.getModifiedBy());
-        return this.offerRepository.save(existingOffer);
     }
 }

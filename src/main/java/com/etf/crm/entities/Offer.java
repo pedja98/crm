@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @Table(name = "offers")
@@ -24,6 +25,9 @@ public class Offer {
 
     @Column(nullable = false, length = 20)
     private String name;
+
+    @Column(name = "om_offer_id", nullable = false)
+    private UUID omOfferId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

@@ -1,5 +1,7 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.CreateOfferDto;
+import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.entities.Offer;
 import com.etf.crm.services.OfferService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +17,9 @@ public class OfferController {
     @Autowired
     private OfferService offerService;
 
-    @PostMapping("/{companyId}")
-    public ResponseEntity<Offer> createOffer(@PathVariable Long companyId, @RequestBody Offer offer) {
-        return ResponseEntity.ok(offerService.createOffer(companyId, offer));
+    @PostMapping("/")
+    public ResponseEntity<MessageResponse> createOffer(@RequestBody CreateOfferDto offerDetails) {
+        return ResponseEntity.ok(new MessageResponse(offerService.createOffer(offerDetails)));
     }
 
     @GetMapping("/{id}")
@@ -28,10 +30,5 @@ public class OfferController {
     @GetMapping
     public ResponseEntity<List<Offer>> getAllOffers() {
         return ResponseEntity.ok(offerService.getAllOffers());
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Offer> updateOffer(@PathVariable Long id, @RequestBody Offer offerDetails) {
-        return ResponseEntity.ok(offerService.updateOffer(id, offerDetails));
     }
 }
