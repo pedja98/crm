@@ -44,11 +44,13 @@ public class OfferService {
                 .name(offerDetails.getName())
                 .opportunity(opportunity)
                 .omOfferId(offerDetails.getOmOfferId())
+                .contract(null)
                 .status(OfferStatus.DRAFT)
                 .createdBy(SetCurrentUserFilter.getCurrentUser())
                 .deleted(false)
                 .build();
 
+        this.offerRepository.save(offer);
         return OFFER_CREATED;
     }
 

@@ -17,7 +17,7 @@ public class OfferController {
     @Autowired
     private OfferService offerService;
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<MessageResponse> createOffer(@RequestBody CreateOfferDto offerDetails) {
         return ResponseEntity.ok(new MessageResponse(offerService.createOffer(offerDetails)));
     }

@@ -26,7 +26,6 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 ).addFilterBefore(headerValidationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(setCurrentUserFilter, HeaderValidationFilter.class);
-        ;
         return http.build();
     }
 
