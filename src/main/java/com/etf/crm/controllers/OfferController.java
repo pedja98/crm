@@ -2,7 +2,7 @@ package com.etf.crm.controllers;
 
 import com.etf.crm.dtos.CreateOfferDto;
 import com.etf.crm.dtos.MessageResponse;
-import com.etf.crm.entities.Offer;
+import com.etf.crm.dtos.OfferDto;
 import com.etf.crm.services.OfferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +23,12 @@ public class OfferController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Offer> getOfferById(@PathVariable Long id) {
+    public ResponseEntity<OfferDto> getOfferById(@PathVariable Long id) {
         return ResponseEntity.ok(offerService.getOfferById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Offer>> getAllOffers() {
+    public ResponseEntity<List<OfferDto>> getAllOffers() {
         return ResponseEntity.ok(offerService.getAllOffers());
     }
 }

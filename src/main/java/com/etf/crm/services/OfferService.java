@@ -1,6 +1,7 @@
 package com.etf.crm.services;
 
 import com.etf.crm.dtos.CreateOfferDto;
+import com.etf.crm.dtos.OfferDto;
 import com.etf.crm.entities.Company;
 import com.etf.crm.entities.Offer;
 import com.etf.crm.entities.Opportunity;
@@ -54,12 +55,12 @@ public class OfferService {
         return OFFER_CREATED;
     }
 
-    public Offer getOfferById(Long id) {
-        return this.offerRepository.findByIdAndDeletedFalse(id)
+    public OfferDto getOfferById(Long id) {
+        return this.offerRepository.findOfferDtoByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
     }
 
-    public List<Offer> getAllOffers() {
-        return this.offerRepository.findAllByDeletedFalse();
+    public List<OfferDto> getAllOffers() {
+        return this.offerRepository.findAllOfferDtoByDeletedFalse();
     }
 }
