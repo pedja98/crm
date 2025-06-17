@@ -3,6 +3,7 @@ package com.etf.crm.controllers;
 import com.etf.crm.dtos.CreateOfferDto;
 import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.OfferDto;
+import com.etf.crm.enums.OfferStatus;
 import com.etf.crm.services.OfferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,16 @@ public class OfferController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OfferDto>> getAllOffers() {
-        return ResponseEntity.ok(offerService.getAllOffers());
+    public ResponseEntity<List<OfferDto>> getAllOffers(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false, value = "status") List<OfferStatus> statuses) {
+        return ResponseEntity.ok(offerService.getAllOffers(sortBy, sortOrder, name, statuses));
+    }
+
+    @GetMapping("/opportunity/{opportunityId}")
+    public ResponseEntity<List<OfferDto>> getOffersByOpportunityId(@PathVariable Long opportunityId) {
+        return ResponseEntity.ok(offerService.getOffersByOpportunityId(opportunityId));
     }
 }

@@ -15,7 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 import static com.etf.crm.common.CrmConstants.SuccessCodes.OFFER_CREATED;
@@ -43,8 +48,8 @@ public class OfferService {
         Offer offer = Offer.builder()
                 .company(company)
                 .name(offerDetails.getName())
-                .opportunity(opportunity)
                 .omOfferId(offerDetails.getOmOfferId())
+                .opportunity(opportunity)
                 .contract(null)
                 .status(OfferStatus.DRAFT)
                 .createdBy(SetCurrentUserFilter.getCurrentUser())
@@ -60,7 +65,64 @@ public class OfferService {
                 .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
     }
 
-    public List<OfferDto> getAllOffers() {
-        return this.offerRepository.findAllOfferDtoByDeletedFalse();
+    public List<OfferDto> getAllOffers(String sortBy, String sortOrder, String name, List<OfferStatus> statuses) {
+        List<OfferDto> offers = offerRepository.findAllOfferDtoByDeletedFalse();
+
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("name", name);
+        filters.put("status", statuses);
+
+        List<Predicate<OfferDto>> predicates = filters.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .map(entry -> {
+                    String fieldName = entry.getKey();
+                    Object value = entry.getValue();
+
+                    return (Predicate<OfferDto>) offer -> {
+                        try {
+                            Field field = OfferDto.class.getDeclaredField(fieldName);
+                            field.setAccessible(true);
+                            Object fieldValue = field.get(offer);
+
+                            if (value instanceof String stringValue) {
+                                return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
+                            } else if (value instanceof List<?> listValue) {
+                                return fieldValue != null && listValue.contains(fieldValue);
+                            }
+                            return false;
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            throw new RuntimeException("Invalid filter field: " + fieldName, e);
+                        }
+                    };
+                })
+                .toList();
+
+        for (Predicate<OfferDto> predicate : predicates) {
+            offers = offers.stream().filter(predicate).toList();
+        }
+
+        if (sortBy != null) {
+            Comparator<OfferDto> comparator = Comparator.comparing(offer -> {
+                try {
+                    Field field = OfferDto.class.getDeclaredField(sortBy);
+                    field.setAccessible(true);
+                    return (Comparable) field.get(offer);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new IllegalArgumentException("Invalid sort field: " + sortBy, e);
+                }
+            });
+
+            if ("desc".equalsIgnoreCase(sortOrder)) {
+                comparator = comparator.reversed();
+            }
+
+            offers = offers.stream().sorted(comparator).toList();
+        }
+
+        return offers;
+    }
+
+    public List<OfferDto> getOffersByOpportunityId(Long opportunityId) {
+        return offerRepository.findAllOfferDtoByOpportunityIdAndDeletedFalse(opportunityId);
     }
 }
