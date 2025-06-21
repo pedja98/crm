@@ -1,5 +1,6 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.CreateCrmOfferResponseDto;
 import com.etf.crm.dtos.CreateOfferDto;
 import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.OfferDto;
@@ -21,8 +22,8 @@ public class OfferController {
     private OfferService offerService;
 
     @PostMapping
-    public ResponseEntity<MessageResponse> createOffer(@RequestBody CreateOfferDto offerDetails) {
-        return ResponseEntity.ok(new MessageResponse(offerService.createOffer(offerDetails)));
+    public ResponseEntity<CreateCrmOfferResponseDto> createOffer(@RequestBody CreateOfferDto body) {
+        return ResponseEntity.ok(offerService.createOffer(body));
     }
 
     @GetMapping("/{id}")

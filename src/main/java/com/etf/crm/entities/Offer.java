@@ -26,9 +26,6 @@ public class Offer {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "om_offer_id", nullable = false)
-    private UUID omOfferId;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private OfferStatus status;

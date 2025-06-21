@@ -1,5 +1,6 @@
 package com.etf.crm.services;
 
+import com.etf.crm.dtos.CreateCrmOfferResponseDto;
 import com.etf.crm.dtos.CreateOfferDto;
 import com.etf.crm.dtos.OfferDto;
 import com.etf.crm.entities.Company;
@@ -21,7 +22,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
-import static com.etf.crm.common.CrmConstants.SuccessCodes.OFFER_CREATED;
 
 @Service
 public class OfferService {
@@ -36,26 +36,24 @@ public class OfferService {
     private OpportunityRepository opportunityRepository;
 
     @Transactional
-    public String createOffer(CreateOfferDto offerDetails) {
-        Opportunity opportunity = this.opportunityRepository.findById(offerDetails.getOpportunityId())
+    public CreateCrmOfferResponseDto createOffer(CreateOfferDto body) {
+        Opportunity opportunity = this.opportunityRepository.findById(body.getOpportunityId())
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
 
-        Company company = this.companyRepository.findById(offerDetails.getCompanyId())
+        Company company = this.companyRepository.findById(body.getCompanyId())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
         Offer offer = Offer.builder()
                 .company(company)
-                .name(offerDetails.getName())
-                .omOfferId(offerDetails.getOmOfferId())
+                .name(body.getName())
                 .opportunity(opportunity)
                 .contract(null)
                 .status(OfferStatus.DRAFT)
                 .createdBy(SetCurrentUserFilter.getCurrentUser())
                 .deleted(false)
                 .build();
-
-        this.offerRepository.save(offer);
-        return OFFER_CREATED;
+        System.out.println(offer.getName());
+        return new CreateCrmOfferResponseDto(this.offerRepository.save(offer).getId());
     }
 
     public OfferDto getOfferById(Long id) {

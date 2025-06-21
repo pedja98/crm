@@ -15,7 +15,7 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     List<Offer> findAllByDeletedFalse();
 
     @Query("""
-    SELECT new com.etf.crm.dtos.OfferDto(o.id,o.name, o.omOfferId, c.id, c.name, opp.id, opp.name, con.id, con.name, o.status, createdBy.username, modifiedBy.username, o.dateCreated, o.dateModified)
+    SELECT new com.etf.crm.dtos.OfferDto(o.id,o.name, c.id, c.name, opp.id, opp.name, con.id, con.name, o.status, createdBy.username, modifiedBy.username, o.dateCreated, o.dateModified)
     FROM Offer o
     LEFT JOIN o.company c
     LEFT JOIN o.opportunity opp
@@ -26,7 +26,7 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     Optional<OfferDto> findOfferDtoByIdAndDeletedFalse(Long id);
 
     @Query("""
-    SELECT new com.etf.crm.dtos.OfferDto(o.id,o.name, o.omOfferId, c.id, c.name, opp.id, opp.name, con.id, con.name, o.status, createdBy.username, modifiedBy.username, o.dateCreated, o.dateModified)
+    SELECT new com.etf.crm.dtos.OfferDto(o.id,o.name, c.id, c.name, opp.id, opp.name, con.id, con.name, o.status, createdBy.username, modifiedBy.username, o.dateCreated, o.dateModified)
     FROM Offer o
     LEFT JOIN o.company c
     LEFT JOIN o.opportunity opp
@@ -37,7 +37,7 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     List<OfferDto> findAllOfferDtoByDeletedFalse();
 
     @Query("""
-                SELECT new com.etf.crm.dtos.OfferDto(o.id, o.name, o.omOfferId, c.id, c.name, opp.id, opp.name,
+                SELECT new com.etf.crm.dtos.OfferDto(o.id, o.name, c.id, c.name, opp.id, opp.name,
                                                      con.id, con.name, o.status, createdBy.username, modifiedBy.username,
                                                      o.dateCreated, o.dateModified)
                 FROM Offer o

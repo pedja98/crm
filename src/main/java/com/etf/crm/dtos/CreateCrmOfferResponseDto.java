@@ -11,8 +11,6 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateOfferDto {
-    private String name;
-    private Long companyId;
-    private Long opportunityId;
+public class CreateCrmOfferResponseDto {
+    private Long crmOfferId;
 }

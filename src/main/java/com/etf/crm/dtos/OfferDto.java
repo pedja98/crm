@@ -16,7 +16,6 @@ import java.util.UUID;
 public class OfferDto {
     private Long id;
     private String name;
-    private UUID omOfferId;
     private Long companyId;
     private String companyName;
     private Long opportunityId;
