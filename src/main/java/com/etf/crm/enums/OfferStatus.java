@@ -9,5 +9,6 @@ public enum OfferStatus {
     L1_REJECTED,
     L2_REJECTED,
     CUSTOMER_ACCEPTED,
+    OFFER_APPROVED,
     CONCLUDED
 }
