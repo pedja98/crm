@@ -33,11 +33,11 @@ public class Offer {
     @Column(nullable = false, length = 20)
     private OfferStatus status;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = true)
     private Contract contract = null;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;
 

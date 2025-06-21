@@ -36,6 +36,8 @@ public final class CrmConstants {
 
         public static final String OFFER_NOT_FOUND = "offerNotFound";
 
+        public static final String OFFER_UPDATED = "offerUpdated";
+
         public static final String CONTRACT_NOT_FOUND = "contractNotFound";
 
         public static final String USERNAME_ALREADY_TAKEN = "usernameAlreadyTaken";

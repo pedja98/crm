@@ -16,11 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 import static com.etf.crm.common.CrmConstants.SuccessCodes.OFFER_CREATED;
@@ -124,5 +122,52 @@ public class OfferService {
 
     public List<OfferDto> getOffersByOpportunityId(Long opportunityId) {
         return offerRepository.findAllOfferDtoByOpportunityIdAndDeletedFalse(opportunityId);
+    }
+
+    @jakarta.transaction.Transactional
+    public String patchOffer(Long id, Map<String, Object> updates) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
+
+        Set<String> allowedFields = Arrays.stream(Offer.class.getDeclaredFields())
+                .map(Field::getName)
+                .collect(Collectors.toSet());
+
+        for (Map.Entry<String, Object> entry : updates.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if (!allowedFields.contains(key)) {
+                throw new IllegalArgumentException("Field '" + key + "' is not allowed to be updated");
+            }
+
+            try {
+                Field field = Offer.class.getDeclaredField(key);
+                field.setAccessible(true);
+
+                Class<?> fieldType = field.getType();
+                Object convertedValue;
+
+                if (fieldType.equals(String.class)) {
+                    convertedValue = value.toString();
+                } else if (fieldType.equals(int.class) || fieldType.equals(Integer.class)) {
+                    convertedValue = Integer.parseInt(value.toString());
+                } else if (fieldType.isEnum()) {
+                    convertedValue = Enum.valueOf((Class<Enum>) fieldType, value.toString());
+                } else {
+                    throw new IllegalArgumentException("Unsupported field type: " + fieldType.getName());
+                }
+
+                field.set(offer, convertedValue);
+
+            } catch (NoSuchFieldException e) {
+                throw new IllegalArgumentException("Field '" + key + "' does not exist on Offer");
+            } catch (IllegalAccessException | IllegalArgumentException e) {
+                throw new RuntimeException("Failed to set field '" + key + "'", e);
+            }
+        }
+
+        offerRepository.save(offer);
+        return OFFER_UPDATED;
     }
 }

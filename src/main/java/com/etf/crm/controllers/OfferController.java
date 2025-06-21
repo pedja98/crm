@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/offers")
@@ -40,5 +42,13 @@ public class OfferController {
     @GetMapping("/opportunity/{opportunityId}")
     public ResponseEntity<List<OfferDto>> getOffersByOpportunityId(@PathVariable Long opportunityId) {
         return ResponseEntity.ok(offerService.getOffersByOpportunityId(opportunityId));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<MessageResponse> patchOffer(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> body
+    ) {
+        return ResponseEntity.ok(new MessageResponse(offerService.patchOffer(id, body)));
     }
 }
