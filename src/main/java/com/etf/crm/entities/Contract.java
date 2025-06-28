@@ -51,6 +51,9 @@ public class Contract {
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Verification> verifications;
 
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Document> documents;
+
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private User createdBy;
