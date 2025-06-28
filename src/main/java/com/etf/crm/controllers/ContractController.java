@@ -1,6 +1,9 @@
 package com.etf.crm.controllers;
 
-import com.etf.crm.entities.Contract;
+import com.etf.crm.dtos.ContractDto;
+import com.etf.crm.dtos.CreateContractDto;
+import com.etf.crm.dtos.MessageResponse;
+import com.etf.crm.enums.ContractStatus;
 import com.etf.crm.services.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,23 +18,23 @@ public class ContractController {
     @Autowired
     private ContractService contractService;
 
-    @PostMapping("/{companyId}/{opportunityId}")
-    public ResponseEntity<Contract> createContract(@PathVariable Long companyId, @PathVariable Long opportunityId, @RequestBody Contract contract) {
-        return ResponseEntity.ok(contractService.createContract(companyId, opportunityId, contract));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Contract> getContractById(@PathVariable Long id) {
-        return ResponseEntity.ok(contractService.getContractById(id));
+    @PostMapping
+    public ResponseEntity<MessageResponse> createContract(@RequestBody CreateContractDto contract) {
+        return ResponseEntity.ok(new MessageResponse(this.contractService.createContract(contract)));
     }
 
     @GetMapping
-    public ResponseEntity<List<Contract>> getAllContracts() {
-        return ResponseEntity.ok(contractService.getAllContracts());
+    public ResponseEntity<List<ContractDto>> getAllContracts(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String referenceNumber,
+            @RequestParam(required = false, value = "status") List<ContractStatus> statuses) {
+        return ResponseEntity.ok(contractService.getAllContracts(sortBy, sortOrder, name, referenceNumber, statuses));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Contract> updateContract(@PathVariable Long id, @RequestBody Contract contractDetails) {
-        return ResponseEntity.ok(contractService.updateContract(id, contractDetails));
+    @GetMapping("/{id}")
+    public ResponseEntity<ContractDto> getOfferById(@PathVariable Long id) {
+        return ResponseEntity.ok(contractService.getContractById(id));
     }
 }

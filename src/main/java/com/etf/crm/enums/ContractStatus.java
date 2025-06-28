@@ -8,5 +8,4 @@ public enum ContractStatus {
     CLOSED_BY_SYSTEM,
     CONTRACT_SIGNED_AND_VERIFIED,
     CONTRACT_SIGNED_AND_REJECTED,
-
 }

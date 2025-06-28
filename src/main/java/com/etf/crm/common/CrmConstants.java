@@ -57,10 +57,14 @@ public final class CrmConstants {
         public static final String REGION_ALREADY_EXISTS = "regionAlreadyExists";
 
         public static final String REGION_NOT_FOUND = "regionNotFound";
+
+        public static final String INVALID_OFFER_STATUS = "invalidOfferStatus";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class SuccessCodes {
+        public static final String CREATE_CONTRACT = "createContract";
+
         public static  String SHOP_DELETED = "shopDeleted";
 
         public static  String OPPORTUNITY_CLOSED = "opportunityClosed";

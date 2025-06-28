@@ -1,7 +1,6 @@
 package com.etf.crm.entities;
 
 import com.etf.crm.enums.ContractStatus;
-import com.etf.crm.enums.DocumentArchiveStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,22 +23,18 @@ public class Contract {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String name;
 
     @Column(name = "reference_number", unique = true)
     private String referenceNumber;
 
+    @Column(nullable = false, name = "contract_obligation")
+    private Integer contractObligation = 0;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ContractStatus status;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "archive_status", length = 15)
-    private DocumentArchiveStatus archiveStatus;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
