@@ -1,14 +1,12 @@
 package com.etf.crm.controllers;
 
+import com.etf.crm.dtos.Base64Response;
 import com.etf.crm.dtos.DocumentDto;
 import com.etf.crm.dtos.DocumentUploadDto;
 import com.etf.crm.dtos.MessageResponse;
-import com.etf.crm.entities.Document;
 import com.etf.crm.services.DocumentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,28 +34,8 @@ public class DocumentController {
     }
 
     @GetMapping("/download/{documentId}")
-    public ResponseEntity<byte[]> downloadDocument(@PathVariable Long documentId) {
-        try {
-            Document document = documentService.getDocumentById(documentId);
-            byte[] documentBytes = documentService.downloadDocument(documentId);
-
-            String fileName = document.getName();
-            MediaType contentType = documentService.getContentType(fileName);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentDispositionFormData("attachment", fileName);
-            headers.setContentType(contentType);
-            headers.setContentLength(documentBytes.length);
-
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(documentBytes);
-
-        } catch (RuntimeException e) {
-            System.err.println("Download error for document " + documentId + ": " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(("Error downloading document: " + e.getMessage()).getBytes());
-        }
+    public ResponseEntity<Base64Response> downloadDocumentAsBase64(@PathVariable Long documentId) {
+        return ResponseEntity.ok(new Base64Response(documentService.getDocumentContent(documentId)));
     }
 
     @DeleteMapping("/{documentId}")

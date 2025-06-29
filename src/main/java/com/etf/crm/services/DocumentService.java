@@ -24,6 +24,7 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
     private final ContractRepository contractRepository;
+    private final FileStorageService fileStorageService;
 
     public List<DocumentDto> getDocumentsByContractId(Long contractId) {
         return documentRepository.findDocumentDtosByContractIdAndDeletedFalse(contractId);
@@ -45,9 +46,21 @@ public class DocumentService {
             throw new RuntimeException("Invalid Base64 file content");
         }
 
+        // Store file in file system
+        String filePath = fileStorageService.storeFile(fileBytes, uploadDto.getFileName(), uploadDto.getContractId());
+
+        // Determine content type
+        String contentType = uploadDto.getContentType();
+        if (contentType == null || contentType.isEmpty()) {
+            contentType = getContentType(uploadDto.getFileName()).toString();
+        }
+
+        // Save document metadata to database
         Document document = Document.builder()
                 .name(uploadDto.getFileName())
-                .documentContent(fileBytes)
+                .filePath(filePath)
+                .contentType(contentType)
+                .fileSize((long) fileBytes.length)
                 .contract(contract)
                 .createdBy(SetCurrentUserFilter.getCurrentUser())
                 .deleted(false)
@@ -58,49 +71,54 @@ public class DocumentService {
     }
 
     public String getDocumentContent(Long documentId) {
-        Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
-
-        return Base64.getEncoder().encodeToString(document.getDocumentContent());
-    }
-
-    public byte[] downloadDocument(Long documentId) {
         Document document = getDocumentById(documentId);
 
-        if (document == null) {
-            throw new RuntimeException("Document not found");
+        if (!fileStorageService.fileExists(document.getFilePath())) {
+            throw new RuntimeException("Document file not found on disk");
         }
 
-        if (document.getDeleted()) {
-            throw new RuntimeException("Document has been deleted");
-        }
-
-        byte[] content = document.getDocumentContent();
-
-        if (content == null || content.length == 0) {
-            throw new RuntimeException("Document content is empty");
-        }
-
-        return content;
+        byte[] fileBytes = fileStorageService.loadFile(document.getFilePath());
+        return Base64.getEncoder().encodeToString(fileBytes);
     }
 
+
     public MediaType getContentType(String fileName) {
+        if (fileName == null || !fileName.contains(".")) {
+            return MediaType.APPLICATION_OCTET_STREAM;
+        }
+
         String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
 
         return switch (extension) {
             case "pdf" -> MediaType.APPLICATION_PDF;
-            case "doc", "docx" -> MediaType.valueOf("application/msword");
+            case "doc", "docx" -> MediaType.valueOf("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
             case "txt" -> MediaType.TEXT_PLAIN;
             case "jpg", "jpeg" -> MediaType.IMAGE_JPEG;
             case "png" -> MediaType.IMAGE_PNG;
+            case "gif" -> MediaType.IMAGE_GIF;
+            case "xlsx" -> MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            case "xls" -> MediaType.valueOf("application/vnd.ms-excel");
+            case "ppt", "pptx" -> MediaType.valueOf("application/vnd.openxmlformats-officedocument.presentationml.presentation");
             default -> MediaType.APPLICATION_OCTET_STREAM;
         };
     }
 
     public void deleteDocument(Long documentId) {
         Document document = getDocumentById(documentId);
+
         document.setDeleted(true);
         document.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         documentRepository.save(document);
+        // fileStorageService.deleteFile(document.getFilePath());
+    }
+
+    public void permanentlyDeleteDocument(Long documentId) {
+        Document document = getDocumentById(documentId);
+
+        // Delete physical file
+        fileStorageService.deleteFile(document.getFilePath());
+
+        // Delete from database
+        documentRepository.delete(document);
     }
 }

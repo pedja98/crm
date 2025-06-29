@@ -12,6 +12,8 @@ import java.time.Instant;
 public class DocumentDto {
     private Long id;
     private String documentName;
+    private String contentType;
+    private Long fileSize;
     private String createdByUsername;
     private String modifiedByUsername;
     private Instant dateCreated;

@@ -24,9 +24,14 @@ public class Document {
     @Column(nullable = false)
     private String name;
 
-    @Lob
-    @Column(name = "document_content", nullable = false)
-    private byte[] documentContent;
+    @Column(name = "file_path", nullable = false)
+    private String filePath;
+
+    @Column(name = "content_type")
+    private String contentType;
+
+    @Column(name = "file_size")
+    private Long fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = false)

@@ -26,6 +26,8 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             SELECT new com.etf.crm.dtos.DocumentDto(
                 d.id,
                 d.name,
+                d.contentType,
+                d.fileSize,
                 cb.username,
                 mb.username,
                 d.dateCreated,
