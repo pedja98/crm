@@ -4,10 +4,12 @@ import com.etf.crm.config.SecurityConfig;
 import com.etf.crm.dtos.AssignToDto;
 import com.etf.crm.dtos.SaveUserRequestDto;
 import com.etf.crm.dtos.UserDto;
+import com.etf.crm.entities.Shop;
 import com.etf.crm.entities.User;
 import com.etf.crm.enums.UserType;
 import com.etf.crm.exceptions.*;
 import com.etf.crm.filters.SetCurrentUserFilter;
+import com.etf.crm.repositories.ShopRepository;
 import com.etf.crm.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ShopRepository shopRepository;
 
     @Transactional
     public String createUser(User user) {
@@ -172,5 +177,19 @@ public class UserService {
     public List<AssignToDto> getAllAssignToDto(UserType type) {
         return this.userRepository.findAllAssignToDtoDeletedFalse(type)
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+    }
+
+    @Transactional
+    public String setUserShop(String username, Long shopId) {
+        User user = userRepository.findByUsernameAndDeletedFalse(username)
+                .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+
+        Shop shop = this.shopRepository.findById(shopId)
+                .orElseThrow(() -> new ItemNotFoundException(SHOP_NOT_FOUND));
+
+        user.setShop(shop);
+        user.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        userRepository.save(user);
+        return USER_UPDATED;
     }
 }

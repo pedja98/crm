@@ -23,7 +23,6 @@ public class UserDto {
     private Language language;
     private Long shopId;
     private String shopName;
-    private String salesmen;
     private String createdByUsername;
     private String modifiedByUsername;
     private Instant dateCreated;

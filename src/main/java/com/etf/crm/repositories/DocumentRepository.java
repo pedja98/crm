@@ -1,5 +1,6 @@
 package com.etf.crm.repositories;
 
+import com.etf.crm.dtos.DocumentDto;
 import com.etf.crm.entities.Document;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,21 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     @Query("SELECT d FROM Document d WHERE d.deleted = false")
     List<Document> findAllNotDeleted();
+
+    @Query("""
+            SELECT new com.etf.crm.dtos.DocumentDto(
+                d.id,
+                d.name,
+                cb.username,
+                mb.username,
+                d.dateCreated,
+                d.dateModified
+            )
+            FROM Document d
+            LEFT JOIN d.createdBy cb
+            LEFT JOIN d.modifiedBy mb
+            WHERE d.contract.id = :contractId AND d.deleted = false
+            """)
+    List<DocumentDto> findDocumentDtosByContractIdAndDeletedFalse(@Param("contractId") Long contractId);
+
 }

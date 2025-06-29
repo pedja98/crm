@@ -22,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByDifferentUsernameAndSameEmail(@Param("username") String username, @Param("email") String email);
 
     @Query("SELECT new com.etf.crm.dtos.UserDto(u.firstName, u.lastName, u.email, u.username, " +
-            "u.phone, u.type, u.language, s.id, s.name, u.salesmen," +
+            "u.phone, u.type, u.language, s.id, s.name," +
             " cb.username, mb.username, u.dateCreated, u.dateModified)" +
             "FROM User u " +
             "LEFT JOIN u.shop s " +
@@ -37,7 +37,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<AuthUserDto> findAuthUserDtoByUsernameAndDeletedFalse(String username);
 
     @Query("SELECT new com.etf.crm.dtos.UserDto(u.firstName, u.lastName, u.email, u.username, " +
-            "u.phone, u.type, u.language, s.id, s.name, u.salesmen," +
+            "u.phone, u.type, u.language, s.id, s.name," +
             "  cb.username, mb.username, u.dateCreated, u.dateModified)" +
             "FROM User u " +
             "LEFT JOIN u.shop s " +

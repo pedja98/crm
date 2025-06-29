@@ -52,9 +52,6 @@ public class User {
     @Column(nullable = false, length = 2)
     private Language language = Language.EN;
 
-    @Column(nullable = false)
-    private String salesmen = "";
-
     @ManyToOne
     @JoinColumn(name = "shop", updatable = false)
     private Shop shop = null;

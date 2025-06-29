@@ -26,7 +26,7 @@ public class Document {
 
     @Lob
     @Column(name = "document_content", nullable = false)
-    private String documentContent;
+    private byte[] documentContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = false)

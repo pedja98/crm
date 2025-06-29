@@ -1,9 +1,6 @@
 package com.etf.crm.controllers;
 
-import com.etf.crm.dtos.MessageResponse;
-import com.etf.crm.dtos.AssignToDto;
-import com.etf.crm.dtos.SaveUserRequestDto;
-import com.etf.crm.dtos.UserDto;
+import com.etf.crm.dtos.*;
 import com.etf.crm.entities.User;
 import com.etf.crm.enums.UserType;
 import com.etf.crm.services.UserService;
@@ -64,5 +61,13 @@ public class UserController {
     @GetMapping("/assign-to")
     public ResponseEntity<List<AssignToDto>> getAllAssignTo(@RequestParam(required = false, value = "type") UserType type) {
         return ResponseEntity.ok(this.userService.getAllAssignToDto(type));
+    }
+
+    @PatchMapping("/{username}/shop")
+    public ResponseEntity<MessageResponse> setUserShop(
+            @PathVariable String username,
+            @RequestBody SetUserShopDto dto
+    ) {
+        return ResponseEntity.ok(new MessageResponse(userService.setUserShop(username, dto.getShopId())));
     }
 }

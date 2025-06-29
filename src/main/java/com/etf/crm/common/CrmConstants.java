@@ -20,6 +20,8 @@ public final class CrmConstants {
 
         public static final String COMPANY_NOT_FOUND = "companyNotFound";
 
+        public static final String DOCUMENT_NOT_FOUND = "documentNotFound";
+
         public static final String PASSWORD_NOT_CHANGED = "passwordNotChanged";
 
         public static final String INVALID_PASSWORD_FORMAT = "invalidPasswordFormat";
@@ -64,6 +66,8 @@ public final class CrmConstants {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class SuccessCodes {
         public static final String CREATE_CONTRACT = "createContract";
+
+        public static final String DOCUMENT_UPLOADED = "documentUploaded";
 
         public static  String SHOP_DELETED = "shopDeleted";
 

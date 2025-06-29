@@ -1,10 +1,6 @@
 package com.etf.crm.entities;
 
-import com.etf.crm.enums.Language;
-import com.etf.crm.enums.UserType;
-
 import jakarta.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
