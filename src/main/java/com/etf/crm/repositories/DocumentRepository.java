@@ -40,4 +40,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             """)
     List<DocumentDto> findDocumentDtosByContractIdAndDeletedFalse(@Param("contractId") Long contractId);
 
+    @Query("SELECT Count(*) FROM Document d WHERE d.id = :id AND d.deleted = false and d.contract.id = :contractId")
+    Integer countDocumentsOfContract(@Param("contractId") Long contractId);
 }

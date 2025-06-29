@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -15,6 +16,7 @@ import java.time.Instant;
 public class ContractDto {
     private Long id;
     private String name;
+    private LocalDate dateSigned;
     private String referenceNumber;
     private Integer contractObligation;
     private ContractStatus status;

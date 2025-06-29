@@ -4,6 +4,8 @@ import com.etf.crm.dtos.DocumentDto;
 import com.etf.crm.dtos.DocumentUploadDto;
 import com.etf.crm.entities.Contract;
 import com.etf.crm.entities.Document;
+import com.etf.crm.enums.ContractStatus;
+import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.ContractRepository;
 import com.etf.crm.repositories.DocumentRepository;
@@ -39,6 +41,10 @@ public class DocumentService {
         Contract contract = contractRepository.findById(uploadDto.getContractId())
                 .orElseThrow(() -> new RuntimeException(CONTRACT_NOT_FOUND));
 
+        if (!contract.getStatus().equals(ContractStatus.CREATED)) {
+            throw new BadRequestException(INVALID_REQUEST);
+        }
+
         byte[] fileBytes;
         try {
             fileBytes = Base64.getDecoder().decode(uploadDto.getFileContent());
@@ -46,16 +52,13 @@ public class DocumentService {
             throw new RuntimeException("Invalid Base64 file content");
         }
 
-        // Store file in file system
         String filePath = fileStorageService.storeFile(fileBytes, uploadDto.getFileName(), uploadDto.getContractId());
 
-        // Determine content type
         String contentType = uploadDto.getContentType();
         if (contentType == null || contentType.isEmpty()) {
             contentType = getContentType(uploadDto.getFileName()).toString();
         }
 
-        // Save document metadata to database
         Document document = Document.builder()
                 .name(uploadDto.getFileName())
                 .filePath(filePath)
@@ -106,19 +109,21 @@ public class DocumentService {
     public void deleteDocument(Long documentId) {
         Document document = getDocumentById(documentId);
 
+        Contract contract = this.contractRepository.findByIdAndDeletedFalse(document.getContract().getId())
+                        .orElseThrow(() -> new RuntimeException(CONTRACT_NOT_FOUND));
+
+        if (!contract.getStatus().equals(ContractStatus.CREATED)) {
+            throw new BadRequestException(INVALID_REQUEST);
+        }
+
         document.setDeleted(true);
         document.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         documentRepository.save(document);
-        // fileStorageService.deleteFile(document.getFilePath());
     }
 
-    public void permanentlyDeleteDocument(Long documentId) {
+    private void permanentlyDeleteDocument(Long documentId) {
         Document document = getDocumentById(documentId);
-
-        // Delete physical file
         fileStorageService.deleteFile(document.getFilePath());
-
-        // Delete from database
         documentRepository.delete(document);
     }
 }

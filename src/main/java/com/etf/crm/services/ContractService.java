@@ -1,6 +1,7 @@
 package com.etf.crm.services;
 
 import com.etf.crm.dtos.ContractDto;
+import com.etf.crm.dtos.ContractSignDto;
 import com.etf.crm.dtos.CreateContractDto;
 import com.etf.crm.entities.Contract;
 import com.etf.crm.entities.Offer;
@@ -10,6 +11,7 @@ import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.ContractRepository;
+import com.etf.crm.repositories.DocumentRepository;
 import com.etf.crm.repositories.OfferRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,16 +20,19 @@ import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
 import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
-
-import static com.etf.crm.common.CrmConstants.ErrorCodes.CONTRACT_NOT_FOUND;
 
 @Service
 public class ContractService {
 
     @Autowired
     private ContractRepository contractRepository;
+
+    @Autowired
+    private DocumentRepository documentRepository;
 
     @Autowired
     private OfferRepository offerRepository;
@@ -119,5 +124,47 @@ public class ContractService {
     public ContractDto getContractById(Long id) {
         return this.contractRepository.findAllContractDtoByIdDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+    }
+
+    public String signContract(Long id, ContractSignDto body) {
+        Integer numberOfUploadDocs = documentRepository.countDocumentsOfContract(id);
+
+        if (numberOfUploadDocs == 0) {
+            throw new BadRequestException(DOCUMENT_NOT_UPLOADED);
+        }
+
+        if (body.getDateSigned().isEmpty()) {
+            throw new BadRequestException(INVALID_REQUEST);
+        }
+
+        Contract contract = this.contractRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate transformedDateSigned = LocalDate.parse(body.getDateSigned(), formatter);
+
+        contract.setDateSigned(transformedDateSigned);
+        contract.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        contract.setStatus(ContractStatus.CONTRACT_SIGNED);
+
+        this.contractRepository.save(contract);
+
+        return CONTRACT_SIGN;
+    }
+
+    public String verifyContract(Long id) {
+        Contract contract = this.contractRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+
+        if (!contract.getStatus().equals(ContractStatus.CONTRACT_SIGNED)) {
+            throw new BadRequestException(INVALID_REQUEST);
+        }
+
+        contract.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        contract.setStatus(ContractStatus.CONTRACT_SIGNED_AND_VERIFIED);
+
+        this.contractRepository.save(contract);
+
+        return CONTRACT_VERIFY;
     }
 }

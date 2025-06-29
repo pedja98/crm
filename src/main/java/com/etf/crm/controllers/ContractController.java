@@ -1,8 +1,6 @@
 package com.etf.crm.controllers;
 
-import com.etf.crm.dtos.ContractDto;
-import com.etf.crm.dtos.CreateContractDto;
-import com.etf.crm.dtos.MessageResponse;
+import com.etf.crm.dtos.*;
 import com.etf.crm.enums.ContractStatus;
 import com.etf.crm.services.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +34,15 @@ public class ContractController {
     @GetMapping("/{id}")
     public ResponseEntity<ContractDto> getOfferById(@PathVariable Long id) {
         return ResponseEntity.ok(contractService.getContractById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MessageResponse> signedContract(@PathVariable Long id, @RequestBody ContractSignDto body) {
+        return ResponseEntity.ok(new MessageResponse(this.contractService.signContract(id, body)));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<MessageResponse> verifyContract(@PathVariable Long id) {
+        return ResponseEntity.ok(new MessageResponse(this.contractService.verifyContract(id)));
     }
 }

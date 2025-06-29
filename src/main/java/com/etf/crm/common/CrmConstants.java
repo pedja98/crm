@@ -8,6 +8,8 @@ public final class CrmConstants {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class ErrorCodes {
+        public static final String INVALID_REQUEST = "invalid_request";
+
         public static final String INVALID_SESSION_DATE_TIME = "invalidSessionDateTime";
 
         public static final String NOT_EDITABLE = "notEditable";
@@ -61,10 +63,16 @@ public final class CrmConstants {
         public static final String REGION_NOT_FOUND = "regionNotFound";
 
         public static final String INVALID_OFFER_STATUS = "invalidOfferStatus";
+
+        public static final String DOCUMENT_NOT_UPLOADED = "documentNotUploaded";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class SuccessCodes {
+        public static final String CONTRACT_SIGN = "contractSign";
+
+        public static final String CONTRACT_VERIFY = "contractVerify";
+
         public static final String CREATE_CONTRACT = "createContract";
 
         public static final String DOCUMENT_UPLOADED = "documentUploaded";

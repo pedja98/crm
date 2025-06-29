@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -32,6 +33,9 @@ public class Contract {
     @Column(nullable = false, name = "contract_obligation")
     private Integer contractObligation = 0;
 
+    @Column(name = "date_signed")
+    private LocalDate dateSigned = null;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ContractStatus status;
@@ -45,7 +49,7 @@ public class Contract {
     private Opportunity opportunity;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="offer_id", nullable = false)
+    @JoinColumn(name = "offer_id", nullable = false)
     private Offer offer;
 
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
