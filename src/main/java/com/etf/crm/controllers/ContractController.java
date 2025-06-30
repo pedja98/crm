@@ -36,17 +36,17 @@ public class ContractController {
         return ResponseEntity.ok(contractService.getContractById(id));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/signed")
     public ResponseEntity<MessageResponse> signedContract(@PathVariable Long id, @RequestBody ContractSignDto body) {
         return ResponseEntity.ok(new MessageResponse(this.contractService.signContract(id, body)));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/verify")
     public ResponseEntity<MessageResponse> verifyContract(@PathVariable Long id) {
         return ResponseEntity.ok(new MessageResponse(this.contractService.verifyContract(id)));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/close")
     public ResponseEntity<MessageResponse> closeContract(@PathVariable Long id) {
         return ResponseEntity.ok(new MessageResponse(this.contractService.verifyContract(id)));
     }
