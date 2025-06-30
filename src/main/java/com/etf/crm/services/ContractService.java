@@ -3,16 +3,18 @@ package com.etf.crm.services;
 import com.etf.crm.dtos.ContractDto;
 import com.etf.crm.dtos.ContractSignDto;
 import com.etf.crm.dtos.CreateContractDto;
+import com.etf.crm.entities.Company;
 import com.etf.crm.entities.Contract;
 import com.etf.crm.entities.Offer;
+import com.etf.crm.entities.Opportunity;
+import com.etf.crm.enums.CompanyStatus;
 import com.etf.crm.enums.ContractStatus;
 import com.etf.crm.enums.OfferStatus;
+import com.etf.crm.enums.OpportunityStatus;
 import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
-import com.etf.crm.repositories.ContractRepository;
-import com.etf.crm.repositories.DocumentRepository;
-import com.etf.crm.repositories.OfferRepository;
+import com.etf.crm.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +34,13 @@ public class ContractService {
     private ContractRepository contractRepository;
 
     @Autowired
+    private OpportunityRepository opportunityRepository;
+
+    @Autowired
     private DocumentRepository documentRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Autowired
     private OfferRepository offerRepository;
@@ -165,6 +173,45 @@ public class ContractService {
 
         this.contractRepository.save(contract);
 
+        Offer offer = this.offerRepository.findById(contract.getOffer().getId())
+                .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
+
+        offer.setStatus(OfferStatus.CONCLUDED);
+        offer.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        this.offerRepository.save(offer);
+
+        Opportunity opportunity = opportunityRepository.findById(contract.getOpportunity().getId())
+                .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
+
+        opportunity.setStatus(OpportunityStatus.CLOSE_WON);
+        opportunity.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        this.opportunityRepository.save(opportunity);
+
+        Company company = this.companyRepository.findById(contract.getCompany().getId())
+                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+
+        company.setStatus(CompanyStatus.ACTIVE);
+        company.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+
         return CONTRACT_VERIFY;
+    }
+
+    public String closeContract(Long id) {
+        Contract contract = this.contractRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+
+        if (contract.getStatus().equals(ContractStatus.CONTRACT_SIGNED_AND_VERIFIED)) {
+            throw new BadRequestException(INVALID_REQUEST);
+        }
+        this.contractRepository.save(contract);
+
+        Offer offer = this.offerRepository.findById(contract.getOffer().getId())
+                .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
+
+        offer.setStatus(OfferStatus.SALESMEN_CLOSED);
+        offer.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        this.offerRepository.save(offer);
+
+        return CONTRACT_CLOSED;
     }
 }

@@ -71,6 +71,8 @@ public final class CrmConstants {
     public static final class SuccessCodes {
         public static final String CONTRACT_SIGN = "contractSign";
 
+        public static final String CONTRACT_CLOSED = "contractClosed";
+
         public static final String CONTRACT_VERIFY = "contractVerify";
 
         public static final String CREATE_CONTRACT = "createContract";

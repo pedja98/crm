@@ -7,6 +7,7 @@ import com.etf.crm.entities.Company;
 import com.etf.crm.entities.Offer;
 import com.etf.crm.entities.Opportunity;
 import com.etf.crm.enums.OfferStatus;
+import com.etf.crm.enums.OpportunityStatus;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.CompanyRepository;
@@ -52,7 +53,9 @@ public class OfferService {
                 .createdBy(SetCurrentUserFilter.getCurrentUser())
                 .deleted(false)
                 .build();
-        System.out.println(offer.getName());
+
+        opportunity.setStatus(OpportunityStatus.NEGOTIATIONS);
+
         return new CreateCrmOfferResponseDto(this.offerRepository.save(offer).getId());
     }
 
@@ -122,7 +125,7 @@ public class OfferService {
         return offerRepository.findAllOfferDtoByOpportunityIdAndDeletedFalse(opportunityId);
     }
 
-    @jakarta.transaction.Transactional
+    @Transactional
     public String patchOffer(Long id, Map<String, Object> updates) {
         Offer offer = offerRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));

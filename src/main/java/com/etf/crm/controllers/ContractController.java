@@ -45,4 +45,9 @@ public class ContractController {
     public ResponseEntity<MessageResponse> verifyContract(@PathVariable Long id) {
         return ResponseEntity.ok(new MessageResponse(this.contractService.verifyContract(id)));
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<MessageResponse> closeContract(@PathVariable Long id) {
+        return ResponseEntity.ok(new MessageResponse(this.contractService.verifyContract(id)));
+    }
 }
