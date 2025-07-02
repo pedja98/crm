@@ -142,6 +142,13 @@ public class OfferService {
                 throw new IllegalArgumentException("Field '" + key + "' is not allowed to be updated");
             }
 
+            if (key.equals("status")
+                    && Arrays.stream(new OfferStatus[]{OfferStatus.L1_PENDING, OfferStatus.L2_PENDING})
+                    .anyMatch(status -> status.name().equals(value))
+                    && this.offerRepository.existsActiveOfferByOpportunityId(offer.getOpportunity().getId(), offer.getId())) {
+                throw new RuntimeException(OFFER_STATUS_TRANSITION_NOT_POSSIBLE);
+            }
+
             try {
                 Field field = Offer.class.getDeclaredField(key);
                 field.setAccessible(true);

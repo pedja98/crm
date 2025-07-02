@@ -8,7 +8,9 @@ public final class CrmConstants {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class ErrorCodes {
-        public static final String INVALID_REQUEST = "invalid_request";
+        public static final String OFFER_STATUS_TRANSITION_NOT_POSSIBLE = "offerStatusTransitionNotPossible";
+
+        public static final String INVALID_REQUEST = "invalidRequest";
 
         public static final String INVALID_SESSION_DATE_TIME = "invalidSessionDateTime";
 
