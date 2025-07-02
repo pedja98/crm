@@ -174,7 +174,7 @@ public class OfferService {
                 throw new RuntimeException("Failed to set field '" + key + "'", e);
             }
         }
-
+        offer.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         offerRepository.save(offer);
         return OFFER_UPDATED;
     }

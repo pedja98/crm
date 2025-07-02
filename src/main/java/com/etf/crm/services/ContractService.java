@@ -16,6 +16,8 @@ import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
@@ -26,6 +28,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
+
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class ContractService {
@@ -44,6 +48,9 @@ public class ContractService {
 
     @Autowired
     private OfferRepository offerRepository;
+
+    @Value("${offer.api.base-url}")
+    private String omOfferApiBaseUrl;
 
     public String createContract(CreateContractDto body) {
         Offer offer = this.offerRepository.findById(body.getOfferId())
@@ -180,6 +187,12 @@ public class ContractService {
         offer.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         this.offerRepository.save(offer);
 
+        try {
+            this.updateOmOfferStatus(offer.getId(), OfferStatus.CONCLUDED);
+        } catch (Exception e) {
+            throw new RuntimeException(INVALID_REQUEST);
+        }
+
         Opportunity opportunity = opportunityRepository.findById(contract.getOpportunity().getId())
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
 
@@ -196,6 +209,28 @@ public class ContractService {
         return CONTRACT_VERIFY;
     }
 
+    private void updateOmOfferStatus(Long offerId, OfferStatus status) {
+        String url = omOfferApiBaseUrl + offerId + "/status";
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("status", String.valueOf(status));
+
+        WebClient webClient = WebClient.create();
+
+        try {
+            webClient.patch()
+                    .uri(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("X-Username", SetCurrentUserFilter.getCurrentUser().getUsername())
+                    .header("X-User-Type", String.valueOf(SetCurrentUserFilter.getCurrentUser().getType()))
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     public String closeContract(Long id) {
         Contract contract = this.contractRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
@@ -210,6 +245,13 @@ public class ContractService {
 
         offer.setStatus(OfferStatus.SALESMEN_CLOSED);
         offer.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+
+        try {
+            this.updateOmOfferStatus(offer.getId(), OfferStatus.SALESMEN_CLOSED);
+        } catch (Exception e) {
+            System.out.println("LL");
+            throw new RuntimeException(INVALID_REQUEST);
+        }
         this.offerRepository.save(offer);
 
         return CONTRACT_CLOSED;
