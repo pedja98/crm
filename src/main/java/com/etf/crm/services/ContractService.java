@@ -7,10 +7,7 @@ import com.etf.crm.entities.Company;
 import com.etf.crm.entities.Contract;
 import com.etf.crm.entities.Offer;
 import com.etf.crm.entities.Opportunity;
-import com.etf.crm.enums.CompanyStatus;
-import com.etf.crm.enums.ContractStatus;
-import com.etf.crm.enums.OfferStatus;
-import com.etf.crm.enums.OpportunityStatus;
+import com.etf.crm.enums.*;
 import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
@@ -203,7 +200,7 @@ public class ContractService {
         Company company = this.companyRepository.findById(contract.getCompany().getId())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
-        company.setStatus(CompanyStatus.ACTIVE);
+        company.setStatus(opportunity.getType().equals(OpportunityType.TERMINATION) ? CompanyStatus.INACTIVE : CompanyStatus.ACTIVE);
         company.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
 
         return CONTRACT_VERIFY;

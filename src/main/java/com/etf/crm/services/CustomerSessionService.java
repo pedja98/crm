@@ -12,7 +12,6 @@ import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.CompanyRepository;
 import com.etf.crm.repositories.CustomerSessionRepository;
-import com.etf.crm.repositories.OpportunityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +34,7 @@ public class CustomerSessionService {
     private CompanyRepository companyRepository;
 
     @Autowired
-    private OpportunityRepository opportunityRepository;
+    private OpportunityService opportunityService;
 
     @Transactional
     public String createCustomerSession(SaveCustomerSessionDto customerSessionDetails) {
@@ -47,20 +46,8 @@ public class CustomerSessionService {
         Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompany())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
-        Opportunity newOpportunity = null;
-        if (customerSessionDetails.getOpportunityType() != null
-                && customerSessionDetails.getOutcome().equals(CustomerSessionOutcome.NEW_OFFER)
-                && customerSessionDetails.getStatus().equals(CustomerSessionStatus.HELD)) {
-            Opportunity opportunity = Opportunity.builder()
-                    .name("OPP " + company.getName() + " " + (new SimpleDateFormat("dd/MM/yyyy")).format(new Date()))
-                    .type(customerSessionDetails.getOpportunityType())
-                    .status(OpportunityStatus.CREATED)
-                    .createdBy(currentUser)
-                    .deleted(false)
-                    .company(company)
-                    .build();
-            newOpportunity = this.opportunityRepository.save(opportunity);
-        }
+        Opportunity opportunity = this.opportunityService.createOpportunity(company, customerSessionDetails.getOpportunityType(),
+                customerSessionDetails.getOutcome(), customerSessionDetails.getStatus());
 
         CustomerSession customerSession = CustomerSession.builder()
                 .name(customerSessionDetails.getMode() + " " + company.getName() + " " + (new SimpleDateFormat("dd/MM/yyyy")).format(new Date()))
@@ -68,7 +55,7 @@ public class CustomerSessionService {
                 .status(customerSessionDetails.getStatus())
                 .type(customerSessionDetails.getType())
                 .mode(customerSessionDetails.getMode())
-                .opportunity(newOpportunity)
+                .opportunity(opportunity)
                 .outcome(customerSessionDetails.getOutcome())
                 .sessionStart(customerSessionDetails.getSessionStart())
                 .sessionEnd(customerSessionDetails.getSessionEnd())
@@ -170,20 +157,8 @@ public class CustomerSessionService {
         Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompany())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
-        Opportunity newOpportunity = null;
-        if (customerSessionDetails.getOpportunityType() != null
-                && customerSessionDetails.getOutcome().equals(CustomerSessionOutcome.NEW_OFFER)
-                && customerSessionDetails.getStatus().equals(CustomerSessionStatus.HELD)) {
-            Opportunity opportunity = Opportunity.builder()
-                    .name("OPP " + company.getName() + " " + (new SimpleDateFormat("dd/MM/yyyy")).format(new Date()))
-                    .type(customerSessionDetails.getOpportunityType())
-                    .status(OpportunityStatus.CREATED)
-                    .createdBy(currentUser)
-                    .deleted(false)
-                    .company(company)
-                    .build();
-            newOpportunity = this.opportunityRepository.save(opportunity);
-        }
+        Opportunity opportunity = this.opportunityService.createOpportunity(company, customerSessionDetails.getOpportunityType(),
+                customerSessionDetails.getOutcome(), customerSessionDetails.getStatus());
 
         customerSession.setDescription(customerSessionDetails.getDescription());
         customerSession.setStatus(customerSessionDetails.getStatus());
@@ -193,7 +168,7 @@ public class CustomerSessionService {
         customerSession.setSessionStart(customerSessionDetails.getSessionStart());
         customerSession.setSessionEnd(customerSessionDetails.getSessionEnd());
         customerSession.setCompany(company);
-        customerSession.setOpportunity(newOpportunity);
+        customerSession.setOpportunity(opportunity);
         customerSession.setModifiedBy(currentUser);
 
         this.customerSessionRepository.save(customerSession);

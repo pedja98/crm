@@ -12,6 +12,8 @@ public final class CrmConstants {
 
         public static final String INVALID_REQUEST = "invalidRequest";
 
+        public static final String CAN_NOT_CREATE_OPPORTUNITY_FOR_COMPANY_IN_THIS_STATUS = "canNotCreateOpportunityForCompanyInThisStatus";
+
         public static final String INVALID_SESSION_DATE_TIME = "invalidSessionDateTime";
 
         public static final String NOT_EDITABLE = "notEditable";
