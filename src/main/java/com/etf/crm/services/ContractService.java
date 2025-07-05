@@ -32,6 +32,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class ContractService {
 
     @Autowired
+    private OmOfferService omOfferService;
+
+    @Autowired
     private ContractRepository contractRepository;
 
     @Autowired
@@ -185,7 +188,7 @@ public class ContractService {
         this.offerRepository.save(offer);
 
         try {
-            this.updateOmOfferStatus(offer.getId(), OfferStatus.CONCLUDED);
+            this.omOfferService.updateOmOfferStatus(offer.getId(), OfferStatus.CONCLUDED);
         } catch (Exception e) {
             throw new RuntimeException(INVALID_REQUEST);
         }
@@ -206,28 +209,6 @@ public class ContractService {
         return CONTRACT_VERIFY;
     }
 
-    private void updateOmOfferStatus(Long offerId, OfferStatus status) {
-        String url = omOfferApiBaseUrl + offerId + "/status";
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("status", String.valueOf(status));
-
-        WebClient webClient = WebClient.create();
-
-        try {
-            webClient.patch()
-                    .uri(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("X-Username", SetCurrentUserFilter.getCurrentUser().getUsername())
-                    .header("X-User-Type", String.valueOf(SetCurrentUserFilter.getCurrentUser().getType()))
-                    .bodyValue(requestBody)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
     public String closeContract(Long id) {
         Contract contract = this.contractRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
@@ -244,9 +225,8 @@ public class ContractService {
         offer.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
 
         try {
-            this.updateOmOfferStatus(offer.getId(), OfferStatus.SALESMEN_CLOSED);
+            this.omOfferService.updateOmOfferStatus(offer.getId(), OfferStatus.SALESMEN_CLOSED);
         } catch (Exception e) {
-            System.out.println("LL");
             throw new RuntimeException(INVALID_REQUEST);
         }
         this.offerRepository.save(offer);

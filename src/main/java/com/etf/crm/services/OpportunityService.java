@@ -3,10 +3,13 @@ package com.etf.crm.services;
 import com.etf.crm.dtos.OpportunityDto;
 import com.etf.crm.entities.Company;
 import com.etf.crm.entities.Opportunity;
+import com.etf.crm.entities.User;
 import com.etf.crm.enums.*;
 import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
+import com.etf.crm.repositories.ContractRepository;
+import com.etf.crm.repositories.OfferRepository;
 import com.etf.crm.repositories.OpportunityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +27,16 @@ import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 public class OpportunityService {
 
     @Autowired
+    private OmOfferService omOfferService;
+
+    @Autowired
     private OpportunityRepository opportunityRepository;
+
+    @Autowired
+    private ContractRepository contractRepository;
+
+    @Autowired
+    private OfferRepository offerRepository;
 
     public OpportunityDto getOpportunityById(Long id) {
         return this.opportunityRepository.findOpportunityDtoByIdAndDeletedFalse(id)
@@ -122,12 +134,19 @@ public class OpportunityService {
     public String closeOpportunity(Long id) {
         Opportunity opportunity = this.opportunityRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
-        if (opportunity.getStatus().equals(OpportunityStatus.CLOSE_LOST)) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+
+        if (opportunity.getStatus().equals(OpportunityStatus.CLOSE_LOST) || opportunity.getStatus().equals(OpportunityStatus.CLOSE_WON)) {
             throw new BadRequestException(NOT_EDITABLE);
         }
         opportunity.setStatus(OpportunityStatus.CLOSE_LOST);
-        opportunity.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        opportunity.setModifiedBy(currentUser);
+
         this.opportunityRepository.save(opportunity);
+        this.omOfferService.closeAllOmOffersConnectedToOpportunity(id);
+        this.offerRepository.updateOfferStatusAndModifyByViaOpportunityId(id, OfferStatus.SALESMEN_CLOSED, currentUser);
+        this.contractRepository.updateContractStatusByOpportunityId(id, ContractStatus.SALESMAN_CLOSED, currentUser);
+
         return OPPORTUNITY_CLOSED;
     }
 }

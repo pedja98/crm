@@ -2,7 +2,10 @@ package com.etf.crm.repositories;
 
 import com.etf.crm.dtos.ContractDto;
 import com.etf.crm.entities.Contract;
+import com.etf.crm.entities.User;
+import com.etf.crm.enums.ContractStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,6 +16,7 @@ import java.util.Optional;
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long> {
     Optional<Contract> findByIdAndDeletedFalse(Long id);
+
     List<Contract> findAllByDeletedFalse();
 
     @Query("""
@@ -40,4 +44,16 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             WHERE c.deleted = false and c.id = :id
             """)
     Optional<ContractDto> findAllContractDtoByIdDeletedFalse(@Param("id") Long id);
+
+    @Modifying
+    @Query("""
+                UPDATE Contract c
+                SET c.status = :contractStatus,
+                    c.modifiedBy = :modifiedBy,
+                    c.dateModified = CURRENT_TIMESTAMP
+                WHERE c.opportunity.id = :opportunityId AND c.deleted = false
+            """)
+    void updateContractStatusByOpportunityId(@Param("opportunityId") Long opportunityId,
+                                             @Param("contractStatus") ContractStatus contractStatus,
+                                             @Param("modifiedBy") User modifiedBy);
 }

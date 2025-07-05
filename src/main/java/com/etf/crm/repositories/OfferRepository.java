@@ -2,7 +2,10 @@ package com.etf.crm.repositories;
 
 import com.etf.crm.dtos.OfferDto;
 import com.etf.crm.entities.Offer;
+import com.etf.crm.entities.User;
+import com.etf.crm.enums.OfferStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -67,4 +70,17 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
                   AND o.deleted = false
             """)
     boolean existsActiveOfferByOpportunityId(@Param("opportunityId") Long opportunityId, @Param("offerId") long offerId);
+
+    @Modifying
+    @Query("""
+                UPDATE Offer o
+                SET o.status = :offerStatus,
+                    o.modifiedBy = :modifiedBy,
+                    o.dateModified = CURRENT_TIMESTAMP
+                WHERE o.opportunity.id = :opportunityId AND o.deleted = false
+            """)
+    void updateOfferStatusAndModifyByViaOpportunityId(@Param("opportunityId") Long opportunityId,
+                                                      @Param("offerStatus") OfferStatus offerStatus,
+                                                      @Param("modifiedBy") User modifiedBy);
+
 }
