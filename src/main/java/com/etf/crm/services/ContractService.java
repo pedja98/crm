@@ -78,13 +78,16 @@ public class ContractService {
         return CREATE_CONTRACT;
     }
 
-    public List<ContractDto> getAllContracts(String sortBy, String sortOrder, String name, String referenceNumber, List<ContractStatus> statuses) {
+    public List<ContractDto> getAllContracts(String sortBy, String sortOrder, String name,
+                                             String referenceNumber, List<ContractStatus> statuses, Long companyId, Long opportunityId) {
         List<ContractDto> contracts = contractRepository.findAllContractDtoByDeletedFalse();
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("name", name);
         filters.put("referenceNumber", referenceNumber);
         filters.put("status", statuses);
+        filters.put("companyId", companyId);
+        filters.put("opportunityId", opportunityId);
 
         List<Predicate<ContractDto>> predicates = filters.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
@@ -102,6 +105,8 @@ public class ContractService {
                                 return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
                             } else if (value instanceof List<?> listValue) {
                                 return fieldValue != null && listValue.contains(fieldValue);
+                            } else if (value instanceof Long longValue) {
+                                return fieldValue != null && fieldValue.equals(longValue);
                             }
                             return false;
                         } catch (NoSuchFieldException | IllegalAccessException e) {

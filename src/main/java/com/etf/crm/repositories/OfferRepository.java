@@ -42,20 +42,6 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     List<OfferDto> findAllOfferDtoByDeletedFalse();
 
     @Query("""
-                SELECT new com.etf.crm.dtos.OfferDto(o.id, o.name, c.id, c.name, opp.id, opp.name,
-                                                     con.id, con.name, o.status, createdBy.username, modifiedBy.username,
-                                                     o.dateCreated, o.dateModified)
-                FROM Offer o
-                LEFT JOIN o.company c
-                LEFT JOIN o.opportunity opp
-                LEFT JOIN o.contract con
-                LEFT JOIN o.createdBy createdBy
-                LEFT JOIN o.modifiedBy modifiedBy
-                WHERE o.deleted = false AND opp.id = :opportunityId
-            """)
-    List<OfferDto> findAllOfferDtoByOpportunityIdAndDeletedFalse(Long opportunityId);
-
-    @Query("""
                 SELECT COUNT(o) > 0
                 FROM Offer o
                 WHERE o.opportunity.id = :opportunityId

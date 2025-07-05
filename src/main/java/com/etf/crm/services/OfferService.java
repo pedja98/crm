@@ -64,12 +64,14 @@ public class OfferService {
                 .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
     }
 
-    public List<OfferDto> getAllOffers(String sortBy, String sortOrder, String name, List<OfferStatus> statuses) {
+    public List<OfferDto> getAllOffers(String sortBy, String sortOrder, String name, List<OfferStatus> statuses, Long companyId, Long opportunityId) {
         List<OfferDto> offers = offerRepository.findAllOfferDtoByDeletedFalse();
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("name", name);
         filters.put("status", statuses);
+        filters.put("companyId", companyId);
+        filters.put("opportunityId", opportunityId);
 
         List<Predicate<OfferDto>> predicates = filters.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
@@ -87,6 +89,8 @@ public class OfferService {
                                 return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
                             } else if (value instanceof List<?> listValue) {
                                 return fieldValue != null && listValue.contains(fieldValue);
+                            } else if (value instanceof Long longValue) {
+                                return fieldValue != null && fieldValue.equals(longValue);
                             }
                             return false;
                         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -119,10 +123,6 @@ public class OfferService {
         }
 
         return offers;
-    }
-
-    public List<OfferDto> getOffersByOpportunityId(Long opportunityId) {
-        return offerRepository.findAllOfferDtoByOpportunityIdAndDeletedFalse(opportunityId);
     }
 
     @Transactional

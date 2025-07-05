@@ -36,13 +36,10 @@ public class OfferController {
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortOrder,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false, value = "status") List<OfferStatus> statuses) {
-        return ResponseEntity.ok(offerService.getAllOffers(sortBy, sortOrder, name, statuses));
-    }
-
-    @GetMapping("/opportunity/{opportunityId}")
-    public ResponseEntity<List<OfferDto>> getOffersByOpportunityId(@PathVariable Long opportunityId) {
-        return ResponseEntity.ok(offerService.getOffersByOpportunityId(opportunityId));
+            @RequestParam(required = false, value = "status") List<OfferStatus> statuses,
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) Long opportunityId) {
+        return ResponseEntity.ok(offerService.getAllOffers(sortBy, sortOrder, name, statuses, companyId, opportunityId));
     }
 
     @PatchMapping("/{id}")

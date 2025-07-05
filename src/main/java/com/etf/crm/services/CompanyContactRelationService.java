@@ -62,6 +62,11 @@ public class CompanyContactRelationService {
                 .orElseThrow(() -> new ItemNotFoundException(RELATION_NOT_FOUND));
     }
 
+    public List<CompanyContactRelationDto> getAllRelationByCompanyId(Long companyId) {
+        return this.relationRepository.findAllCompanyContactRelationDtoByCompanyIdAndDeletedFalse(companyId)
+                .orElseThrow(() -> new ItemNotFoundException(RELATION_NOT_FOUND));
+    }
+
     @Transactional
     public String deleteRelation(Long id) {
         CompanyContactRelation relation = this.relationRepository.findByIdAndDeletedFalse(id)

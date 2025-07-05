@@ -29,8 +29,9 @@ public class OpportunityController {
             @RequestParam(required = false, defaultValue = "asc") String sortOrder,
             @RequestParam(required = false) String name,
             @RequestParam(required = false, value = "type") List<OpportunityType> types,
-            @RequestParam(required = false, value = "status") List<OpportunityStatus> statuses) {
-        return ResponseEntity.ok(opportunityService.getAllOpportunities(sortBy, sortOrder, name, types, statuses));
+            @RequestParam(required = false, value = "status") List<OpportunityStatus> statuses,
+            @RequestParam(required = false) Long companyId) {
+        return ResponseEntity.ok(opportunityService.getAllOpportunities(sortBy, sortOrder, name, types, statuses, companyId));
     }
 
     @PatchMapping("/{id}/close")

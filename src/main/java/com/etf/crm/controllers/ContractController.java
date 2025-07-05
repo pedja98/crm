@@ -27,8 +27,10 @@ public class ContractController {
             @RequestParam(required = false, defaultValue = "asc") String sortOrder,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String referenceNumber,
-            @RequestParam(required = false, value = "status") List<ContractStatus> statuses) {
-        return ResponseEntity.ok(contractService.getAllContracts(sortBy, sortOrder, name, referenceNumber, statuses));
+            @RequestParam(required = false, value = "status") List<ContractStatus> statuses,
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) Long opportunityId) {
+        return ResponseEntity.ok(contractService.getAllContracts(sortBy, sortOrder, name, referenceNumber, statuses, companyId, opportunityId));
     }
 
     @GetMapping("/{id}")

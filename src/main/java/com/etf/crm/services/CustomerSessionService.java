@@ -80,7 +80,10 @@ public class CustomerSessionService {
             List<CustomerSessionType> types,
             List<CustomerSessionMode> modes,
             List<CustomerSessionOutcome> outcomes,
-            List<CustomerSessionStatus> statuses) {
+            List<CustomerSessionStatus> statuses,
+            Long companyId,
+            Long opportunityId
+    ) {
         List<CustomerSessionDto> customerSessions = customerSessionRepository.findAllCustomerSessionDtoByDeletedFalse()
                 .orElseThrow(() -> new ItemNotFoundException(NO_USERS_FOUND));
 
@@ -90,6 +93,8 @@ public class CustomerSessionService {
         filters.put("status", statuses);
         filters.put("mode", modes);
         filters.put("type", types);
+        filters.put("companyId", companyId);
+        filters.put("opportunityId", opportunityId);
 
         List<Predicate<CustomerSessionDto>> predicates = filters.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
@@ -107,6 +112,8 @@ public class CustomerSessionService {
                                 return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
                             } else if (value instanceof List<?> listValue) {
                                 return fieldValue != null && listValue.contains(fieldValue);
+                            } else if (value instanceof Long longValue) {
+                                return fieldValue != null && fieldValue.equals(longValue);
                             }
                             return false;
                         } catch (NoSuchFieldException | IllegalAccessException e) {

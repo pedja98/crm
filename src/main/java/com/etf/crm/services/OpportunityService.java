@@ -73,7 +73,8 @@ public class OpportunityService {
             String sortOrder,
             String name,
             List<OpportunityType> types,
-            List<OpportunityStatus> statuses) {
+            List<OpportunityStatus> statuses,
+            Long companyId) {
         List<OpportunityDto> opportunities = this.opportunityRepository.findAllOpportunityDtoByDeletedFalse()
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
 
@@ -81,6 +82,7 @@ public class OpportunityService {
         filters.put("name", name);
         filters.put("status", statuses);
         filters.put("type", types);
+        filters.put("companyId", companyId);
 
         List<Predicate<OpportunityDto>> predicates = filters.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
@@ -98,6 +100,8 @@ public class OpportunityService {
                                 return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
                             } else if (value instanceof List<?> listValue) {
                                 return fieldValue != null && listValue.contains(fieldValue);
+                            } else if (value instanceof Long longValue) {
+                                return fieldValue != null && fieldValue.equals(longValue);
                             }
                             return false;
                         } catch (NoSuchFieldException | IllegalAccessException e) {

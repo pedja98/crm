@@ -36,9 +36,11 @@ public class CustomerSessionController {
             @RequestParam(required = false, value = "type") List<CustomerSessionType> types,
             @RequestParam(required = false, value = "mode") List<CustomerSessionMode> modes,
             @RequestParam(required = false, value = "outcome") List<CustomerSessionOutcome> outcomes,
-            @RequestParam(required = false, value = "status") List<CustomerSessionStatus> statuses
+            @RequestParam(required = false, value = "status") List<CustomerSessionStatus> statuses,
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) Long opportunityId
     ) {
-        return ResponseEntity.ok(customerSessionService.getAllCustomerSessions(sortBy, sortOrder, name, types, modes, outcomes, statuses));
+        return ResponseEntity.ok(customerSessionService.getAllCustomerSessions(sortBy, sortOrder, name, types, modes, outcomes, statuses, companyId, opportunityId));
     }
 
     @PutMapping("/{id}")
