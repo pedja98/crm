@@ -17,23 +17,13 @@ public interface CompanyContactRelationRepository extends JpaRepository<CompanyC
     @Query("SELECT ccr FROM CompanyContactRelation ccr WHERE ccr.contact.id = :contactId AND ccr.deleted = false")
     List<CompanyContactRelation> findAllByContactIdAndDeletedFalse(@Param("contactId") Long contactId);
 
-    @Query("SELECT new com.etf.crm.dtos.CompanyContactRelationDto(ccr.id, CONCAT(co.firstName, CONCAT(' ', co.lastName)), c.id, c.name, ccr.relationType, " +
+    @Query("SELECT new com.etf.crm.dtos.CompanyContactRelationDto(ccr.id, co.id, CONCAT(co.firstName, CONCAT(' ', co.lastName)), c.id, c.name, ccr.relationType, " +
             "cb.username, mb.username, ccr.dateCreated, ccr.dateModified)" +
             "FROM CompanyContactRelation ccr " +
             "LEFT JOIN ccr.createdBy cb " +
             "LEFT JOIN ccr.contact co " +
             "LEFT JOIN ccr.modifiedBy mb " +
             "LEFT JOIN ccr.company c " +
-            "WHERE ccr.contact.id = :contactId AND ccr.deleted = false")
-    Optional<List<CompanyContactRelationDto>> findAllCompanyContactRelationDtoByContactIdAndDeletedFalse(Long contactId);
-
-    @Query("SELECT new com.etf.crm.dtos.CompanyContactRelationDto(ccr.id, CONCAT(co.firstName, CONCAT(' ', co.lastName)), c.id, c.name, ccr.relationType, " +
-            "cb.username, mb.username, ccr.dateCreated, ccr.dateModified)" +
-            "FROM CompanyContactRelation ccr " +
-            "LEFT JOIN ccr.createdBy cb " +
-            "LEFT JOIN ccr.contact co " +
-            "LEFT JOIN ccr.modifiedBy mb " +
-            "LEFT JOIN ccr.company c " +
-            "WHERE ccr.company.id = :companyId AND ccr.deleted = false")
-    Optional<List<CompanyContactRelationDto>> findAllCompanyContactRelationDtoByCompanyIdAndDeletedFalse(Long companyId);
+            "WHERE ccr.deleted = false")
+    Optional<List<CompanyContactRelationDto>> findAllCompanyContactRelationDtoByDeletedFalse();
 }

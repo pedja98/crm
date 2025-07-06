@@ -37,7 +37,7 @@ public class CompanyContactRelationService {
     @Transactional
     public String createRelation(CreateCompanyContactRelationDto relation) {
         User currentUser = SetCurrentUserFilter.getCurrentUser();
-        for(CompanyContactRelationType relationType : relation.getRelationTypes()){
+        for (CompanyContactRelationType relationType : relation.getRelationTypes()) {
             Company company = companyRepository.findByIdAndDeletedFalse(relation.getCompanyId())
                     .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
@@ -57,14 +57,24 @@ public class CompanyContactRelationService {
         return ALL_RELATIONS_CREATED;
     }
 
-    public List<CompanyContactRelationDto> getAllRelationByContactId(Long contactId) {
-        return this.relationRepository.findAllCompanyContactRelationDtoByContactIdAndDeletedFalse(contactId)
+    public List<CompanyContactRelationDto> getAllRelations(Long companyId, Long contactId) {
+        List<CompanyContactRelationDto> relations = this.relationRepository
+                .findAllCompanyContactRelationDtoByDeletedFalse()
                 .orElseThrow(() -> new ItemNotFoundException(RELATION_NOT_FOUND));
-    }
 
-    public List<CompanyContactRelationDto> getAllRelationByCompanyId(Long companyId) {
-        return this.relationRepository.findAllCompanyContactRelationDtoByCompanyIdAndDeletedFalse(companyId)
-                .orElseThrow(() -> new ItemNotFoundException(RELATION_NOT_FOUND));
+        if (companyId != null) {
+            relations = relations.stream()
+                    .filter(relation -> relation.getCompanyId() != null && relation.getCompanyId().equals(companyId))
+                    .toList();
+        }
+
+        if (contactId != null) {
+            relations = relations.stream()
+                    .filter(relation -> relation.getContactId() != null && relation.getContactId().equals(contactId))
+                    .toList();
+        }
+
+        return relations;
     }
 
     @Transactional

@@ -14,6 +14,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class CompanyContactRelationDto {
     private Long id;
+    private Long contactId;
     private String contactFullName;
     private Long companyId;
     private String companyName;

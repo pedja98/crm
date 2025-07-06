@@ -24,14 +24,12 @@ public class CompanyContactRelationController {
         return ResponseEntity.ok(new MessageResponse(relationService.createRelation(relation)));
     }
 
-    @GetMapping("/company/{companyId}")
-    public ResponseEntity<List<CompanyContactRelationDto>> getAllRelationByCompanyId(@PathVariable Long companyId) {
-        return ResponseEntity.ok(relationService.getAllRelationByCompanyId(companyId));
-    }
+    @GetMapping
+    public ResponseEntity<List<CompanyContactRelationDto>> getAllRelations(
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) Long contactId) {
 
-    @GetMapping("/contact/{contactId}")
-    public ResponseEntity<List<CompanyContactRelationDto>> getAllRelationByContactId(@PathVariable Long contactId) {
-        return ResponseEntity.ok(relationService.getAllRelationByContactId(contactId));
+        return ResponseEntity.ok(relationService.getAllRelations(companyId, contactId));
     }
 
     @PutMapping("/{id}")
