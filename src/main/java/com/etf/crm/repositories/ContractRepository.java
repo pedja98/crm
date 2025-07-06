@@ -20,7 +20,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     List<Contract> findAllByDeletedFalse();
 
     @Query("""
-            SELECT new com.etf.crm.dtos.ContractDto(c.id, c.name, c.dateSigned,c.referenceNumber, c.contractObligation, c.status, 
+            SELECT new com.etf.crm.dtos.ContractDto(c.id, c.name, opp.type, c.dateSigned,c.referenceNumber, c.contractObligation, c.status, 
                 comp.id, comp.name, opp.id, opp.name, o.id, o.name,cb.username, mb.username, c.dateCreated, c.dateModified)
             FROM Contract c
             LEFT JOIN c.company comp
@@ -33,7 +33,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     List<ContractDto> findAllContractDtoByDeletedFalse();
 
     @Query("""
-            SELECT new com.etf.crm.dtos.ContractDto(c.id, c.name, c.dateSigned, c.referenceNumber, c.contractObligation, c.status, 
+            SELECT new com.etf.crm.dtos.ContractDto(c.id, c.name, opp.type, c.dateSigned, c.referenceNumber, c.contractObligation, c.status, 
                 comp.id, comp.name, opp.id, opp.name, o.id, o.name, cb.username, mb.username, c.dateCreated, c.dateModified)
             FROM Contract c
             LEFT JOIN c.company comp
@@ -56,4 +56,6 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     void updateContractStatusByOpportunityId(@Param("opportunityId") Long opportunityId,
                                              @Param("contractStatus") ContractStatus contractStatus,
                                              @Param("modifiedBy") User modifiedBy);
+
+    Optional<Contract> findTopByCompanyIdAndStatusOrderByDateModifiedDesc(Long companyId, ContractStatus status);
 }

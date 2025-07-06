@@ -1,6 +1,7 @@
 package com.etf.crm.dtos;
 
 import com.etf.crm.enums.ContractStatus;
+import com.etf.crm.enums.OpportunityType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 public class ContractDto {
     private Long id;
     private String name;
+    private OpportunityType opportunityType;
     private LocalDate dateSigned;
     private String referenceNumber;
     private Integer contractObligation;

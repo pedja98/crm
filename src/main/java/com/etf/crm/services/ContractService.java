@@ -22,6 +22,7 @@ import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
@@ -210,6 +211,7 @@ public class ContractService {
 
         company.setStatus(opportunity.getType().equals(OpportunityType.TERMINATION) ? CompanyStatus.INACTIVE : CompanyStatus.ACTIVE);
         company.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        this.companyRepository.save(company);
 
         return CONTRACT_VERIFY;
     }
@@ -237,5 +239,39 @@ public class ContractService {
         this.offerRepository.save(offer);
 
         return CONTRACT_CLOSED;
+    }
+
+    public int getRemainingContractMonths(Long companyId) {
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+
+        if (!company.getStatus().equals(CompanyStatus.ACTIVE)) {
+            return 0;
+        }
+
+        Optional<Contract> latestSignedContract = contractRepository
+                .findTopByCompanyIdAndStatusOrderByDateModifiedDesc(companyId, ContractStatus.CONTRACT_SIGNED_AND_VERIFIED);
+
+        if (latestSignedContract.isEmpty()) {
+            return 0;
+        }
+
+        Contract contract = latestSignedContract.get();
+        LocalDate signedDate = contract.getDateSigned();
+        Integer obligationMonths = contract.getContractObligation();
+
+        if (signedDate == null || obligationMonths == null || obligationMonths <= 0) {
+            return 0;
+        }
+
+        LocalDate endDate = signedDate.plusMonths(obligationMonths);
+        LocalDate now = LocalDate.now();
+
+        if (endDate.isBefore(now)) {
+            return 0;
+        }
+
+        Period remainingPeriod = Period.between(now, endDate);
+        return remainingPeriod.getYears() * 12 + remainingPeriod.getMonths();
     }
 }
