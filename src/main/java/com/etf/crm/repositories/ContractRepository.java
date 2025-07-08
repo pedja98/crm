@@ -17,6 +17,8 @@ import java.util.Optional;
 public interface ContractRepository extends JpaRepository<Contract, Long> {
     Optional<Contract> findByIdAndDeletedFalse(Long id);
 
+    boolean existsByCompanyIdAndStatusAndDeletedFalse(Long companyId, ContractStatus status);
+
     List<Contract> findAllByDeletedFalse();
 
     @Query("""

@@ -158,6 +158,10 @@ public class ContractService {
         Contract contract = this.contractRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
 
+        if (this.contractRepository.existsByCompanyIdAndStatusAndDeletedFalse(contract.getCompany().getId(), ContractStatus.CONTRACT_SIGNED)) {
+            throw new BadRequestException(THERE_IS_ALREADY_SIGNED_CONTRACT);
+        }
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate transformedDateSigned = LocalDate.parse(body.getDateSigned(), formatter);
 

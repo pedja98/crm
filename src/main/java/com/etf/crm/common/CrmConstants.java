@@ -16,6 +16,8 @@ public final class CrmConstants {
 
         public static final String INVALID_SESSION_DATE_TIME = "invalidSessionDateTime";
 
+        public static final String THERE_IS_ALREADY_SIGNED_CONTRACT = "thereIsAlreadySignedContract";
+
         public static final String NOT_EDITABLE = "notEditable";
 
         public static final String USER_NOT_FOUND = "userNotFound";
