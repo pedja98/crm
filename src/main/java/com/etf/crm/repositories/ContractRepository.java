@@ -56,6 +56,4 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     void updateContractStatusByOpportunityId(@Param("opportunityId") Long opportunityId,
                                              @Param("contractStatus") ContractStatus contractStatus,
                                              @Param("modifiedBy") User modifiedBy);
-
-    Optional<Contract> findTopByCompanyIdAndStatusOrderByDateModifiedDesc(Long companyId, ContractStatus status);
 }

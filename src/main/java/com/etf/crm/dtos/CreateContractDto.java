@@ -10,6 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateContractDto {
-    private Integer contractObligation;
     private Long offerId;
 }

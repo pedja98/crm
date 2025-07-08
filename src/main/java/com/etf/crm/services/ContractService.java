@@ -14,7 +14,6 @@ import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import static com.etf.crm.common.CrmConstants.SuccessCodes.*;
@@ -26,8 +25,6 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
-
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class ContractService {
@@ -64,7 +61,7 @@ public class ContractService {
         String refNo = UUID.randomUUID().toString();
 
         Contract contract = Contract.builder()
-                .contractObligation(body.getContractObligation())
+                .contractObligation(0)
                 .createdBy(SetCurrentUserFilter.getCurrentUser())
                 .deleted(false)
                 .name(offer.getName().replace("Offer", "Contract"))
@@ -239,39 +236,5 @@ public class ContractService {
         this.offerRepository.save(offer);
 
         return CONTRACT_CLOSED;
-    }
-
-    public int getRemainingContractMonths(Long companyId) {
-        Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
-
-        if (!company.getStatus().equals(CompanyStatus.ACTIVE)) {
-            return 0;
-        }
-
-        Optional<Contract> latestSignedContract = contractRepository
-                .findTopByCompanyIdAndStatusOrderByDateModifiedDesc(companyId, ContractStatus.CONTRACT_SIGNED_AND_VERIFIED);
-
-        if (latestSignedContract.isEmpty()) {
-            return 0;
-        }
-
-        Contract contract = latestSignedContract.get();
-        LocalDate signedDate = contract.getDateSigned();
-        Integer obligationMonths = contract.getContractObligation();
-
-        if (signedDate == null || obligationMonths == null || obligationMonths <= 0) {
-            return 0;
-        }
-
-        LocalDate endDate = signedDate.plusMonths(obligationMonths);
-        LocalDate now = LocalDate.now();
-
-        if (endDate.isBefore(now)) {
-            return 0;
-        }
-
-        Period remainingPeriod = Period.between(now, endDate);
-        return remainingPeriod.getYears() * 12 + remainingPeriod.getMonths();
     }
 }

@@ -52,9 +52,4 @@ public class ContractController {
     public ResponseEntity<MessageResponse> closeContract(@PathVariable Long id) {
         return ResponseEntity.ok(new MessageResponse(this.contractService.verifyContract(id)));
     }
-
-    @GetMapping("/remaining-months/{companyId}")
-    public ResponseEntity<Integer> getRemainingContractMonths(@PathVariable Long companyId) {
-        return ResponseEntity.ok(contractService.getRemainingContractMonths(companyId));
-    }
 }
