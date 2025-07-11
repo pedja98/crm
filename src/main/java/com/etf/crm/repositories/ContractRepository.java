@@ -1,6 +1,7 @@
 package com.etf.crm.repositories;
 
 import com.etf.crm.dtos.ContractDto;
+import com.etf.crm.dtos.ContractReportDto;
 import com.etf.crm.entities.Contract;
 import com.etf.crm.entities.User;
 import com.etf.crm.enums.ContractStatus;
@@ -58,4 +59,23 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     void updateContractStatusByOpportunityId(@Param("opportunityId") Long opportunityId,
                                              @Param("contractStatus") ContractStatus contractStatus,
                                              @Param("modifiedBy") User modifiedBy);
+
+    @Query("""
+            SELECT new com.etf.crm.dtos.ContractReportDto(
+                c.id, c.name, c.referenceNumber, c.dateSigned, c.status, 
+                comp.id, comp.name, 
+                opp.id, opp.name, opp.type, 
+                u.shop.id, u.shop.name, 
+                u.shop.region.id, u.shop.region.name
+            )
+            FROM Contract c
+            LEFT JOIN c.company comp
+            LEFT JOIN c.opportunity opp
+            LEFT JOIN comp.assignedTo u
+            LEFT JOIN u.shop s
+            LEFT JOIN s.region r
+            WHERE c.deleted = false
+            """)
+    List<ContractReportDto> findAllContractReportDtoByDeletedFalse();
+
 }

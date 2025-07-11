@@ -1,6 +1,7 @@
 package com.etf.crm.services;
 
 import com.etf.crm.dtos.ContractDto;
+import com.etf.crm.dtos.ContractReportDto;
 import com.etf.crm.dtos.ContractSignDto;
 import com.etf.crm.dtos.CreateContractDto;
 import com.etf.crm.entities.Company;
@@ -21,10 +22,12 @@ import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class ContractService {
@@ -51,8 +54,7 @@ public class ContractService {
     private String omOfferApiBaseUrl;
 
     public String createContract(CreateContractDto body) {
-        Offer offer = this.offerRepository.findById(body.getOfferId())
-                .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
+        Offer offer = this.offerRepository.findById(body.getOfferId()).orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
 
         if (!OfferStatus.OFFER_APPROVED.equals(offer.getStatus())) {
             throw new BadRequestException(INVALID_OFFER_STATUS);
@@ -60,24 +62,13 @@ public class ContractService {
 
         String refNo = UUID.randomUUID().toString();
 
-        Contract contract = Contract.builder()
-                .contractObligation(0)
-                .createdBy(SetCurrentUserFilter.getCurrentUser())
-                .deleted(false)
-                .name(offer.getName().replace("Offer", "Contract"))
-                .company(offer.getCompany())
-                .opportunity(offer.getOpportunity())
-                .referenceNumber(refNo)
-                .offer(offer)
-                .status(ContractStatus.CREATED)
-                .build();
+        Contract contract = Contract.builder().contractObligation(0).createdBy(SetCurrentUserFilter.getCurrentUser()).deleted(false).name(offer.getName().replace("Offer", "Contract")).company(offer.getCompany()).opportunity(offer.getOpportunity()).referenceNumber(refNo).offer(offer).status(ContractStatus.CREATED).build();
         offer.setContract(this.contractRepository.save(contract));
         this.offerRepository.save(offer);
         return CREATE_CONTRACT;
     }
 
-    public List<ContractDto> getAllContracts(String sortBy, String sortOrder, String name,
-                                             String referenceNumber, List<ContractStatus> statuses, Long companyId, Long opportunityId) {
+    public List<ContractDto> getAllContracts(String sortBy, String sortOrder, String name, String referenceNumber, List<ContractStatus> statuses, Long companyId, Long opportunityId) {
         List<ContractDto> contracts = contractRepository.findAllContractDtoByDeletedFalse();
 
         Map<String, Object> filters = new HashMap<>();
@@ -87,32 +78,29 @@ public class ContractService {
         filters.put("companyId", companyId);
         filters.put("opportunityId", opportunityId);
 
-        List<Predicate<ContractDto>> predicates = filters.entrySet().stream()
-                .filter(entry -> entry.getValue() != null)
-                .map(entry -> {
-                    String fieldName = entry.getKey();
-                    Object value = entry.getValue();
+        List<Predicate<ContractDto>> predicates = filters.entrySet().stream().filter(entry -> entry.getValue() != null).map(entry -> {
+            String fieldName = entry.getKey();
+            Object value = entry.getValue();
 
-                    return (Predicate<ContractDto>) contract -> {
-                        try {
-                            Field field = ContractDto.class.getDeclaredField(fieldName);
-                            field.setAccessible(true);
-                            Object fieldValue = field.get(contract);
+            return (Predicate<ContractDto>) contract -> {
+                try {
+                    Field field = ContractDto.class.getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                    Object fieldValue = field.get(contract);
 
-                            if (value instanceof String stringValue) {
-                                return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
-                            } else if (value instanceof List<?> listValue) {
-                                return fieldValue != null && listValue.contains(fieldValue);
-                            } else if (value instanceof Long longValue) {
-                                return fieldValue != null && fieldValue.equals(longValue);
-                            }
-                            return false;
-                        } catch (NoSuchFieldException | IllegalAccessException e) {
-                            throw new RuntimeException("Invalid filter field: " + fieldName, e);
-                        }
-                    };
-                })
-                .toList();
+                    if (value instanceof String stringValue) {
+                        return fieldValue != null && fieldValue.toString().toLowerCase().contains(stringValue.toLowerCase());
+                    } else if (value instanceof List<?> listValue) {
+                        return fieldValue != null && listValue.contains(fieldValue);
+                    } else if (value instanceof Long longValue) {
+                        return fieldValue != null && fieldValue.equals(longValue);
+                    }
+                    return false;
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new RuntimeException("Invalid filter field: " + fieldName, e);
+                }
+            };
+        }).toList();
 
         for (Predicate<ContractDto> predicate : predicates) {
             contracts = contracts.stream().filter(predicate).toList();
@@ -140,8 +128,7 @@ public class ContractService {
     }
 
     public ContractDto getContractById(Long id) {
-        return this.contractRepository.findAllContractDtoByIdDeletedFalse(id)
-                .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+        return this.contractRepository.findAllContractDtoByIdDeletedFalse(id).orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
     }
 
     public String signContract(Long id, ContractSignDto body) {
@@ -155,8 +142,7 @@ public class ContractService {
             throw new BadRequestException(INVALID_REQUEST);
         }
 
-        Contract contract = this.contractRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+        Contract contract = this.contractRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
 
         if (this.contractRepository.existsByCompanyIdAndStatusAndDeletedFalse(contract.getCompany().getId(), ContractStatus.CONTRACT_SIGNED)) {
             throw new BadRequestException(THERE_IS_ALREADY_SIGNED_CONTRACT);
@@ -175,8 +161,7 @@ public class ContractService {
     }
 
     public String verifyContract(Long id) {
-        Contract contract = this.contractRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+        Contract contract = this.contractRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
 
         if (!contract.getStatus().equals(ContractStatus.CONTRACT_SIGNED)) {
             throw new BadRequestException(INVALID_REQUEST);
@@ -187,8 +172,7 @@ public class ContractService {
 
         this.contractRepository.save(contract);
 
-        Offer offer = this.offerRepository.findById(contract.getOffer().getId())
-                .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
+        Offer offer = this.offerRepository.findById(contract.getOffer().getId()).orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
 
         offer.setStatus(OfferStatus.CONCLUDED);
         offer.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
@@ -200,15 +184,13 @@ public class ContractService {
             throw new RuntimeException(INVALID_REQUEST);
         }
 
-        Opportunity opportunity = opportunityRepository.findById(contract.getOpportunity().getId())
-                .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
+        Opportunity opportunity = opportunityRepository.findById(contract.getOpportunity().getId()).orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
 
         opportunity.setStatus(OpportunityStatus.CLOSE_WON);
         opportunity.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         this.opportunityRepository.save(opportunity);
 
-        Company company = this.companyRepository.findById(contract.getCompany().getId())
-                .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+        Company company = this.companyRepository.findById(contract.getCompany().getId()).orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
         company.setStatus(opportunity.getType().equals(OpportunityType.TERMINATION) ? CompanyStatus.INACTIVE : CompanyStatus.ACTIVE);
         company.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
@@ -218,16 +200,14 @@ public class ContractService {
     }
 
     public String closeContract(Long id) {
-        Contract contract = this.contractRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+        Contract contract = this.contractRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
 
         if (contract.getStatus().equals(ContractStatus.CONTRACT_SIGNED_AND_VERIFIED)) {
             throw new BadRequestException(INVALID_REQUEST);
         }
         this.contractRepository.save(contract);
 
-        Offer offer = this.offerRepository.findById(contract.getOffer().getId())
-                .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
+        Offer offer = this.offerRepository.findById(contract.getOffer().getId()).orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
 
         offer.setStatus(OfferStatus.SALESMEN_CLOSED);
         offer.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
@@ -240,5 +220,48 @@ public class ContractService {
         this.offerRepository.save(offer);
 
         return CONTRACT_CLOSED;
+    }
+
+    public List<ContractReportDto> getContractReport(List<Long> regions, List<Long> shops, LocalDateTime signatureStartDate,
+                                                     LocalDateTime signatureEndDate, List<OpportunityType> opportunityTypes, List<ContractStatus> contractStatuses) {
+
+        List<ContractReportDto> contractReportData = this.contractRepository.findAllContractReportDtoByDeletedFalse();
+
+        return contractReportData.stream().filter(contract -> {
+            if (regions != null && !regions.isEmpty()) {
+                if (contract.getRegionId() == null || !regions.contains(contract.getRegionId())) {
+                    return false;
+                }
+            }
+            if (shops != null && !shops.isEmpty()) {
+                if (contract.getShopId() == null || !shops.contains(contract.getShopId())) {
+                    return false;
+                }
+            }
+            if (signatureStartDate != null || signatureEndDate != null) {
+                if (contract.getDateSigned() == null) {
+                    return false;
+                }
+
+                LocalDateTime contractSignedDateTime = contract.getDateSigned().atStartOfDay();
+
+                if (signatureStartDate != null && contractSignedDateTime.isBefore(signatureStartDate)) {
+                    return false;
+                }
+
+                if (signatureEndDate != null && contractSignedDateTime.isAfter(signatureEndDate)) {
+                    return false;
+                }
+            }
+            if (opportunityTypes != null && !opportunityTypes.isEmpty()) {
+                if (contract.getOpportunityType() == null || !opportunityTypes.contains(contract.getOpportunityType())) {
+                    return false;
+                }
+            }
+            if (contractStatuses != null && !contractStatuses.isEmpty()) {
+                return contract.getContractStatus() != null && contractStatuses.contains(contract.getContractStatus());
+            }
+            return true;
+        }).collect(Collectors.toList());
     }
 }

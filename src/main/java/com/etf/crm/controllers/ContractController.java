@@ -2,11 +2,14 @@ package com.etf.crm.controllers;
 
 import com.etf.crm.dtos.*;
 import com.etf.crm.enums.ContractStatus;
+import com.etf.crm.enums.OpportunityType;
 import com.etf.crm.services.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -50,6 +53,18 @@ public class ContractController {
 
     @PatchMapping("/{id}/close")
     public ResponseEntity<MessageResponse> closeContract(@PathVariable Long id) {
-        return ResponseEntity.ok(new MessageResponse(this.contractService.verifyContract(id)));
+        return ResponseEntity.ok(new MessageResponse(this.contractService.closeContract(id)));
+    }
+
+    @GetMapping("/report")
+    public ResponseEntity<List<ContractReportDto>> getContractReport(
+            @RequestParam(required = false) List<Long> regions,
+            @RequestParam(required = false) List<Long> shops,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime signatureStartDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime signatureEndDate,
+            @RequestParam(required = false) List<OpportunityType> opportunityTypes,
+            @RequestParam(required = false) List<ContractStatus> contractStatuses) {
+        return ResponseEntity.ok(this.contractService.getContractReport(
+                regions, shops, signatureStartDate, signatureEndDate, opportunityTypes, contractStatuses));
     }
 }

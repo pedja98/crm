@@ -186,7 +186,6 @@ public class UserService {
 
         Shop shop = this.shopRepository.findById(shopId)
                 .orElseThrow(() -> new ItemNotFoundException(SHOP_NOT_FOUND));
-
         user.setShop(shop);
         user.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
         userRepository.save(user);

@@ -52,15 +52,15 @@ public class User {
     @Column(nullable = false, length = 2)
     private Language language = Language.EN;
 
-    @ManyToOne
-    @JoinColumn(name = "shop", updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop", nullable = true)
     private Shop shop = null;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", updatable = false)
     private User createdBy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modified_by")
     private User modifiedBy;
 
