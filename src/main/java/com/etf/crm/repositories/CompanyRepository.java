@@ -2,6 +2,7 @@ package com.etf.crm.repositories;
 
 import com.etf.crm.dtos.CompanyDto;
 import com.etf.crm.entities.Company;
+import com.etf.crm.enums.CompanyStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -34,4 +35,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
             "LEFT JOIN c.temporaryAssignedTo tas " +
             "WHERE c.deleted = false")
     Optional<List<CompanyDto>> findAllCompanyDtoByDeletedFalse();
+
+    List<Company> findAllByStatusAndDeletedFalse(CompanyStatus status);
 }

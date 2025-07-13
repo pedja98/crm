@@ -78,4 +78,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             """)
     List<ContractReportDto> findAllContractReportDtoByDeletedFalse();
 
+    @Query("""
+        SELECT c FROM Contract c
+        WHERE c.company.id = :companyId AND c.deleted = false
+        ORDER BY c.dateSigned DESC
+        LIMIT 1
+    """)
+    Optional<Contract> findLastSignedContractByCompanyId(@Param("companyId") Long companyId);
+
 }

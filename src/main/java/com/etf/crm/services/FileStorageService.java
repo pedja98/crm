@@ -19,22 +19,13 @@ public class FileStorageService {
 
     public String storeFile(byte[] fileContent, String originalFileName, Long contractId) {
         try {
-            // Create directory structure: documents/contract_{contractId}/
             Path contractDir = Paths.get(storageBasePath, "contract_" + contractId);
             Files.createDirectories(contractDir);
-
-            // Generate unique filename with timestamp
             String timestamp = String.valueOf(Instant.now().toEpochMilli());
             String fileExtension = getFileExtension(originalFileName);
             String uniqueFileName = timestamp + "_" + UUID.randomUUID().toString().substring(0, 8) + fileExtension;
-
-            // Full file path
             Path filePath = contractDir.resolve(uniqueFileName);
-
-            // Write file to disk
             Files.write(filePath, fileContent, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-
-            // Return relative path for storage in database
             return Paths.get("contract_" + contractId, uniqueFileName).toString();
 
         } catch (IOException e) {
@@ -66,7 +57,6 @@ public class FileStorageService {
             }
 
         } catch (IOException e) {
-            // Log the error but don't fail the operation
             System.err.println("Failed to delete file: " + relativePath + ", Error: " + e.getMessage());
         }
     }
