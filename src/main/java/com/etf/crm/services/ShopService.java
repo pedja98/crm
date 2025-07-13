@@ -5,8 +5,10 @@ import com.etf.crm.dtos.ShopDto;
 import com.etf.crm.entities.Region;
 import com.etf.crm.entities.Shop;
 import com.etf.crm.entities.User;
+import com.etf.crm.enums.UserType;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.exceptions.PropertyCopyException;
+import com.etf.crm.exceptions.UnauthorizedException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.RegionRepository;
 import com.etf.crm.repositories.ShopRepository;
@@ -38,6 +40,11 @@ public class ShopService {
     private RegionRepository regionRepository;
 
     public ShopDto getShopById(Long id) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        if (!currentUser.getType().equals(UserType.ADMIN) && !currentUser.getType().equals(UserType.L2_MANAGER)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
+
         return this.shopRepository.findShopDtoByUsernameAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(SHOP_NOT_FOUND));
     }
@@ -48,6 +55,10 @@ public class ShopService {
             List<Long> regions,
             List<Long> shopLeaders,
             String name) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        if (!currentUser.getType().equals(UserType.ADMIN) && !currentUser.getType().equals(UserType.L2_MANAGER)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
 
         List<ShopDto> shops = this.shopRepository.findAllShopDtoByDeletedFalse()
                 .orElseThrow(() -> new ItemNotFoundException(SHOP_NOT_FOUND));
@@ -108,6 +119,10 @@ public class ShopService {
 
     @Transactional
     public String deleteShop(Long id) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        if (!currentUser.getType().equals(UserType.ADMIN)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
         Shop shop = this.shopRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(SHOP_NOT_FOUND));
         shop.setDeleted(true);
@@ -117,7 +132,12 @@ public class ShopService {
 
     @Transactional
     public String createShop(SaveShopDto shopData) {
+
         User createdBy = SetCurrentUserFilter.getCurrentUser();
+
+        if (!createdBy.getType().equals(UserType.ADMIN)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
 
         User shopLeader = userRepository.findById(shopData.getShopLeader())
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
@@ -140,6 +160,11 @@ public class ShopService {
 
     @Transactional
     public String updateShop(Long id, SaveShopDto shopDetails) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        if (!currentUser.getType().equals(UserType.ADMIN)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
+
         Shop shop = this.shopRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(SHOP_NOT_FOUND));
 
@@ -162,7 +187,7 @@ public class ShopService {
             }
         }
 
-        shop.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        shop.setModifiedBy(currentUser);
         this.shopRepository.save(shop);
 
         return SHOP_UPDATED;

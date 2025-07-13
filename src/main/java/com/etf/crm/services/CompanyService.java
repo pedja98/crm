@@ -5,6 +5,7 @@ import com.etf.crm.dtos.SaveCompanyDto;
 import com.etf.crm.entities.Company;
 import com.etf.crm.entities.User;
 import com.etf.crm.enums.CompanyStatus;
+import com.etf.crm.enums.UserType;
 import com.etf.crm.exceptions.*;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.CompanyRepository;
@@ -27,6 +28,9 @@ public class CompanyService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuthorizationService authorizationService;
 
     @Transactional
     public String createCompany(SaveCompanyDto companyDto) {
@@ -68,8 +72,10 @@ public class CompanyService {
     }
 
     public CompanyDto getCompanyById(Long id) {
-        return this.companyRepository.findCompanyDtoByIdAndDeletedFalse(id)
+        CompanyDto companyDto = this.companyRepository.findCompanyDtoByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+        this.authorizationService.isUserAuthorizedForAction(id);
+        return companyDto;
     }
 
     public List<CompanyDto> getFilteredAndSortedCompanies(
@@ -79,6 +85,20 @@ public class CompanyService {
 
         List<CompanyDto> companies = companyRepository.findAllCompanyDtoByDeletedFalse()
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+
+        if (currentUser.getType().equals(UserType.SALESMAN)) {
+            companies = companies.stream().filter(company -> Objects.equals(company.getAssignedToId(), currentUser.getId())
+                    || Objects.equals(company.getTemporaryAssignedToId(), currentUser.getId())).toList();
+        } else if (currentUser.getType().equals(UserType.L1_MANAGER)) {
+            companies = companies.stream().filter(company -> {
+                User assignedTo = this.userRepository.findById(company.getAssignedToId())
+                        .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+
+                return Objects.equals(assignedTo.getShop().getId(), currentUser.getShop().getId());
+            }).toList();
+        }
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("name", name);
@@ -148,6 +168,9 @@ public class CompanyService {
         Company company = this.companyRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
 
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        this.authorizationService.isUserAuthorizedForAction(id);
+
         for (Field field : SaveCompanyDto.class.getDeclaredFields()) {
             try {
                 field.setAccessible(true);
@@ -156,13 +179,21 @@ public class CompanyService {
                     continue;
                 }
                 if (field.getName().equals("assignedTo")) {
-                    newValue = userRepository.findById((Long) field.get(companyDetails))
+                    User assigendToUser = userRepository.findById((Long) field.get(companyDetails))
                             .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+                    if (assigendToUser.getShop() == null) {
+                        throw new BadRequestException(COMPANY_ASSIGNED_TO_USER_SHOP_EMPTY);
+                    }
+                    newValue = assigendToUser;
                 } else if (field.getName().equals("temporaryAssignedTo")) {
-                    newValue = newValue == null
+                    User temporaryAssignedTo = newValue == null
                             ? null
                             : userRepository.findById((Long) field.get(companyDetails))
                             .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+                    if (temporaryAssignedTo != null && temporaryAssignedTo.getShop() != company.getAssignedTo().getShop()) {
+                        throw new BadRequestException(COMPANY_TEMPORARY_ASSIGNED_TO_USER_ERROR);
+                    }
+                    newValue = temporaryAssignedTo;
                 }
                 Field companyField = Company.class.getDeclaredField(field.getName());
                 companyField.setAccessible(true);
@@ -172,7 +203,7 @@ public class CompanyService {
             }
         }
 
-        company.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        company.setModifiedBy(currentUser);
         this.companyRepository.save(company);
 
         return COMPANY_UPDATED;

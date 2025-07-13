@@ -4,13 +4,11 @@ import com.etf.crm.dtos.ContractDto;
 import com.etf.crm.dtos.ContractReportDto;
 import com.etf.crm.dtos.ContractSignDto;
 import com.etf.crm.dtos.CreateContractDto;
-import com.etf.crm.entities.Company;
-import com.etf.crm.entities.Contract;
-import com.etf.crm.entities.Offer;
-import com.etf.crm.entities.Opportunity;
+import com.etf.crm.entities.*;
 import com.etf.crm.enums.*;
 import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.exceptions.ItemNotFoundException;
+import com.etf.crm.exceptions.UnauthorizedException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,6 @@ import static com.etf.crm.common.CrmConstants.ErrorCodes.*;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
@@ -50,11 +47,16 @@ public class ContractService {
     @Autowired
     private OfferRepository offerRepository;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     @Value("${offer.api.base-url}")
     private String omOfferApiBaseUrl;
 
     public String createContract(CreateContractDto body) {
         Offer offer = this.offerRepository.findById(body.getOfferId()).orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
+
+        this.authorizationService.isUserAuthorizedForAction(offer.getCompany().getId());
 
         if (!OfferStatus.OFFER_APPROVED.equals(offer.getStatus())) {
             throw new BadRequestException(INVALID_OFFER_STATUS);
@@ -69,7 +71,8 @@ public class ContractService {
     }
 
     public List<ContractDto> getAllContracts(String sortBy, String sortOrder, String name, String referenceNumber, List<ContractStatus> statuses, Long companyId, Long opportunityId) {
-        List<ContractDto> contracts = contractRepository.findAllContractDtoByDeletedFalse();
+        List<ContractDto> contracts = authorizationService
+                .filterByUserAccess(contractRepository.findAllContractDtoByDeletedFalse(), ContractDto::getCompanyId);
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("name", name);
@@ -128,7 +131,10 @@ public class ContractService {
     }
 
     public ContractDto getContractById(Long id) {
-        return this.contractRepository.findAllContractDtoByIdDeletedFalse(id).orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+        ContractDto contractDto = this.contractRepository.findContractDtoByIdDeletedFalse(id)
+                .orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+        this.authorizationService.isUserAuthorizedForAction(contractDto.getCompanyId());
+        return contractDto;
     }
 
     public String signContract(Long id, ContractSignDto body) {
@@ -143,6 +149,8 @@ public class ContractService {
         }
 
         Contract contract = this.contractRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+
+        this.authorizationService.isUserAuthorizedForAction(contract.getCompany().getId());
 
         if (this.contractRepository.existsByCompanyIdAndStatusAndDeletedFalse(contract.getCompany().getId(), ContractStatus.CONTRACT_SIGNED)) {
             throw new BadRequestException(THERE_IS_ALREADY_SIGNED_CONTRACT);
@@ -162,6 +170,8 @@ public class ContractService {
 
     public String verifyContract(Long id) {
         Contract contract = this.contractRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+
+        this.authorizationService.isUserAuthorizedForAction(contract.getCompany().getId());
 
         if (!contract.getStatus().equals(ContractStatus.CONTRACT_SIGNED)) {
             throw new BadRequestException(INVALID_REQUEST);
@@ -201,6 +211,7 @@ public class ContractService {
 
     public String closeContract(Long id) {
         Contract contract = this.contractRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new ItemNotFoundException(CONTRACT_NOT_FOUND));
+        this.authorizationService.isUserAuthorizedForAction(contract.getCompany().getId());
 
         if (contract.getStatus().equals(ContractStatus.CONTRACT_SIGNED_AND_VERIFIED)) {
             throw new BadRequestException(INVALID_REQUEST);
@@ -226,6 +237,11 @@ public class ContractService {
                                                      LocalDateTime signatureEndDate, List<OpportunityType> opportunityTypes, List<ContractStatus> contractStatuses) {
 
         List<ContractReportDto> contractReportData = this.contractRepository.findAllContractReportDtoByDeletedFalse();
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+
+        if (!currentUser.getType().equals(UserType.ADMIN) && !currentUser.getType().equals(UserType.L2_MANAGER)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
 
         return contractReportData.stream().filter(contract -> {
             if (regions != null && !regions.isEmpty()) {

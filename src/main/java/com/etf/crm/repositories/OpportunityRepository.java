@@ -27,5 +27,5 @@ public interface OpportunityRepository extends JpaRepository<Opportunity, Long> 
             "LEFT JOIN o.modifiedBy mb " +
             "LEFT JOIN o.company c " +
             "WHERE o.deleted = false")
-    Optional<List<OpportunityDto>> findAllOpportunityDtoByDeletedFalse();
+    List<OpportunityDto> findAllOpportunityDtoByDeletedFalse();
 }

@@ -8,6 +8,12 @@ public final class CrmConstants {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class ErrorCodes {
+        public static final String COMPANY_ASSIGNED_TO_USER_SHOP_EMPTY = "companyAssignedToUserShopEmpty";
+
+        public static final String UNAUTHORIZED = "unauthorized";
+
+        public static final String COMPANY_TEMPORARY_ASSIGNED_TO_USER_ERROR = "companyTemporaryAssignedToUserError";
+
         public static final String OFFER_STATUS_TRANSITION_NOT_POSSIBLE = "offerStatusTransitionNotPossible";
 
         public static final String INVALID_REQUEST = "invalidRequest";

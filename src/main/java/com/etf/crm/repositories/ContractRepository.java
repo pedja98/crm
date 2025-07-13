@@ -46,7 +46,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             LEFT JOIN c.modifiedBy mb 
             WHERE c.deleted = false and c.id = :id
             """)
-    Optional<ContractDto> findAllContractDtoByIdDeletedFalse(@Param("id") Long id);
+    Optional<ContractDto> findContractDtoByIdDeletedFalse(@Param("id") Long id);
 
     @Modifying
     @Query("""

@@ -31,5 +31,5 @@ public interface CustomerSessionRepository extends JpaRepository<CustomerSession
             "LEFT JOIN cs.company c " +
             "LEFT JOIN cs.opportunity o " +
             "WHERE cs.deleted = false")
-    Optional<List<CustomerSessionDto>> findAllCustomerSessionDtoByDeletedFalse();
+    List<CustomerSessionDto> findAllCustomerSessionDtoByDeletedFalse();
 }

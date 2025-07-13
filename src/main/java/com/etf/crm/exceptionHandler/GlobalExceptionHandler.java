@@ -21,6 +21,7 @@ public class GlobalExceptionHandler {
         HttpStatus status = switch (ex.getClass().getSimpleName()) {
             case "ItemNotFoundException" -> HttpStatus.NOT_FOUND;
             case "DuplicateItemException" -> HttpStatus.CONFLICT;
+            case "UnauthorizedException" -> HttpStatus.UNAUTHORIZED;
             case "PropertyCopyException",
                  "InvalidAttributeValueException",
                  "BadRequestException" -> HttpStatus.BAD_REQUEST;

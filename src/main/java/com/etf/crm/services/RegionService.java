@@ -3,8 +3,11 @@ package com.etf.crm.services;
 import com.etf.crm.dtos.RegionDto;
 import com.etf.crm.dtos.SaveRegionRequestDto;
 import com.etf.crm.entities.Region;
+import com.etf.crm.entities.User;
+import com.etf.crm.enums.UserType;
 import com.etf.crm.exceptions.DuplicateItemException;
 import com.etf.crm.exceptions.ItemNotFoundException;
+import com.etf.crm.exceptions.UnauthorizedException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.RegionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +29,33 @@ public class RegionService {
 
     @Transactional
     public String createRegion(Region region) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        if (!currentUser.getType().equals(UserType.ADMIN)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
         if (regionRepository.findByNameAndDeletedFalse(region.getName()).isPresent()) {
             throw new DuplicateItemException(REGION_ALREADY_EXISTS);
         }
-        region.setCreatedBy(SetCurrentUserFilter.getCurrentUser());
+        region.setCreatedBy(currentUser);
         regionRepository.save(region);
         return REGION_CREATED;
     }
 
     public RegionDto getRegionById(Long id) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        if (!currentUser.getType().equals(UserType.ADMIN)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
         return regionRepository.findRegionDtoById(id)
                 .orElseThrow(() -> new ItemNotFoundException(REGION_NOT_FOUND));
     }
 
     public List<RegionDto> getFilteredAndSortedRegions(String name, String sortBy, String sortOrder) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        if (!currentUser.getType().equals(UserType.ADMIN)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
+
         List<RegionDto> regions = regionRepository.findAllRegionDtoByDeletedFalse();
 
         if (regions.isEmpty()) {
@@ -75,16 +91,24 @@ public class RegionService {
 
     @Transactional
     public String deleteRegion(Long id) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        if (!currentUser.getType().equals(UserType.ADMIN)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
         Region region = regionRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(REGION_NOT_FOUND));
         region.setDeleted(true);
-        region.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        region.setModifiedBy(currentUser);
         regionRepository.save(region);
         return REGION_DELETED;
     }
 
     @Transactional
     public String updateRegion(Long id, SaveRegionRequestDto updatedRegionData) {
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        if (!currentUser.getType().equals(UserType.ADMIN)) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
         if (regionRepository.findByNameAndDeletedFalse(updatedRegionData.getName()).isPresent()) {
             throw new DuplicateItemException(REGION_ALREADY_EXISTS);
         }

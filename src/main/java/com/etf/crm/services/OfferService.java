@@ -36,6 +36,9 @@ public class OfferService {
     @Autowired
     private OpportunityRepository opportunityRepository;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     @Transactional
     public CreateCrmOfferResponseDto createOffer(CreateOfferDto body) {
         Opportunity opportunity = this.opportunityRepository.findById(body.getOpportunityId())
@@ -43,6 +46,8 @@ public class OfferService {
 
         Company company = this.companyRepository.findById(body.getCompanyId())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+
+        this.authorizationService.isUserAuthorizedForAction(company.getId());
 
         Offer offer = Offer.builder()
                 .company(company)
@@ -60,12 +65,15 @@ public class OfferService {
     }
 
     public OfferDto getOfferById(Long id) {
-        return this.offerRepository.findOfferDtoByIdAndDeletedFalse(id)
+        OfferDto offerDto = this.offerRepository.findOfferDtoByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
+        this.authorizationService.isUserAuthorizedForAction(offerDto.getCompanyId());
+        return offerDto;
     }
 
     public List<OfferDto> getAllOffers(String sortBy, String sortOrder, String name, List<OfferStatus> statuses, Long companyId, Long opportunityId) {
-        List<OfferDto> offers = offerRepository.findAllOfferDtoByDeletedFalse();
+       List<OfferDto> offers = authorizationService
+               .filterByUserAccess(offerRepository.findAllOfferDtoByDeletedFalse(), OfferDto::getCompanyId);
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("name", name);
@@ -129,6 +137,8 @@ public class OfferService {
     public String patchOffer(Long id, Map<String, Object> updates) {
         Offer offer = offerRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
+
+        this.authorizationService.isUserAuthorizedForAction(offer.getCompany().getId());
 
         Set<String> allowedFields = Arrays.stream(Offer.class.getDeclaredFields())
                 .map(Field::getName)

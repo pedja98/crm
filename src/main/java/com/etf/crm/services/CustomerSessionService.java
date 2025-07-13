@@ -12,6 +12,7 @@ import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
 import com.etf.crm.repositories.CompanyRepository;
 import com.etf.crm.repositories.CustomerSessionRepository;
+import com.etf.crm.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,12 +37,20 @@ public class CustomerSessionService {
     @Autowired
     private OpportunityService opportunityService;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AuthorizationService authorizationService;
+
     @Transactional
     public String createCustomerSession(SaveCustomerSessionDto customerSessionDetails) {
         if (customerSessionDetails.getSessionEnd().isBefore(customerSessionDetails.getSessionStart())) {
             throw new BadRequestException(INVALID_SESSION_DATE_TIME);
         }
         User currentUser = SetCurrentUserFilter.getCurrentUser();
+
+        this.authorizationService.isUserAuthorizedForAction(customerSessionDetails.getCompany());
 
         Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompany())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
@@ -69,8 +78,10 @@ public class CustomerSessionService {
     }
 
     public CustomerSessionDto getCustomerSessionById(Long id) {
-        return this.customerSessionRepository.findCustomerSessionDtoByIdAndDeletedFalse(id)
+        CustomerSessionDto customerSession = this.customerSessionRepository.findCustomerSessionDtoByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(CUSTOMER_SESSION_NOT_FOUND));
+        this.authorizationService.isUserAuthorizedForAction(customerSession.getCompanyId());
+        return customerSession;
     }
 
     public List<CustomerSessionDto> getAllCustomerSessions(
@@ -84,8 +95,8 @@ public class CustomerSessionService {
             Long companyId,
             Long opportunityId
     ) {
-        List<CustomerSessionDto> customerSessions = customerSessionRepository.findAllCustomerSessionDtoByDeletedFalse()
-                .orElseThrow(() -> new ItemNotFoundException(NO_USERS_FOUND));
+        List<CustomerSessionDto> customerSessions = authorizationService
+                .filterByUserAccess(customerSessionRepository.findAllCustomerSessionDtoByDeletedFalse(), CustomerSessionDto::getCompanyId);
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("name", name);
@@ -163,6 +174,8 @@ public class CustomerSessionService {
 
         Company company = companyRepository.findByIdAndDeletedFalse(customerSessionDetails.getCompany())
                 .orElseThrow(() -> new ItemNotFoundException(COMPANY_NOT_FOUND));
+
+        this.authorizationService.isUserAuthorizedForAction(customerSessionDetails.getCompany());
 
         Opportunity opportunity = this.opportunityService.createOpportunity(company, customerSessionDetails.getOpportunityType(),
                 customerSessionDetails.getOutcome(), customerSessionDetails.getStatus());

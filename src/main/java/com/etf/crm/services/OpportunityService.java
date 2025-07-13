@@ -8,6 +8,7 @@ import com.etf.crm.enums.*;
 import com.etf.crm.exceptions.BadRequestException;
 import com.etf.crm.exceptions.ItemNotFoundException;
 import com.etf.crm.filters.SetCurrentUserFilter;
+import com.etf.crm.repositories.CompanyRepository;
 import com.etf.crm.repositories.ContractRepository;
 import com.etf.crm.repositories.OfferRepository;
 import com.etf.crm.repositories.OpportunityRepository;
@@ -33,14 +34,22 @@ public class OpportunityService {
     private OpportunityRepository opportunityRepository;
 
     @Autowired
+    private CompanyRepository companyRepository;
+
+    @Autowired
     private ContractRepository contractRepository;
 
     @Autowired
     private OfferRepository offerRepository;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     public OpportunityDto getOpportunityById(Long id) {
-        return this.opportunityRepository.findOpportunityDtoByIdAndDeletedFalse(id)
+        OpportunityDto opportunityDto = this.opportunityRepository.findOpportunityDtoByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
+        this.authorizationService.isUserAuthorizedForAction(opportunityDto.getCompanyId());
+        return opportunityDto;
     }
 
     public Opportunity createOpportunity(Company company, OpportunityType opportunityType, CustomerSessionOutcome outcome, CustomerSessionStatus status) {
@@ -55,6 +64,8 @@ public class OpportunityService {
         if (company.getStatus().equals(CompanyStatus.ACTIVE) && opportunityType.equals(OpportunityType.ACQUISITION)) {
             throw new BadRequestException(CAN_NOT_CREATE_OPPORTUNITY_FOR_COMPANY_IN_THIS_STATUS);
         }
+
+        this.authorizationService.isUserAuthorizedForAction(company.getId());
 
         Opportunity opportunity = Opportunity.builder()
                 .name("OPP " + company.getName() + " " + (new SimpleDateFormat("dd/MM/yyyy")).format(new Date()))
@@ -75,8 +86,8 @@ public class OpportunityService {
             List<OpportunityType> types,
             List<OpportunityStatus> statuses,
             Long companyId) {
-        List<OpportunityDto> opportunities = this.opportunityRepository.findAllOpportunityDtoByDeletedFalse()
-                .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
+        List<OpportunityDto> opportunities = authorizationService
+                .filterByUserAccess(opportunityRepository.findAllOpportunityDtoByDeletedFalse(), OpportunityDto::getCompanyId);
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("name", name);
@@ -138,6 +149,9 @@ public class OpportunityService {
     public String closeOpportunity(Long id) {
         Opportunity opportunity = this.opportunityRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ItemNotFoundException(OPPORTUNITY_NOT_FOUND));
+
+        this.authorizationService.isUserAuthorizedForAction(opportunity.getCompany().getId());
+
         User currentUser = SetCurrentUserFilter.getCurrentUser();
 
         if (opportunity.getStatus().equals(OpportunityStatus.CLOSE_LOST) || opportunity.getStatus().equals(OpportunityStatus.CLOSE_WON)) {

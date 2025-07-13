@@ -4,7 +4,6 @@ import com.etf.crm.dtos.CompanyContactRelationDto;
 import com.etf.crm.dtos.CreateCompanyContactRelationDto;
 import com.etf.crm.dtos.MessageResponse;
 import com.etf.crm.dtos.UpdateCompanyContactRelation;
-import com.etf.crm.entities.CompanyContactRelation;
 import com.etf.crm.services.CompanyContactRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
