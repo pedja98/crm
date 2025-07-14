@@ -216,12 +216,16 @@ public class ContractService {
         if (contract.getStatus().equals(ContractStatus.CONTRACT_SIGNED_AND_VERIFIED)) {
             throw new BadRequestException(INVALID_REQUEST);
         }
+
+        User currentUser = SetCurrentUserFilter.getCurrentUser();
+        contract.setStatus(ContractStatus.SALESMAN_CLOSED);
+        contract.setModifiedBy(currentUser);
         this.contractRepository.save(contract);
 
         Offer offer = this.offerRepository.findById(contract.getOffer().getId()).orElseThrow(() -> new ItemNotFoundException(OFFER_NOT_FOUND));
 
         offer.setStatus(OfferStatus.SALESMEN_CLOSED);
-        offer.setModifiedBy(SetCurrentUserFilter.getCurrentUser());
+        offer.setModifiedBy(currentUser);
 
         try {
             this.omOfferService.updateOmOfferStatus(offer.getId(), OfferStatus.SALESMEN_CLOSED);
