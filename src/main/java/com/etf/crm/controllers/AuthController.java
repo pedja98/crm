@@ -19,10 +19,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthUserResponseDto> login(@RequestBody AuthUserRequestDto authRequest) {
-        AuthUserDto authUserData = authService.getAuthUserData(authRequest.getUsername());
-        if (!SecurityConfig.matches(authRequest.getPassword(), authUserData.getPassword())) {
-            throw new ItemNotFoundException(WRONG_PASSWORD);
-        }
+        AuthUserDto authUserData = authService.getAuthUserData(authRequest);
         return ResponseEntity.ok((new AuthUserResponseDto(authUserData.getUsername(), authUserData.getType(), authUserData.getLanguage())));
     }
 

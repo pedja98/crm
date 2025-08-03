@@ -2,6 +2,7 @@ package com.etf.crm.services;
 
 import com.etf.crm.config.SecurityConfig;
 import com.etf.crm.dtos.AuthUserDto;
+import com.etf.crm.dtos.AuthUserRequestDto;
 import com.etf.crm.dtos.ChangePasswordRequestDto;
 import com.etf.crm.entities.User;
 import com.etf.crm.exceptions.BadRequestException;
@@ -21,9 +22,13 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    public AuthUserDto getAuthUserData(String username) {
-        return this.userRepository.findAuthUserDtoByUsernameAndDeletedFalse(username)
+    public AuthUserDto getAuthUserData(AuthUserRequestDto authRequest) {
+        AuthUserDto authData = this.userRepository.findAuthUserDtoByUsernameAndDeletedFalse(authRequest.getUsername())
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND));
+        if (!SecurityConfig.matches(authRequest.getPassword(), authData.getPassword())) {
+            throw new ItemNotFoundException(WRONG_PASSWORD);
+        }
+        return authData;
     }
 
     public String changePassword(ChangePasswordRequestDto changePasswordData) {
